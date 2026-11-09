@@ -20,3 +20,43 @@ PASS: aapt2 badging package=dev.changbak.explorer versionCode=12 versionName=0.1
 APK SHA-256 88a29fb4872f638f9f71ec139c35d7224932818fcc1583a9f176d22dc671e16f
 NOT VERIFIED on this host: no emulator or device. No install, no runtime, no SDK probe.
   Device and real route-guidance verification still pending (see docs/현재상태와_다음작업.md).
+
+2026-11-10 EMULATOR RUN (generic Android Automotive, NOT the Pleos emulator)
+Host: macOS arm64. AVD pleos_check_aaos33, system-images;android-33;android-automotive;arm64-v8a
+Device: API 33, ro.build.characteristics=automotive, android.hardware.type.automotive present
+Reproduce with: tools/emulator-demo-check.sh
+
+PASS install: apk/김규범_길위의큐레이터_release.apk, versionCode=12 versionName=0.12.0
+  Installed without -g. Runtime permissions started granted=false.
+PASS launch: dev.changbak.explorer/.MainActivity resumed, 0 FATAL EXCEPTION across all runs
+PASS demo flow, untouched after one tap on 한강의 과학 여행:
+  01 먼저 상상해 보기 -> 02 창밖에서 만나기 -> 03 장소의 이야기 -> 04 오늘의 구조 설계자
+  Canvas illustrations advance per phase; progress dots 예고/관찰/이야기/놀이 track the phase
+PASS Korean speech on the Android fallback engine:
+  GoogleTTSServiceImpl "Synthesis request for locale kor-KOR", voice ko-kr-x-ism-lstm-embedded
+PASS car audio priority through the real AAOS stack:
+  CarAudioFocus GAIN_TRANSIENT REQUEST_GRANTED per utterance, onAudioFocusAbandon after each
+
+PASS narration-failure recovery (the 0.12.0 fix), reproduced twice:
+  While phase 03 EXPLAIN was speaking, `am force-stop com.google.android.tts`.
+  logcat: "TextToSpeech: Disconnected from TTS engine" - no onDone, no onError reached the app.
+  VoiceGuide's speech timeout fired -> settle(aborted) -> onAborted -> afterExplanation.
+  logcat then shows "playSilentUtterance failed: not bound" = the app had already moved on and
+  was speaking the NEXT phase's line. Screens b-01 (03 장소의 이야기) -> b-02 (04 역할 놀이).
+  Before this fix the screen stayed on 03 for the rest of the drive.
+
+PASS location permission flow, requested through the normal system UI:
+  App start does NOT ask. The request appears only on 실제 내비로 음성 여행 시작.
+  Dialog: "Allow 길 위의 큐레이터 to access this device's location?" While using the app / Don't allow.
+  After the tap: ACCESS_FINE_LOCATION granted=true with flag USER_SET (user action, not adb -g).
+  With system location off, the app shows 차량 위치를 켜 주세요 instead of crashing.
+PASS foreground service: CuratorDriveService isForeground=true, notification id 71,
+  channel curator-journey, category=transport, 1 action. Survives KEYCODE_HOME.
+
+NOT VERIFIED - needs the Pleos emulator or a vehicle:
+  Pleos NaviService is absent here. logcat: "Unable to start service Intent
+  { act=ai.pleos.playground.intent.action.NAVI_START ... } not found", NaviHelper SDK retried
+  30 times then "connect failed cause : service has not started yet". The app degrades without
+  crashing and shows 예고 가능한 장소 0곳 / 가까운 장소 0곳.
+  So: real route guidance, per-place remainTime units, the 300-second question, real passage
+  detection, and Pleos on-device TTS/STT remain unverified.

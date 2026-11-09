@@ -1,0 +1,22 @@
+11-10 01:24:35.416 I/CarAudioFocus(  998): Evaluating GAIN_TRANSIENT request for client android.media.AudioManager@1c5a680dev.changbak.explorer.audio.VoiceGuide$$ExternalSyntheticLambda16@e314b9 with usage USAGE_MEDIA
+11-10 01:24:35.417 I/CarAudioFocus(  998): onAudioFocusRequest for client android.media.AudioManager@1c5a680dev.changbak.explorer.audio.VoiceGuide$$ExternalSyntheticLambda16@e314b9 with gain type GAIN_TRANSIENT resulted in REQUEST_GRANTED
+11-10 01:24:35.425 I/GoogleTTSServiceImpl( 7782): Synthesis request for locale kor-KOR and name ko-kr-x-kod-local
+11-10 01:24:43.084 I/CarAudioFocus(  998): onAudioFocusAbandon for client android.media.AudioManager@1c5a680dev.changbak.explorer.audio.VoiceGuide$$ExternalSyntheticLambda16@e314b9
+11-10 01:24:43.084 I/CarAudioFocus(  998): removeFocusEntry android.media.AudioManager@1c5a680dev.changbak.explorer.audio.VoiceGuide$$ExternalSyntheticLambda16@e314b9
+11-10 01:25:02.562 I/CarAudioFocus(  998): Evaluating GAIN_TRANSIENT request for client android.media.AudioManager@1c5a680dev.changbak.explorer.audio.VoiceGuide$$ExternalSyntheticLambda16@bc8433b with usage USAGE_MEDIA
+11-10 01:25:02.564 I/CarAudioFocus(  998): onAudioFocusRequest for client android.media.AudioManager@1c5a680dev.changbak.explorer.audio.VoiceGuide$$ExternalSyntheticLambda16@bc8433b with gain type GAIN_TRANSIENT resulted in REQUEST_GRANTED
+11-10 01:25:02.574 I/GoogleTTSServiceImpl( 7782): Synthesis request for locale kor-KOR and name ko-kr-x-kod-local
+11-10 01:25:06.694 I/CarAudioFocus(  998): onAudioFocusAbandon for client android.media.AudioManager@1c5a680dev.changbak.explorer.audio.VoiceGuide$$ExternalSyntheticLambda16@bc8433b
+11-10 01:25:06.694 I/CarAudioFocus(  998): removeFocusEntry android.media.AudioManager@1c5a680dev.changbak.explorer.audio.VoiceGuide$$ExternalSyntheticLambda16@bc8433b
+11-10 01:25:06.695 I/CarAudioFocus(  998): Evaluating GAIN_TRANSIENT request for client android.media.AudioManager@1c5a680dev.changbak.explorer.audio.VoiceGuide$$ExternalSyntheticLambda16@1446d71 with usage USAGE_MEDIA
+11-10 01:25:06.695 I/CarAudioFocus(  998): onAudioFocusRequest for client android.media.AudioManager@1c5a680dev.changbak.explorer.audio.VoiceGuide$$ExternalSyntheticLambda16@1446d71 with gain type GAIN_TRANSIENT resulted in REQUEST_GRANTED
+11-10 01:25:06.697 I/GoogleTTSServiceImpl( 7782): Synthesis request for locale kor-KOR and name ko-kr-x-kod-local
+11-10 01:25:40.321 W/TextToSpeech( 7754): stop failed: not bound to TTS engine
+11-10 01:25:40.324 I/CarAudioFocus(  998): onAudioFocusAbandon for client android.media.AudioManager@1c5a680dev.changbak.explorer.audio.VoiceGuide$$ExternalSyntheticLambda16@1446d71
+11-10 01:25:40.324 I/CarAudioFocus(  998): removeFocusEntry android.media.AudioManager@1c5a680dev.changbak.explorer.audio.VoiceGuide$$ExternalSyntheticLambda16@1446d71
+11-10 01:25:40.408 I/CarAudioFocus(  998): Evaluating GAIN_TRANSIENT request for client android.media.AudioManager@1c5a680dev.changbak.explorer.audio.VoiceGuide$$ExternalSyntheticLambda16@b7d13d8 with usage USAGE_MEDIA
+11-10 01:25:40.408 I/CarAudioFocus(  998): onAudioFocusRequest for client android.media.AudioManager@1c5a680dev.changbak.explorer.audio.VoiceGuide$$ExternalSyntheticLambda16@b7d13d8 with gain type GAIN_TRANSIENT resulted in REQUEST_GRANTED
+11-10 01:25:40.410 W/TextToSpeech( 7754): playSilentUtterance failed: not bound to TTS engine
+11-10 01:25:40.410 W/TextToSpeech( 7754): stop failed: not bound to TTS engine
+11-10 01:25:40.411 I/CarAudioFocus(  998): onAudioFocusAbandon for client android.media.AudioManager@1c5a680dev.changbak.explorer.audio.VoiceGuide$$ExternalSyntheticLambda16@b7d13d8
+11-10 01:25:40.411 I/CarAudioFocus(  998): removeFocusEntry android.media.AudioManager@1c5a680dev.changbak.explorer.audio.VoiceGuide$$ExternalSyntheticLambda16@b7d13d8
