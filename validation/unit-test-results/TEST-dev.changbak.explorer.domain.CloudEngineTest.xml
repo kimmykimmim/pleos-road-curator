@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="dev.changbak.explorer.domain.CloudEngineTest" tests="23" skipped="0" failures="0" errors="0" timestamp="2026-11-09T16:01:27.301Z" hostname="gimgyubeom-ui-MacBookPro.local" time="0.045">
+  <properties/>
+  <testcase name="repeatAndUndoAreSignalsForTheHostNotFakeStateChanges" classname="dev.changbak.explorer.domain.CloudEngineTest" time="0.017"/>
+  <testcase name="repeatedNewFriendWordsDoNotAccumulateDuplicates" classname="dev.changbak.explorer.domain.CloudEngineTest" time="0.002"/>
+  <testcase name="restingAndFinishedSessionsRequireExplicitResume" classname="dev.changbak.explorer.domain.CloudEngineTest" time="0.001"/>
+  <testcase name="nicknameIsNotMistakenForAChangeOfShapeOrFeature" classname="dev.changbak.explorer.domain.CloudEngineTest" time="0.002"/>
+  <testcase name="veryLongInputIsNotStoredAsANameOrShape" classname="dev.changbak.explorer.domain.CloudEngineTest" time="0.0"/>
+  <testcase name="finishingAnEmptyTripDoesNotInventAKeepsake" classname="dev.changbak.explorer.domain.CloudEngineTest" time="0.0"/>
+  <testcase name="aNewFormDoesNotInheritUnconfirmedFeaturesButKeepsItsNickname" classname="dev.changbak.explorer.domain.CloudEngineTest" time="0.002"/>
+  <testcase name="aLongTailDoesNotMakeTheWholeCloudLong" classname="dev.changbak.explorer.domain.CloudEngineTest" time="0.002"/>
+  <testcase name="correctionUsesOnlyTheAffirmedShape" classname="dev.changbak.explorer.domain.CloudEngineTest" time="0.002"/>
+  <testcase name="aFeatureCanBeTheFirstObservationAndANameIsOptional" classname="dev.changbak.explorer.domain.CloudEngineTest" time="0.001"/>
+  <testcase name="anUnspacedDescriptionKeepsTheKnownFormAndItsExplicitFeatures" classname="dev.changbak.explorer.domain.CloudEngineTest" time="0.001"/>
+  <testcase name="repeatingOneOfSeveralFeaturesDoesNotReorderOrDuplicateTheMemory" classname="dev.changbak.explorer.domain.CloudEngineTest" time="0.001"/>
+  <testcase name="disappearingCloudIsARestNotASuccessOrFailure" classname="dev.changbak.explorer.domain.CloudEngineTest" time="0.0"/>
+  <testcase name="normalSpeechDoesNotInventObjectsFromAmbiguousSyllables" classname="dev.changbak.explorer.domain.CloudEngineTest" time="0.002"/>
+  <testcase name="aShortUnknownNounCanBeStoredButItsUtteranceCannot" classname="dev.changbak.explorer.domain.CloudEngineTest" time="0.002"/>
+  <testcase name="explicitFeatureNegationRemovesAnOldFeature" classname="dev.changbak.explorer.domain.CloudEngineTest" time="0.001"/>
+  <testcase name="unchangedCloudIsAlwaysAcceptedWithoutAnotherMemory" classname="dev.changbak.explorer.domain.CloudEngineTest" time="0.0"/>
+  <testcase name="startingAndWaitingNeverInventACloud" classname="dev.changbak.explorer.domain.CloudEngineTest" time="0.0"/>
+  <testcase name="helpDoesNotChangeTheChildsObservationOrAppendAQuestionTask" classname="dev.changbak.explorer.domain.CloudEngineTest" time="0.001"/>
+  <testcase name="aHiddenPartRemovesOnlyThatFeatureInsteadOfResting" classname="dev.changbak.explorer.domain.CloudEngineTest" time="0.001"/>
+  <testcase name="featureUpdatesRetainIdentityAndReplaceContradictions" classname="dev.changbak.explorer.domain.CloudEngineTest" time="0.001"/>
+  <testcase name="childCanNameAFormWithoutMakingAStory" classname="dev.changbak.explorer.domain.CloudEngineTest" time="0.001"/>
+  <testcase name="memoryIsBoundedAndInputStateStaysImmutable" classname="dev.changbak.explorer.domain.CloudEngineTest" time="0.005"/>
+  <system-out><![CDATA[]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>

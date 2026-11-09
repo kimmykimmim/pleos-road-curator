@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="dev.changbak.explorer.domain.NarrationRecoveryTest" tests="8" skipped="0" failures="0" errors="0" timestamp="2026-11-09T16:01:27.505Z" hostname="gimgyubeom-ui-MacBookPro.local" time="0.002">
+  <properties/>
+  <testcase name="phases that do not wait for narration are left alone" classname="dev.changbak.explorer.domain.NarrationRecoveryTest" time="0.001"/>
+  <testcase name="recovery does not skip the place or lose the journey's route" classname="dev.changbak.explorer.domain.NarrationRecoveryTest" time="0.0"/>
+  <testcase name="a stale narration cannot act even long after its place is gone" classname="dev.changbak.explorer.domain.NarrationRecoveryTest" time="0.0"/>
+  <testcase name="a failed explanation releases the phase that waits for it" classname="dev.changbak.explorer.domain.NarrationRecoveryTest" time="0.0"/>
+  <testcase name="recovery advances on the same path as the child's own button" classname="dev.changbak.explorer.domain.NarrationRecoveryTest" time="0.0"/>
+  <testcase name="a replaced narration cannot steer the journey" classname="dev.changbak.explorer.domain.NarrationRecoveryTest" time="0.0"/>
+  <testcase name="a paused journey stays paused" classname="dev.changbak.explorer.domain.NarrationRecoveryTest" time="0.0"/>
+  <testcase name="a dialog or spoken answer keeps the explanation where it is" classname="dev.changbak.explorer.domain.NarrationRecoveryTest" time="0.001"/>
+  <system-out><![CDATA[]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>

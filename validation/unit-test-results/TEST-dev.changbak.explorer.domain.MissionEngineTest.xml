@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="dev.changbak.explorer.domain.MissionEngineTest" tests="15" skipped="0" failures="0" errors="0" timestamp="2026-11-09T16:01:27.429Z" hostname="gimgyubeom-ui-MacBookPro.local" time="0.073">
+  <properties/>
+  <testcase name="contextChangeReplacesTargetWithEligibleRootWithoutAddingDiscovery" classname="dev.changbak.explorer.domain.MissionEngineTest" time="0.016"/>
+  <testcase name="createAndResetProduceEmptyIndependentStates" classname="dev.changbak.explorer.domain.MissionEngineTest" time="0.001"/>
+  <testcase name="previousStatesStayUnchangedAndRecordsRemainBounded" classname="dev.changbak.explorer.domain.MissionEngineTest" time="0.007"/>
+  <testcase name="twoConsecutiveSkipsChooseEasyFreshObservationsInEveryEnvironment" classname="dev.changbak.explorer.domain.MissionEngineTest" time="0.001"/>
+  <testcase name="callerOwnedListsCannotChangeAnAlreadyReturnedSnapshot" classname="dev.changbak.explorer.domain.MissionEngineTest" time="0.002"/>
+  <testcase name="startIssuesPromptWithoutClaimingObservation" classname="dev.changbak.explorer.domain.MissionEngineTest" time="0.001"/>
+  <testcase name="nonSuccessResultsMoveToNewRootWithoutPenaltyOrDiscovery" classname="dev.changbak.explorer.domain.MissionEngineTest" time="0.001"/>
+  <testcase name="knownWebPrototypeRoutesRemainIdentical" classname="dev.changbak.explorer.domain.MissionEngineTest" time="0.001"/>
+  <testcase name="sameDoesNotChangeFindDetailOrUnstartedMission" classname="dev.changbak.explorer.domain.MissionEngineTest" time="0.0"/>
+  <testcase name="foundRootOffersOneOptionalDetailAndDetailAddsNoSecondDiscovery" classname="dev.changbak.explorer.domain.MissionEngineTest" time="0.001"/>
+  <testcase name="contextChangesKeepExistingDiscoveriesWithoutRecordingMore" classname="dev.changbak.explorer.domain.MissionEngineTest" time="0.0"/>
+  <testcase name="recentFourRootsAreAvoidedAndThemesAlternateAcrossContexts" classname="dev.changbak.explorer.domain.MissionEngineTest" time="0.008"/>
+  <testcase name="restoredInputIsCanonicalBoundedAndCannotOverflowRound" classname="dev.changbak.explorer.domain.MissionEngineTest" time="0.005"/>
+  <testcase name="sameCompletesAComparisonButPreservesTheActualAnswer" classname="dev.changbak.explorer.domain.MissionEngineTest" time="0.0"/>
+  <testcase name="allTwentyTwoRootsAndTheirDetailsUseBriefSafeKoreanPrompts" classname="dev.changbak.explorer.domain.MissionEngineTest" time="0.025"/>
+  <system-out><![CDATA[]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>

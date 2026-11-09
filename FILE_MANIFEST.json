@@ -1,0 +1,741 @@
+{
+  "date": "2026-11-09",
+  "version": "0.11.0",
+  "files": [
+    {
+      "path": "00_START_HERE.md",
+      "bytes": 2527,
+      "sha256": "2ec09a5a7c391c973522292582e49daa832ce2b7b4c8a4b7b9e99419b2820f1d"
+    },
+    {
+      "path": "apk/route-curator-0.10-previous-demo.apk",
+      "bytes": 27986879,
+      "sha256": "315758b51fdda53555ad84818b7efa6865ee9f8926e44efe6750d267bd6cda57"
+    },
+    {
+      "path": "apk/route-curator-0.11-tests.apk",
+      "bytes": 95360,
+      "sha256": "6e8e6d3280fd8aaa4a7b856fbb401a1c3998cd2d86ffaf2b28e879ce53a6a26e"
+    },
+    {
+      "path": "apk/route-curator-0.11.apk",
+      "bytes": 27771139,
+      "sha256": "f6f7fb126ce0473b51c0762d52f1f0a48df3cf663df4b67c0da83d34211e9ba2"
+    },
+    {
+      "path": "CLAUDE.md",
+      "bytes": 8911,
+      "sha256": "03455be8b132a7d434f3839ea9310e0282ef8a1b09e64b82d0838b5dcb5ec7fb"
+    },
+    {
+      "path": "docs/개발환경과_실행.md",
+      "bytes": 4755,
+      "sha256": "ce52a7ddd30cafcbe598bb76a4093083268e21fa00dbe25eb7d3d1461b8a7fb0"
+    },
+    {
+      "path": "docs/공식자료와_기획이력.md",
+      "bytes": 3383,
+      "sha256": "06dd02143ca916df7430f3567fe0848c6b0eb29135f6710fa95fcd80f85f5fec"
+    },
+    {
+      "path": "docs/현재상태와_다음작업.md",
+      "bytes": 6496,
+      "sha256": "3b02dbdb78a53f142e29b774d53ab6c1c5b2bfca970c07bd3749e65d5265c8cd"
+    },
+    {
+      "path": "history/changbak-pleos/changbak-pleos-source.zip",
+      "bytes": 78211,
+      "sha256": "d1114ec50f69321f8ef7b348f860fbe3b3dfeb6edd9faecbc402d46577ba1efe"
+    },
+    {
+      "path": "history/cloud-friends/cloud-friends-source.zip",
+      "bytes": 95513,
+      "sha256": "fd811baa96364c89ca82d21238fb41b9c4ce95245a23941c1f7a091f05a494fd"
+    },
+    {
+      "path": "history/cloud-journey-0.7/cloud-journey-source-0.7.zip",
+      "bytes": 175500,
+      "sha256": "f7bd657edbe6cc32557e0f285e4177fc844b0fca65d3a8e056cfb51c53dfd646"
+    },
+    {
+      "path": "history/cloud-journey-0.7/README.md",
+      "bytes": 9864,
+      "sha256": "74c81d2ac5717f28b3cd31189b0ec851c80589123acfd0d9caeb3127f45d983c"
+    },
+    {
+      "path": "history/cloud-journey-0.7/VALIDATION.md",
+      "bytes": 5143,
+      "sha256": "bb709bb3e350940307ed146d3a05883536d29de2b8e7f8742fa6cb7858db2001"
+    },
+    {
+      "path": "history/cloud-world-0.6/cloud-friends-source-0.6.zip",
+      "bytes": 165807,
+      "sha256": "67a25a1ce64b1691adddccab83270f6b4df2d0adbc506a5d70809e6b0ab5382b"
+    },
+    {
+      "path": "history/cloud-world-0.6/README.md",
+      "bytes": 7024,
+      "sha256": "317acd136b2f085798839e241709e1005b5c7f6efa86f9777c09c24040d544cb"
+    },
+    {
+      "path": "history/cloud-world-0.6/VALIDATION.md",
+      "bytes": 4192,
+      "sha256": "7bbc5682e2c5a5299eda5fcca027f809e960edb9d4203ea93a7bfa1a405f3399"
+    },
+    {
+      "path": "history/landscape-friends/landscape-friends-source.zip",
+      "bytes": 114121,
+      "sha256": "f5b1907a2a6d56fa25788a571350b3f410326fd4bf9f1e8b2774d8fd7409ea67"
+    },
+    {
+      "path": "history/landscape-friends-3d/landscape-friends-3d-source.zip",
+      "bytes": 132788,
+      "sha256": "e306ad883669c140cf2f19f95c0cbcb6578cd58472e1c354dcca8b40e68cdfe8"
+    },
+    {
+      "path": "history/landscape-friends-3d-chat/landscape-friends-3d-chat-source-0.5.zip",
+      "bytes": 157673,
+      "sha256": "115799a5104667980180bba5ac30e311b29ddaee407809b6e175f734210beb37"
+    },
+    {
+      "path": "history/landscape-friends-3d-chat/README.md",
+      "bytes": 10998,
+      "sha256": "fea1f75de34292b2d24c12ebd76db03f9480cbbb30511b913582853b14245d5e"
+    },
+    {
+      "path": "history/landscape-friends-3d-chat/VALIDATION.md",
+      "bytes": 5747,
+      "sha256": "f51e3a8b32d23905d2ac1bd1562d65a3b8dad5ada38833b8d54939c4f739c7bb"
+    },
+    {
+      "path": "history/route-curator-0.10/README.md",
+      "bytes": 7396,
+      "sha256": "7462487b8cd04f31a87e9386a2611a9c16d417380476875850d36f09aeec13e9"
+    },
+    {
+      "path": "history/route-curator-0.10/route-curator-source-0.10.zip",
+      "bytes": 497689,
+      "sha256": "e810eb0258ce7d1e3d89cb4e95bb55a3520a7b47273f59e33cce3ae4afe77656"
+    },
+    {
+      "path": "history/route-curator-0.10/VALIDATION.md",
+      "bytes": 3746,
+      "sha256": "4066385990c7d50f6935566f4f38f4727177701fa2dea860d5aaaa2f3364e4f6"
+    },
+    {
+      "path": "history/route-curator-0.9/README.md",
+      "bytes": 5490,
+      "sha256": "06de336e4ac8f505517d19ed64e7885ee282a61efce1cb4f485b7b79734322a2"
+    },
+    {
+      "path": "history/route-curator-0.9/route-curator-source-0.9.zip",
+      "bytes": 199305,
+      "sha256": "3bccbdf031f523adafd292ec9936c9fa05ec8a720c595a790b7c172083377e3e"
+    },
+    {
+      "path": "history/route-curator-0.9/VALIDATION.md",
+      "bytes": 2953,
+      "sha256": "89bad1cbc5e205cb8f149fc0fbd0a1a34d1dab6f445ed759865c8b8b12e35a09"
+    },
+    {
+      "path": "history/sky-journey-0.8/README.md",
+      "bytes": 4479,
+      "sha256": "4ea6123cdd733ca37b931fcc6ba8f440a83076f27516f65220d9a5448b71f8e7"
+    },
+    {
+      "path": "history/sky-journey-0.8/sky-journey-source-0.8.zip",
+      "bytes": 182181,
+      "sha256": "9dada4aa80707c0b7280c90eb35b6610e067104736171769c059e3f65248da19"
+    },
+    {
+      "path": "history/sky-journey-0.8/VALIDATION.md",
+      "bytes": 2165,
+      "sha256": "00e58252c43f746a6b78320984380e422900d94530642f05bbc8d94dbc197c5e"
+    },
+    {
+      "path": "history/window-orchestra/README.md",
+      "bytes": 4433,
+      "sha256": "aa85424843fae3db925ad86de9172fc401632d515e2858f9234a75d6fd6dd7ac"
+    },
+    {
+      "path": "history/window-orchestra/RESEARCH.md",
+      "bytes": 3674,
+      "sha256": "49baec8313adf916af1ba312f9e374568e708bd2f46cbee45251b4fbf3e556b1"
+    },
+    {
+      "path": "legacy-web/ASSET-PROMPT.txt",
+      "bytes": 1363,
+      "sha256": "00ef3956feea6c4ad8a875de7ccd20a8e41a417d7b3051323381df85667b2bf1"
+    },
+    {
+      "path": "legacy-web/dist/app.js",
+      "bytes": 14250,
+      "sha256": "ac42d4433df332ac9f078826d135c0e90ce3efe7274a86145a2fae88e20771d1"
+    },
+    {
+      "path": "legacy-web/dist/assets/vehicle.png",
+      "bytes": 1415777,
+      "sha256": "9fc9eb639cc5648ef68a8d01ac85ba140d3dd1157bd22799825da2627997dfad"
+    },
+    {
+      "path": "legacy-web/dist/audio.js",
+      "bytes": 18926,
+      "sha256": "544a31bd2326ce41d78a4aadd588a4bd0d9a2659e0bfefee26d530f99549d232"
+    },
+    {
+      "path": "legacy-web/dist/index.html",
+      "bytes": 6048,
+      "sha256": "4615536b01ad3e1c36da49b05ec57c3e49d130183e87cb666d7fc19d5a78de30"
+    },
+    {
+      "path": "legacy-web/dist/mission-engine.js",
+      "bytes": 11219,
+      "sha256": "409b9a5029cbdc5afe9e3306597fc62f1e15e5e663ca2aeeb2ac944428a2c662"
+    },
+    {
+      "path": "legacy-web/dist/mission-voice.js",
+      "bytes": 9882,
+      "sha256": "901269fc0fab84892906916529a0e404ada068fc9cb396adb7467fa00d370f0b"
+    },
+    {
+      "path": "legacy-web/dist/mission.css",
+      "bytes": 8175,
+      "sha256": "71944a0888183ca27cf45afa8c62b13f32d4573e064c17749828b3fa2710692b"
+    },
+    {
+      "path": "legacy-web/dist/server/index.js",
+      "bytes": 2030162,
+      "sha256": "2fde664243eed1fef83d39d00b4e9151140a30b7e5a8427abd0e955778edacc5"
+    },
+    {
+      "path": "legacy-web/dist/story-engine.js",
+      "bytes": 18152,
+      "sha256": "34adeecf3dcf58523e69cba441392ffb63263167b7a6b6dec7a92bfd027bf78f"
+    },
+    {
+      "path": "legacy-web/dist/story-visuals.js",
+      "bytes": 4316,
+      "sha256": "9c2272fa659cf758edc0fe0a29734645d62cf378c82c0977c6bc8f4dd6ded5e4"
+    },
+    {
+      "path": "legacy-web/dist/story.css",
+      "bytes": 8952,
+      "sha256": "d8f1853372032c5eeac5453e6932711461c827cae753608959a7530b12ec96b6"
+    },
+    {
+      "path": "legacy-web/dist/styles.css",
+      "bytes": 18848,
+      "sha256": "6a7f9d87ecc96af2b893a36509b04ec3e6af7e8e825a600e2f79bd354ec8c286"
+    },
+    {
+      "path": "legacy-web/dist/vehicle-shell.css",
+      "bytes": 6810,
+      "sha256": "eec5d5f6091c167e0d7a70bad83f95c849531a4a87f07143e57daa72c743159d"
+    },
+    {
+      "path": "legacy-web/dist/vehicle-shell.js",
+      "bytes": 6790,
+      "sha256": "8e29ecab72d893f601f7fe1fcfab5a44a686019650912f7779ba302d5a14e57d"
+    },
+    {
+      "path": "legacy-web/dist/visuals.js",
+      "bytes": 3947,
+      "sha256": "ac88d55e1b811a197deb675859fb4cd38a59c824036a85d814cfc31b1be04984"
+    },
+    {
+      "path": "legacy-web/dist/voice.js",
+      "bytes": 11286,
+      "sha256": "23522a5cd1d73dfc5c6126f084909b3393b82a70f4c7577cb5c925e9102d130b"
+    },
+    {
+      "path": "legacy-web/README.md",
+      "bytes": 4273,
+      "sha256": "fb8dbdd4f2285948deaaec6e70fb5e49e1a1c823a3bcd5fb522f8551085ce6a8"
+    },
+    {
+      "path": "legacy-web/RESEARCH.md",
+      "bytes": 2367,
+      "sha256": "793f3eae91cbc53cc97cc6c0830437240caee8e685af277d0e2811b856dd579f"
+    },
+    {
+      "path": "media/gate.mp4",
+      "bytes": 24568,
+      "sha256": "7814e8e1619f8546ae8744e5b873a191cc5852860525bf9ab2e087b3a24ce17d"
+    },
+    {
+      "path": "media/gate.png",
+      "bytes": 30847,
+      "sha256": "8940de6808288dc99d8f65967a6a1aae6d666aa1babe00910f0709622f5be387"
+    },
+    {
+      "path": "media/glass.mp4",
+      "bytes": 104617,
+      "sha256": "a46fd2768f359792f4b519a14c366ad4764c121b1936d9205acc404aa6cc3fd0"
+    },
+    {
+      "path": "media/glass.png",
+      "bytes": 32263,
+      "sha256": "b48d366999c1c2af9e8078f6203d695b7b20d997919bfc27374be9f7f045a430"
+    },
+    {
+      "path": "media/island.mp4",
+      "bytes": 85647,
+      "sha256": "70b8eb10755c9ae0042bcb760ed4117efc9486f519f355685c112d968c3b7961"
+    },
+    {
+      "path": "media/island.png",
+      "bytes": 46037,
+      "sha256": "b49c8457388a483c615c0817c8f894bd51ed9b7dec79d551a11c6bf97bfa291f"
+    },
+    {
+      "path": "media/recipe.mp4",
+      "bytes": 36013,
+      "sha256": "6071cd51bb3996c210f847a826c86d45ce60721fdfea4a779b49fc58f2e3481b"
+    },
+    {
+      "path": "media/recipe.png",
+      "bytes": 38053,
+      "sha256": "1e700d86cc9b9dc11336a41e75d2208f8590f061259565b3a401edaf5ed65b09"
+    },
+    {
+      "path": "media/tower.mp4",
+      "bytes": 55115,
+      "sha256": "37177c8803352c7ca95f069f09f0ef1948dde97f6534580823cd6ebc680979a0"
+    },
+    {
+      "path": "media/tower.png",
+      "bytes": 45496,
+      "sha256": "4d0bd1909359ed22c477127f793f6f22ae49caa8c7c004e69143ed7a4da2be5e"
+    },
+    {
+      "path": "native-app/.gitignore",
+      "bytes": 115,
+      "sha256": "1fadf8dc29d0ec1cbec9fe0f7516eaf86f77bd7ce316644e8935aeb805bbb95e"
+    },
+    {
+      "path": "native-app/app/build.gradle.kts",
+      "bytes": 1440,
+      "sha256": "433ac6ee01fd9f8bc3cc92ef7e47f31ce732a67cbe34fb19d8e57a513bbc14ab"
+    },
+    {
+      "path": "native-app/app/src/androidTest/java/dev/changbak/explorer/FriendChatTransportCheck.kt",
+      "bytes": 6443,
+      "sha256": "8d677079b0d082565fe65e435c529c05680438803aea0a22408583b10dd0238d"
+    },
+    {
+      "path": "native-app/app/src/androidTest/java/dev/changbak/explorer/NaviConnectionCheck.kt",
+      "bytes": 2678,
+      "sha256": "60c22f7f39fe612e923164ae8758e2028cce08f330d1e39844ad0f342d1819f8"
+    },
+    {
+      "path": "native-app/app/src/androidTest/java/dev/changbak/explorer/SceneRenderCheck.kt",
+      "bytes": 23542,
+      "sha256": "ef8b446859f8cb69f03901536463f204e4fbc81bf24a6a47280135142d4d7fa3"
+    },
+    {
+      "path": "native-app/app/src/debug/AndroidManifest.xml",
+      "bytes": 199,
+      "sha256": "34b09b30632fc5779fbcb00a66d7a748c1bfeee4a76caf760de56be172ca90f1"
+    },
+    {
+      "path": "native-app/app/src/debug/res/xml/dev_network_security.xml",
+      "bytes": 374,
+      "sha256": "b967391a2bc7357aadcdaf3f5cbca63eb159e03dd6097c234d8ec5e2d71a201f"
+    },
+    {
+      "path": "native-app/app/src/main/AndroidManifest.xml",
+      "bytes": 2192,
+      "sha256": "adbe6053ac5d9c9e95a4c4f718db6131cf44ef829d6f98b3f96aecca05ba99f1"
+    },
+    {
+      "path": "native-app/app/src/main/java/dev/changbak/explorer/audio/MissionCommand.kt",
+      "bytes": 2230,
+      "sha256": "79ad10c91eb7c1a53770b5459c9620e09212b5068af1d6aafab6de208030c43a"
+    },
+    {
+      "path": "native-app/app/src/main/java/dev/changbak/explorer/audio/VoiceGuide.kt",
+      "bytes": 27595,
+      "sha256": "4c0e90eda441d5236e103c0b3ea33acd69604c0a6815494fa252f807026cdb2b"
+    },
+    {
+      "path": "native-app/app/src/main/java/dev/changbak/explorer/CloudFriendView.kt",
+      "bytes": 16573,
+      "sha256": "7bd360538e995c871a0f40f432be03e9e5f765a57972be2f2374d02be1e07595"
+    },
+    {
+      "path": "native-app/app/src/main/java/dev/changbak/explorer/CloudLegacyActivity.kt",
+      "bytes": 50296,
+      "sha256": "a3bdb1936e7645e8cce2da236041207d47d1e2cf7f89a302b9e2452f50d5416f"
+    },
+    {
+      "path": "native-app/app/src/main/java/dev/changbak/explorer/CloudStore.kt",
+      "bytes": 2623,
+      "sha256": "7ff2ea233fffa03e79b86136929162cad46e13e01fc2d1feb94fd29db6579951"
+    },
+    {
+      "path": "native-app/app/src/main/java/dev/changbak/explorer/CloudWorldStore.kt",
+      "bytes": 5410,
+      "sha256": "ac6dd8a520b10d0df78720e1ea6e89f431dfc8fc94c9eb454b99e78ccd677137"
+    },
+    {
+      "path": "native-app/app/src/main/java/dev/changbak/explorer/CuratorDriveService.kt",
+      "bytes": 7304,
+      "sha256": "8c4cc898ff506943e7697238d18be58fffcd90fef7f9599c031fc323669f7c85"
+    },
+    {
+      "path": "native-app/app/src/main/java/dev/changbak/explorer/CuratorMediaArt.kt",
+      "bytes": 9323,
+      "sha256": "14ea9c35ce82807fd2facab60dad7cd954bbb0fab2a2fb85fcb26605432158f1"
+    },
+    {
+      "path": "native-app/app/src/main/java/dev/changbak/explorer/CuratorMediaPanel.kt",
+      "bytes": 2612,
+      "sha256": "388d19e880a37870502d72c2ec038cd8ea21a75d2b56a0fad2ac4fcbb0582655"
+    },
+    {
+      "path": "native-app/app/src/main/java/dev/changbak/explorer/CuratorNaviSource.kt",
+      "bytes": 7585,
+      "sha256": "c6a898c24937c3852fa76cbc21da24fd114179c5dde263f2bce6a473d54fdab1"
+    },
+    {
+      "path": "native-app/app/src/main/java/dev/changbak/explorer/CuratorSceneView.kt",
+      "bytes": 4114,
+      "sha256": "15974705c4e7af23cd93f532213eabdfd1448ad408fa2aa64d0bae901b5d2e49"
+    },
+    {
+      "path": "native-app/app/src/main/java/dev/changbak/explorer/domain/CloudEngine.kt",
+      "bytes": 19544,
+      "sha256": "526ec171c8d3e04d63172ba20c69e1458f9fe70053b476bc29863edeec739c07"
+    },
+    {
+      "path": "native-app/app/src/main/java/dev/changbak/explorer/domain/CloudPlayEngine.kt",
+      "bytes": 17232,
+      "sha256": "d0dc4ef985726397fd1a1bd5c0f12fde96cdbb9b29bc731bdc9fd84d6eeb4ad1"
+    },
+    {
+      "path": "native-app/app/src/main/java/dev/changbak/explorer/domain/CompanionEngine.kt",
+      "bytes": 12546,
+      "sha256": "75243a87ed07c4ef0319fa9689b9a648248fc7ba93fdf416929271beaba0798f"
+    },
+    {
+      "path": "native-app/app/src/main/java/dev/changbak/explorer/domain/CuratorContent.kt",
+      "bytes": 9657,
+      "sha256": "0536e8e5a880977122877bcdaa9df3e6ebd72323d3335896da71772b203b517f"
+    },
+    {
+      "path": "native-app/app/src/main/java/dev/changbak/explorer/domain/LiveNavigation.kt",
+      "bytes": 4832,
+      "sha256": "b3c9b951ec9854fc910f2089213690de0174f1f25a53172676e03ee98767d03a"
+    },
+    {
+      "path": "native-app/app/src/main/java/dev/changbak/explorer/domain/LivePlaces.kt",
+      "bytes": 2952,
+      "sha256": "5a5d1f78d8d1554b2f395ea7eb78dccc0d13105cba5a0135b44a46a8c10bc85e"
+    },
+    {
+      "path": "native-app/app/src/main/java/dev/changbak/explorer/domain/MissionEngine.kt",
+      "bytes": 12380,
+      "sha256": "530ad6a42d50239bb553e06752ac64c7f2cefb8d15e53fb6bd96013501f327d2"
+    },
+    {
+      "path": "native-app/app/src/main/java/dev/changbak/explorer/domain/RouteCurator.kt",
+      "bytes": 10813,
+      "sha256": "207e90f2940252fb10a5317be030584cc28a62e857b4601592a0b8f28f300bf3"
+    },
+    {
+      "path": "native-app/app/src/main/java/dev/changbak/explorer/domain/SkyJourney.kt",
+      "bytes": 4553,
+      "sha256": "f993d25152e59c64cce148f729a1078370650baa480b65a9fd02fb172b13342f"
+    },
+    {
+      "path": "native-app/app/src/main/java/dev/changbak/explorer/domain/TravelEngine.kt",
+      "bytes": 26978,
+      "sha256": "48a17592938a9e9e6bc24714e532872111ffaa98dba5e4b011a76a69e579f66a"
+    },
+    {
+      "path": "native-app/app/src/main/java/dev/changbak/explorer/JourneySceneView.kt",
+      "bytes": 7183,
+      "sha256": "7eda14a7b089af317255dd068ce11d45890836aaa809e3d8f12198c1165dbeb7"
+    },
+    {
+      "path": "native-app/app/src/main/java/dev/changbak/explorer/LandscapeFriend3DView.kt",
+      "bytes": 33751,
+      "sha256": "9420ee6e0f51ceabdbfe2de82185b48ffcc4326e892bae4e7b808a4b2c9d9243"
+    },
+    {
+      "path": "native-app/app/src/main/java/dev/changbak/explorer/LandscapeFriendView.kt",
+      "bytes": 11637,
+      "sha256": "cc7b627541e37cea263768834d04e90b675ab60cf5179f79d827e4de81462c83"
+    },
+    {
+      "path": "native-app/app/src/main/java/dev/changbak/explorer/MainActivity.kt",
+      "bytes": 29546,
+      "sha256": "bb2811e18f8694165b2ff1d98dec224d9749826a6f7f1eac0026f0be54670a19"
+    },
+    {
+      "path": "native-app/app/src/main/java/dev/changbak/explorer/network/AsyncReplyGate.kt",
+      "bytes": 1153,
+      "sha256": "300692dd0b67a67f7b39c0619ed941367645ab8c97cb5059ed3ed947fd8328f8"
+    },
+    {
+      "path": "native-app/app/src/main/java/dev/changbak/explorer/network/FriendChatClient.kt",
+      "bytes": 6712,
+      "sha256": "1ee7403a50538e61099572ac6684c01c10548af8adab801d07c9998b27600046"
+    },
+    {
+      "path": "native-app/app/src/main/java/dev/changbak/explorer/rendering/CloudSceneMotion.kt",
+      "bytes": 4997,
+      "sha256": "72ec47bdcc9ca55adb125abcacc789745b017eec5a1ab84795add5af2924573a"
+    },
+    {
+      "path": "native-app/app/src/main/java/dev/changbak/explorer/SessionStore.kt",
+      "bytes": 3469,
+      "sha256": "b1fed81c29c7804c2257448fe3f5d037913a17334c628bba609e622d22343640"
+    },
+    {
+      "path": "native-app/app/src/main/java/dev/changbak/explorer/TravelStore.kt",
+      "bytes": 4549,
+      "sha256": "6d7900ddacf3e9d5dfa937ff5494fc333be78ac7c51c5d7df6f3cd5d4c400c23"
+    },
+    {
+      "path": "native-app/app/src/main/java/dev/changbak/explorer/VehicleJourneySource.kt",
+      "bytes": 1845,
+      "sha256": "dd86ab8df2da3ee7caebb027c2963827e482a3a64201d7831e95e1c4f64d062a"
+    },
+    {
+      "path": "native-app/app/src/main/java/dev/changbak/explorer/WindowSceneView.kt",
+      "bytes": 3518,
+      "sha256": "d6b456dbe95a32f9d06e4bafe41eded95a5efb85cb1a005daa4f501c298c935a"
+    },
+    {
+      "path": "native-app/app/src/main/res/drawable/ic_explorer.xml",
+      "bytes": 1022,
+      "sha256": "6a66dfd508b6e22359c0a62c737af4be3f41717da9f593d7c3d1030169c59ef9"
+    },
+    {
+      "path": "native-app/app/src/main/res/raw/curator_gate.mp4",
+      "bytes": 24568,
+      "sha256": "7814e8e1619f8546ae8744e5b873a191cc5852860525bf9ab2e087b3a24ce17d"
+    },
+    {
+      "path": "native-app/app/src/main/res/raw/curator_glass.mp4",
+      "bytes": 104617,
+      "sha256": "a46fd2768f359792f4b519a14c366ad4764c121b1936d9205acc404aa6cc3fd0"
+    },
+    {
+      "path": "native-app/app/src/main/res/raw/curator_island.mp4",
+      "bytes": 85647,
+      "sha256": "70b8eb10755c9ae0042bcb760ed4117efc9486f519f355685c112d968c3b7961"
+    },
+    {
+      "path": "native-app/app/src/main/res/raw/curator_recipe.mp4",
+      "bytes": 36013,
+      "sha256": "6071cd51bb3996c210f847a826c86d45ce60721fdfea4a779b49fc58f2e3481b"
+    },
+    {
+      "path": "native-app/app/src/main/res/raw/curator_tower.mp4",
+      "bytes": 55115,
+      "sha256": "37177c8803352c7ca95f069f09f0ef1948dde97f6534580823cd6ebc680979a0"
+    },
+    {
+      "path": "native-app/app/src/main/res/values/styles.xml",
+      "bytes": 579,
+      "sha256": "acfd65f683f54177397c045a1ee6d6e1e4fde82ef9398dfcbf014457a1166781"
+    },
+    {
+      "path": "native-app/app/src/test/java/dev/changbak/explorer/domain/CloudEngineTest.kt",
+      "bytes": 11386,
+      "sha256": "0d48835510b85677108b3b34bb28f233e008e4d358814d4523d25ee8440e89ef"
+    },
+    {
+      "path": "native-app/app/src/test/java/dev/changbak/explorer/domain/CloudPlayEngineTest.kt",
+      "bytes": 9240,
+      "sha256": "3685e89974b2c27e3867de183fffc7dfd11cbcd138b4389df7f4fed6ffa8a13f"
+    },
+    {
+      "path": "native-app/app/src/test/java/dev/changbak/explorer/domain/CompanionEngineTest.kt",
+      "bytes": 6816,
+      "sha256": "ac8a1497bf7b93cd8502fe3d1810bd085c370fbccc45659ba814ac58dbfcdf2b"
+    },
+    {
+      "path": "native-app/app/src/test/java/dev/changbak/explorer/domain/CuratorPlayTest.kt",
+      "bytes": 4554,
+      "sha256": "7fd6e30aa88d7a0d0a807de08a2b4be947bd50205a51e0888adad96bf0df6d52"
+    },
+    {
+      "path": "native-app/app/src/test/java/dev/changbak/explorer/domain/LiveNavigationTest.kt",
+      "bytes": 7974,
+      "sha256": "491eb63dbf74443e15d82ef76c1a3ee53d03d658531564fde12890aeb3409bb1"
+    },
+    {
+      "path": "native-app/app/src/test/java/dev/changbak/explorer/domain/MissionEngineTest.kt",
+      "bytes": 14417,
+      "sha256": "a0f2b0171f76909caefe7bdf2658db3ae0e0e962194d1e69baf835df4cc4d0a2"
+    },
+    {
+      "path": "native-app/app/src/test/java/dev/changbak/explorer/domain/RouteCuratorTest.kt",
+      "bytes": 5487,
+      "sha256": "8d341da09a2aa745f7071fe6cccff691c72fb5b9e64afa336ef611bacbaec43a"
+    },
+    {
+      "path": "native-app/app/src/test/java/dev/changbak/explorer/domain/SkyJourneyTest.kt",
+      "bytes": 4319,
+      "sha256": "b3f9456e0ba8ce0b6453f8fa76c0f92a0b37832d3f6d285a825ccef7bed20261"
+    },
+    {
+      "path": "native-app/app/src/test/java/dev/changbak/explorer/domain/TravelEngineTest.kt",
+      "bytes": 11792,
+      "sha256": "67168f9b7164264238cc0a526eb268563263a5bd413b9ee6f86304bc5be91c62"
+    },
+    {
+      "path": "native-app/app/src/test/java/dev/changbak/explorer/network/AsyncReplyGateTest.kt",
+      "bytes": 3463,
+      "sha256": "21d2db0f1be03125e2d88cec341eadfe2fb789cb2f554024a55a1b09efe818a8"
+    },
+    {
+      "path": "native-app/app/src/test/java/dev/changbak/explorer/rendering/CloudSceneMotionTest.kt",
+      "bytes": 4757,
+      "sha256": "a984636b62f9ab107ea6b1ad19eb106fb1c27f40f57ab2cf9dd0d067269b91c6"
+    },
+    {
+      "path": "native-app/build.gradle.kts",
+      "bytes": 74,
+      "sha256": "20485875f2123b6dfa69bdb228a06890f440c46c5443bf68b936531fa2b0df28"
+    },
+    {
+      "path": "native-app/gradle/wrapper/gradle-wrapper.jar",
+      "bytes": 45457,
+      "sha256": "76805e32c009c0cf0dd5d206bddc9fb22ea42e84db904b764f3047de095493f3"
+    },
+    {
+      "path": "native-app/gradle/wrapper/gradle-wrapper.properties",
+      "bytes": 339,
+      "sha256": "137a45811ade89eb5d35fc3df0441aa891a69c55ae65780f23303e5acaf597f7"
+    },
+    {
+      "path": "native-app/gradle.properties",
+      "bytes": 272,
+      "sha256": "98dc2a3cbb7e3c8590979a8594d28aeed8df540f65a5675ada60dce664fe84b0"
+    },
+    {
+      "path": "native-app/gradlew",
+      "bytes": 8728,
+      "sha256": "3238afb2aed5cb16eb7d6718077e7138059108f007b54179e9cc157c5a6e0e89"
+    },
+    {
+      "path": "native-app/gradlew.bat",
+      "bytes": 2937,
+      "sha256": "1d297e00bd21de3ace22b4d7f2de1f9dfa858883d66bbf7c1ccbecccec8f4f3b"
+    },
+    {
+      "path": "native-app/README.md",
+      "bytes": 420,
+      "sha256": "be4af8e094f119c361ec04c2512a926de765775c3b513a27a32634142f1c4d59"
+    },
+    {
+      "path": "native-app/server/local-companion.mjs",
+      "bytes": 15556,
+      "sha256": "45b98b18bd7eca4bfbbe0ab780e526970f78cb4a30770162221c0615029ee7a8"
+    },
+    {
+      "path": "native-app/server/local-companion.test.mjs",
+      "bytes": 13000,
+      "sha256": "89207b9b77ad45c47ec1f5e7a96874151aace663bd8927eaf10342e760648ab6"
+    },
+    {
+      "path": "native-app/server/README.md",
+      "bytes": 5315,
+      "sha256": "ae505c796a6b41f046b752843f1e9baf76a5c8e80f54c9b54dcea3ef0dcf1f53"
+    },
+    {
+      "path": "native-app/server/transport-fixture.mjs",
+      "bytes": 4762,
+      "sha256": "3175b73be8b3559e50a90d3cdc7e5fd38ab2f3f8ef730d680a14691d0883da03"
+    },
+    {
+      "path": "native-app/settings.gradle.kts",
+      "bytes": 511,
+      "sha256": "dbddcb7515c322e22d0b3096079e5485cd434caf970720d5eee6ef100449370a"
+    },
+    {
+      "path": "native-app/tests/audio/MissionCommandTest.kt",
+      "bytes": 2709,
+      "sha256": "9885e2f4de03356816502f351a3a1c00b13b3eb38c6ca0c7f7955c72b5d2b279"
+    },
+    {
+      "path": "native-app-source-0.11.zip",
+      "bytes": 506690,
+      "sha256": "6f0231ebc713fc5bc0a4ccc6233a83a2f9782c43c4e0f9f8f0cd65e3b30d83c4"
+    },
+    {
+      "path": "reference/vehicle-ui-reference.jpeg",
+      "bytes": 145518,
+      "sha256": "a001f2072feed7ef3b87fe07509b49d8a00373441157f294c1e6a5ff66226690"
+    },
+    {
+      "path": "validation/DEVICE_CHECKS.txt",
+      "bytes": 680,
+      "sha256": "7c044855aabb384cd3c0a7f17247faa63b3ca5ccad4aeb249986105831b849f5"
+    },
+    {
+      "path": "validation/unit-test-results/TEST-dev.changbak.explorer.audio.MissionCommandTest.xml",
+      "bytes": 985,
+      "sha256": "0709592d3cd4be9b771c0870af4b1cc2b0a54fdb89d33b71307af441d4678b43"
+    },
+    {
+      "path": "validation/unit-test-results/TEST-dev.changbak.explorer.domain.CloudEngineTest.xml",
+      "bytes": 3565,
+      "sha256": "7359afec5a1e430825e9bd577b53269ceac35f30c2b3f150d5fdf5e8ed1001ae"
+    },
+    {
+      "path": "validation/unit-test-results/TEST-dev.changbak.explorer.domain.CloudPlayEngineTest.xml",
+      "bytes": 3748,
+      "sha256": "02458edcc836a3316bab3ac3bd7e4e42b3f1e7682bc587843a113bb07b7ee5ab"
+    },
+    {
+      "path": "validation/unit-test-results/TEST-dev.changbak.explorer.domain.CompanionEngineTest.xml",
+      "bytes": 2505,
+      "sha256": "efc2b77d873aebaec22c087abf59fd08c91cbcb3d0086618cfb40526b6d7f4c4"
+    },
+    {
+      "path": "validation/unit-test-results/TEST-dev.changbak.explorer.domain.CuratorPlayTest.xml",
+      "bytes": 1466,
+      "sha256": "d24bcf97e2d25001f7de782b69952ea769a4b3a58738765392d15f0871d96602"
+    },
+    {
+      "path": "validation/unit-test-results/TEST-dev.changbak.explorer.domain.LiveNavigationTest.xml",
+      "bytes": 3298,
+      "sha256": "e80f999caf13c3241a13a9e74e197c8c1ec5e75ebfc599a5b6c7134d70864368"
+    },
+    {
+      "path": "validation/unit-test-results/TEST-dev.changbak.explorer.domain.MissionEngineTest.xml",
+      "bytes": 2556,
+      "sha256": "afa983d2d50ed74ce9b1f07a4ae776e496b11e5705cce0ef5d9e1425e0439cea"
+    },
+    {
+      "path": "validation/unit-test-results/TEST-dev.changbak.explorer.domain.RouteCuratorTest.xml",
+      "bytes": 2745,
+      "sha256": "537df96c7ab5968bdaf095438d91b5fd1e8b9c9b4ad2a7ada3e0b1706f286f93"
+    },
+    {
+      "path": "validation/unit-test-results/TEST-dev.changbak.explorer.domain.SkyJourneyTest.xml",
+      "bytes": 1653,
+      "sha256": "3979899729207863b984d8cac04b87a23a3dc520924d9917f55ecc6cb4d63361"
+    },
+    {
+      "path": "validation/unit-test-results/TEST-dev.changbak.explorer.domain.TravelEngineTest.xml",
+      "bytes": 3543,
+      "sha256": "31bf3edba10bb05921a78808da5478e0b1b5ab4c3c11fe0de1f6995ec356d912"
+    },
+    {
+      "path": "validation/unit-test-results/TEST-dev.changbak.explorer.network.AsyncReplyGateTest.xml",
+      "bytes": 1375,
+      "sha256": "37c5749ccb712169367e947c143f404b7557077de166f57950b7ba0a0565caa3"
+    },
+    {
+      "path": "validation/unit-test-results/TEST-dev.changbak.explorer.rendering.CloudSceneMotionTest.xml",
+      "bytes": 1817,
+      "sha256": "5e4801bebd79fbc2f2c0b44ce59a8283f5184092b506c938e9afb220c37e35a6"
+    }
+  ]
+}

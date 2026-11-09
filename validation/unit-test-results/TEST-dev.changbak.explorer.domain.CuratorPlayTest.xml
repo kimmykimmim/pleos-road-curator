@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="dev.changbak.explorer.domain.CuratorPlayTest" tests="8" skipped="0" failures="0" errors="0" timestamp="2026-11-09T16:01:27.402Z" hostname="gimgyubeom-ui-MacBookPro.local" time="0.011">
+  <properties/>
+  <testcase name="ownIdeasAreAcknowledgedWithoutPersistingTheUtteranceInMemory" classname="dev.changbak.explorer.domain.CuratorPlayTest" time="0.007"/>
+  <testcase name="everyTopicCompletesItsRoleDuringTheJourney" classname="dev.changbak.explorer.domain.CuratorPlayTest" time="0.001"/>
+  <testcase name="upcomingLandmarkCannotInterruptTheCurrentRole" classname="dev.changbak.explorer.domain.CuratorPlayTest" time="0.0"/>
+  <testcase name="skippingTheRoleKeepsTheStoryWithoutInventingAnActivity" classname="dev.changbak.explorer.domain.CuratorPlayTest" time="0.0"/>
+  <testcase name="invalidAndRepeatedChoicesCannotChangeTheCompletedScene" classname="dev.changbak.explorer.domain.CuratorPlayTest" time="0.0"/>
+  <testcase name="listeningOnlyMovesOnWithoutInventingAPerformedRole" classname="dev.changbak.explorer.domain.CuratorPlayTest" time="0.0"/>
+  <testcase name="roleChoiceCannotStartBeforeTheFactualStory" classname="dev.changbak.explorer.domain.CuratorPlayTest" time="0.001"/>
+  <testcase name="spokenRoleKeywordsTriggerTheCorrespondingScene" classname="dev.changbak.explorer.domain.CuratorPlayTest" time="0.0"/>
+  <system-out><![CDATA[]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>

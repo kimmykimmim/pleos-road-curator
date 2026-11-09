@@ -1,0 +1,23 @@
+# 빌드 결과와 도구 캐시
+build/
+.gradle/
+.kotlin/
+.idea/
+*.iml
+
+# 기기와 사람마다 다른 경로 설정
+local.properties
+
+# 서명 비밀정보. 키스토어 파일과 비밀번호는 저장소에 올리지 않습니다.
+keystore.properties
+*.jks
+*.keystore
+
+# 비밀 키
+.env
+.env.*
+!.env.example
+server/runtime/
+
+# macOS
+.DS_Store

@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="dev.changbak.explorer.network.AsyncReplyGateTest" tests="7" skipped="0" failures="0" errors="0" timestamp="2026-11-09T16:01:27.604Z" hostname="gimgyubeom-ui-MacBookPro.local" time="0.002">
+  <properties/>
+  <testcase name="restAndArrivalCancellationDoNotDependOnAScreenPhaseChange" classname="dev.changbak.explorer.network.AsyncReplyGateTest" time="0.0"/>
+  <testcase name="newerInputSupersedesOlderReplyWithoutConsumingTheNewReply" classname="dev.changbak.explorer.network.AsyncReplyGateTest" time="0.001"/>
+  <testcase name="initialStateCannotAcceptAnUnrequestedReply" classname="dev.changbak.explorer.network.AsyncReplyGateTest" time="0.0"/>
+  <testcase name="stoppingThenResumingCannotReviveAnOldAnswer" classname="dev.changbak.explorer.network.AsyncReplyGateTest" time="0.0"/>
+  <testcase name="textInputDoesNotInheritAnEarlierVoiceListeningIntent" classname="dev.changbak.explorer.network.AsyncReplyGateTest" time="0.0"/>
+  <testcase name="microphoneOffInvalidatesTheReplyAndItsListeningIntent" classname="dev.changbak.explorer.network.AsyncReplyGateTest" time="0.0"/>
+  <testcase name="completionCanOnlyBeAcceptedOnceAndConsumesListeningIntent" classname="dev.changbak.explorer.network.AsyncReplyGateTest" time="0.0"/>
+  <system-out><![CDATA[]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>

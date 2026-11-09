@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="dev.changbak.explorer.domain.CompanionEngineTest" tests="15" skipped="0" failures="0" errors="0" timestamp="2026-11-09T16:01:27.382Z" hostname="gimgyubeom-ui-MacBookPro.local" time="0.017">
+  <properties/>
+  <testcase name="negativeMoodWordsDoNotBecomePositiveMemories" classname="dev.changbak.explorer.domain.CompanionEngineTest" time="0.004"/>
+  <testcase name="sadnessGetsAnOptionalChoiceWithoutInventingItsCause" classname="dev.changbak.explorer.domain.CompanionEngineTest" time="0.001"/>
+  <testcase name="openingIntroducesTheExistingFriendAndInvitesADestination" classname="dev.changbak.explorer.domain.CompanionEngineTest" time="0.001"/>
+  <testcase name="unknownQuestionsAndSensitiveDestinationDetailsAreNotStored" classname="dev.changbak.explorer.domain.CompanionEngineTest" time="0.002"/>
+  <testcase name="aNewDestinationReplacesTheOldOneWithoutInventingAMood" classname="dev.changbak.explorer.domain.CompanionEngineTest" time="0.002"/>
+  <testcase name="reciprocalQuestionAcknowledgesTheFriendsActualAppearance" classname="dev.changbak.explorer.domain.CompanionEngineTest" time="0.0"/>
+  <testcase name="moodRecallUsesOnlyTheStoredMood" classname="dev.changbak.explorer.domain.CompanionEngineTest" time="0.001"/>
+  <testcase name="sleepyAndRestRequestsStopAskingQuestions" classname="dev.changbak.explorer.domain.CompanionEngineTest" time="0.0"/>
+  <testcase name="moodQuestionsAreNotRecordedAsTheChildsMood" classname="dev.changbak.explorer.domain.CompanionEngineTest" time="0.0"/>
+  <testcase name="cancellingADestinationRemovesItFromRecall" classname="dev.changbak.explorer.domain.CompanionEngineTest" time="0.001"/>
+  <testcase name="reopeningAndRepeatingADestinationKeepsSessionContext" classname="dev.changbak.explorer.domain.CompanionEngineTest" time="0.0"/>
+  <testcase name="repeatingTheSameFeelingDoesNotRepeatThePlanQuestion" classname="dev.changbak.explorer.domain.CompanionEngineTest" time="0.0"/>
+  <testcase name="destinationThenMoodThenPlanFormsAConversation" classname="dev.changbak.explorer.domain.CompanionEngineTest" time="0.0"/>
+  <testcase name="landscapeReportsCannotBecomeDestinationsOrSocialPlans" classname="dev.changbak.explorer.domain.CompanionEngineTest" time="0.002"/>
+  <testcase name="shortKnownPlaceAnswersAreAllowedOnlyWhenAsked" classname="dev.changbak.explorer.domain.CompanionEngineTest" time="0.001"/>
+  <system-out><![CDATA[]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>

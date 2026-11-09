@@ -1,0 +1,70 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#f6f7fa">
+<meta name="description" content="짧은 미션을 듣고, 진짜 창밖에서 발견해요. 어린이 동승자를 위한 창밖 탐험.">
+<title>창밖 탐험</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="./styles.css">
+<link rel="stylesheet" href="./vehicle-shell.css">
+<link rel="stylesheet" href="./mission.css">
+<script type="module" src="./app.js"></script>
+</head>
+<body>
+<div class="vehicle-layout">
+<aside id="vehicle-panel" aria-label="차량 화면 예시"></aside>
+<header id="system-bar" aria-label="상태 표시 예시"></header>
+<aside id="scene-panel" aria-label="창밖 탐험"></aside>
+<section class="play-panel" aria-label="관찰 미션">
+  <div class="play-toolbar"><span id="stage-caption">창밖에서 하나씩 발견해요</span><div class="header-tools">
+    <button id="undo-button" class="icon-button" type="button" aria-label="직전 응답 취소" title="잘못 눌렀어" disabled></button>
+    <button id="guide" class="icon-button" type="button" aria-label="미션 다시 듣기"></button>
+    <button id="parent-button" class="parent-button" type="button">보호자</button>
+  </div></div>
+  <main id="app" tabindex="-1"></main>
+</section>
+<footer id="vehicle-dock" aria-label="차량 하단 바 예시"></footer>
+</div>
+<div id="status" class="toast" role="status" aria-live="polite" aria-atomic="true"></div>
+<dialog id="parent-dialog" aria-labelledby="parent-title">
+<div class="parent-content">
+  <div class="dialog-heading"><div><p class="parent-eyebrow">짧게 듣고, 오래 살펴봐요</p><h2 id="parent-title">보호자 설정</h2></div><button id="parent-close" class="icon-button close-button" type="button" aria-label="보호자 설정 닫기">×</button></div>
+  <section class="parent-section"><h3>지금 창밖은 어떤가요?</h3>
+    <p class="setting-note">알려주신 환경에 맞춰 미션을 골라요. 차량이 자동으로 풍경을 읽는 기능은 아직 없어요.</p>
+    <div id="context-options" class="context-options"></div>
+  </section>
+  <section class="parent-section"><h3>소리와 관찰 시간</h3>
+    <label class="setting-row" for="narration"><span>미션 읽어주기</span><input id="narration" type="checkbox" checked></label>
+    <label class="volume-row" for="volume"><span>음량</span><input id="volume" type="range" min="0" max="1" value="0.6" step="0.05" aria-label="미션 음량"></label>
+    <label class="setting-row" for="gentle-hint"><span>기다리는 동안 한 번 도움 주기</span><input id="gentle-hint" type="checkbox" checked></label>
+    <p class="setting-note">약 25초 뒤 한 번만 힌트를 줘요. 시간이 지나도 실패 처리하거나 미션을 자동으로 넘기지 않아요.</p>
+  </section>
+  <section class="parent-section"><h3>목소리로 알려주기</h3>
+    <p class="setting-note">아이가 “찾았어”, “안 보여”, “지나갔어”, “쉬자”라고 말할 수 있어요. 버튼으로도 같은 동작을 할 수 있습니다.</p>
+    <button id="parent-voice" class="button secondary compact" type="button">음성 알림 켜기</button>
+    <p id="voice-support-note" class="setting-note"></p>
+  </section>
+  <section class="parent-section"><h3>이번 탐험 기록</h3><div id="mission-log" class="mission-log"></div></section>
+  <details class="parent-details"><summary>이 체험에 대해</summary><div class="details-body">
+    <p>6~8세 동승자를 위한 관찰 미션 프로토타입입니다. 실제 차량 화면과 공조 바는 배치 예시이며 차량 장치를 조작하지 않습니다.</p>
+    <p>카메라, 위치, 시선 인식을 사용하지 않습니다. “찾았어”는 아이가 알려준 결과로 기록하며 실제로 창밖을 봤는지 판정하지 않습니다.</p>
+    <p>음성 알림은 보호자가 안내를 확인하고 켠 뒤에만 사용합니다. 브라우저 음성 인식 제공자에게 목소리가 전송될 수 있습니다. 이 앱은 녹음 파일을 만들거나 대화를 별도 서버에 저장하지 않습니다.</p>
+    <p>음성 알림이 켜져 있으면 미션을 읽은 뒤 짧은 말을 듣습니다. 인식이 계속 안 되면 자동 듣기를 멈춥니다. 쉬기, 설정 열기, 다른 탭으로 이동하면 마이크와 안내가 멈춥니다.</p>
+    <p>발견 기록은 이 탭에만 남고 새로고침하면 사라집니다. 실제 아이의 창밖 관찰 시간과 차량 안에서의 사용성은 아직 검증하지 않았습니다.</p>
+  </div></details>
+  <div class="dialog-actions"><button id="reset-missions" class="button secondary compact" type="button">처음부터</button><button id="parent-done" class="button primary compact" type="button">돌아가기</button></div>
+</div>
+</dialog>
+<dialog id="voice-dialog" aria-labelledby="voice-title"><div class="parent-content">
+  <div class="dialog-heading"><h2 id="voice-title">말로 알려줄까요?</h2><button id="voice-close" type="button" class="icon-button close-button" aria-label="음성 안내 닫기">×</button></div>
+  <p class="consent-copy">보호자와 함께 확인해 주세요. 음성 알림을 켜면 미션을 읽은 뒤 아이의 짧은 말을 들어요. 목소리는 브라우저 제공자에게 전송될 수 있어요.</p>
+  <div class="voice-examples"><span>“찾았어”</span><span>“안 보여”</span><span>“쉬자”</span></div>
+  <p class="consent-copy">쉬기나 설정을 누르면 듣기가 멈춰요. 버튼으로 알려줘도 괜찮아요.</p>
+  <button id="voice-enable" class="button primary compact" type="button">알겠어요, 켤게요</button>
+</div></dialog>
+</body>
+</html>

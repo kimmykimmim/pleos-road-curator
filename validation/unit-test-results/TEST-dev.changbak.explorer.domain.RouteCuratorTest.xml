@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="dev.changbak.explorer.domain.RouteCuratorTest" tests="18" skipped="0" failures="0" errors="0" timestamp="2026-11-09T16:01:27.516Z" hostname="gimgyubeom-ui-MacBookPro.local" time="0.005">
+  <properties/>
+  <testcase name="pauseOrConnectionLossCannotConfirmSight" classname="dev.changbak.explorer.domain.RouteCuratorTest" time="0.001"/>
+  <testcase name="asksAtFiveMinutesOnceAndWaitsForTheEncounter" classname="dev.changbak.explorer.domain.RouteCuratorTest" time="0.0"/>
+  <testcase name="timeIsForEachPlaceRatherThanDestination" classname="dev.changbak.explorer.domain.RouteCuratorTest" time="0.0"/>
+  <testcase name="anotherPointCannotInterruptAnExplanation" classname="dev.changbak.explorer.domain.RouteCuratorTest" time="0.001"/>
+  <testcase name="staleOrOutOfOrderEventsNeverTriggerAudio" classname="dev.changbak.explorer.domain.RouteCuratorTest" time="0.0"/>
+  <testcase name="rerouteRemovesUpcomingQuestionWithoutCallingItVisited" classname="dev.changbak.explorer.domain.RouteCuratorTest" time="0.0"/>
+  <testcase name="absentResponseDoesNotBlockAutomaticExplanation" classname="dev.changbak.explorer.domain.RouteCuratorTest" time="0.0"/>
+  <testcase name="nearPointInvitesObservationButDoesNotExplainYet" classname="dev.changbak.explorer.domain.RouteCuratorTest" time="0.001"/>
+  <testcase name="skippedPlaceDoesNotAskAgainWhenEtaOscillates" classname="dev.changbak.explorer.domain.RouteCuratorTest" time="0.0"/>
+  <testcase name="completedTripDoesNotRestartOnARepeatedLocation" classname="dev.changbak.explorer.domain.RouteCuratorTest" time="0.0"/>
+  <testcase name="invisibleCandidateIsNotSelected" classname="dev.changbak.explorer.domain.RouteCuratorTest" time="0.0"/>
+  <testcase name="notVisibleIsNotMarkedAsSeenButPassageStillExplains" classname="dev.changbak.explorer.domain.RouteCuratorTest" time="0.001"/>
+  <testcase name="unknownAnswerIsAcceptedWithoutScoring" classname="dev.changbak.explorer.domain.RouteCuratorTest" time="0.0"/>
+  <testcase name="originalPredictionAndReflectionRemainTogether" classname="dev.changbak.explorer.domain.RouteCuratorTest" time="0.001"/>
+  <testcase name="doesNotAskBeforeFiveMinutes" classname="dev.changbak.explorer.domain.RouteCuratorTest" time="0.0"/>
+  <testcase name="unknownPlaceIsNeverGivenInventedContent" classname="dev.changbak.explorer.domain.RouteCuratorTest" time="0.0"/>
+  <testcase name="seeingCannotBeClaimedWhileFarAway" classname="dev.changbak.explorer.domain.RouteCuratorTest" time="0.0"/>
+  <testcase name="reportedSightStartsExplanationOnce" classname="dev.changbak.explorer.domain.RouteCuratorTest" time="0.0"/>
+  <system-out><![CDATA[]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>

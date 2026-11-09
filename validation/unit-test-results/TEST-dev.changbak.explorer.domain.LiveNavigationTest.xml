@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="dev.changbak.explorer.domain.LiveNavigationTest" tests="22" skipped="0" failures="0" errors="0" timestamp="2026-11-09T16:01:27.416Z" hostname="gimgyubeom-ui-MacBookPro.local" time="0.011">
+  <properties/>
+  <testcase name="noLocationOrEtaIsAnExplicitUnavailableSignal" classname="dev.changbak.explorer.domain.LiveNavigationTest" time="0.002"/>
+  <testcase name="impossibleLocationJumpDoesNotPass" classname="dev.changbak.explorer.domain.LiveNavigationTest" time="0.0"/>
+  <testcase name="zeroEtaIsNotProofOfArrival" classname="dev.changbak.explorer.domain.LiveNavigationTest" time="0.001"/>
+  <testcase name="rerouteCannotCompleteOldPassage" classname="dev.changbak.explorer.domain.LiveNavigationTest" time="0.0"/>
+  <testcase name="staleStopsDoNotTriggerQuestions" classname="dev.changbak.explorer.domain.LiveNavigationTest" time="0.0"/>
+  <testcase name="sdkArrivalWithNearbyLocationExplainsOnce" classname="dev.changbak.explorer.domain.LiveNavigationTest" time="0.0"/>
+  <testcase name="unmatchedOrDistantArrivalDoesNotExplain" classname="dev.changbak.explorer.domain.LiveNavigationTest" time="0.001"/>
+  <testcase name="outsideNearbyRadiusDoesNotInventALandmarkOnTheRoute" classname="dev.changbak.explorer.domain.LiveNavigationTest" time="0.0"/>
+  <testcase name="parkedGpsNoiseNeverPasses" classname="dev.changbak.explorer.domain.LiveNavigationTest" time="0.001"/>
+  <testcase name="firstLocationAlreadyLeavingDoesNotClaimPassage" classname="dev.changbak.explorer.domain.LiveNavigationTest" time="0.0"/>
+  <testcase name="completedStoryIsNotRepeatedAfterAnotherPassage" classname="dev.changbak.explorer.domain.LiveNavigationTest" time="0.0"/>
+  <testcase name="destinationEtaIsNeverUsedForAnotherNearbyPlace" classname="dev.changbak.explorer.domain.LiveNavigationTest" time="0.001"/>
+  <testcase name="unknownBranchesAndNamesOutsideAreaAreNotMatched" classname="dev.changbak.explorer.domain.LiveNavigationTest" time="0.0"/>
+  <testcase name="broadIslandIsNeverGivenAnInventedPassagePoint" classname="dev.changbak.explorer.domain.LiveNavigationTest" time="0.0"/>
+  <testcase name="stalePositionAndRouteAreRejected" classname="dev.changbak.explorer.domain.LiveNavigationTest" time="0.001"/>
+  <testcase name="positionGapResetsPassageHistory" classname="dev.changbak.explorer.domain.LiveNavigationTest" time="0.0"/>
+  <testcase name="passageRequiresApproachingThenTwoSamplesMovingAway" classname="dev.changbak.explorer.domain.LiveNavigationTest" time="0.0"/>
+  <testcase name="leavingZoneDoesNotDiscardQuestionBeforePassageConfirmation" classname="dev.changbak.explorer.domain.LiveNavigationTest" time="0.0"/>
+  <testcase name="wrongCoordinateOrderIsNotAcceptedAsLocalPlace" classname="dev.changbak.explorer.domain.LiveNavigationTest" time="0.0"/>
+  <testcase name="duplicateSequenceIsIgnored" classname="dev.changbak.explorer.domain.LiveNavigationTest" time="0.002"/>
+  <testcase name="stopEtaAsksAtFiveMinutesAndNotEarlier" classname="dev.changbak.explorer.domain.LiveNavigationTest" time="0.001"/>
+  <testcase name="cancelledGuidanceCannotNarrate" classname="dev.changbak.explorer.domain.LiveNavigationTest" time="0.0"/>
+  <system-out><![CDATA[]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>

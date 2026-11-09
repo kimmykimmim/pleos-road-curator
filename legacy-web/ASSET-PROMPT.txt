@@ -1,0 +1,14 @@
+Tool: built-in image_gen.imagegen
+Mode: new image generation
+Transparent background: true
+Source: C:/Users/pc/.codex/generated_images/01a1b685-7056-7320-bb20-8e9812e048a8/exec-150c287a-664e-46c9-a779-1da9b63c42ca.png
+Asset: silver-crossover-v1.png
+
+Use case: product-mockup
+Asset type: isolated vehicle render for an automotive HMI interface.
+Primary request: One unbranded silver compact electric crossover SUV, black panoramic roof, viewed from a front-left three-quarter angle slightly above. The front of the car points toward the bottom-left of the composition.
+Scene/backdrop: Genuinely transparent background, alpha channel preserved, no studio floor or scenery. Only a soft subtle contact shadow directly beneath the car.
+Style/medium: realistic, clean premium 3D automotive product render, precise smooth bodywork, realistic wheels and windows, understated soft studio illumination.
+Composition/framing: entire car visible, centered, generous transparent framing on all sides. Wide composition suitable for placing on a landscape car dashboard UI.
+Materials/textures: satin metallic silver body, black panoramic glass roof, dark glass windows, dark rubber tires and clean alloy wheels.
+Constraints: exactly one complete vehicle, no logos, no brand-specific emblems, no text, no license-plate characters, no watermark, no UI, no people, no extra objects.

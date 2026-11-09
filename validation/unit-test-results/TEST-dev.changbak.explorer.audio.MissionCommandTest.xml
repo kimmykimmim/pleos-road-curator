@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="dev.changbak.explorer.audio.MissionCommandTest" tests="5" skipped="0" failures="0" errors="0" timestamp="2026-11-09T16:01:27.267Z" hostname="gimgyubeom-ui-MacBookPro.local" time="0.03">
+  <properties/>
+  <testcase name="observedDifferenceIsNotSceneryThatPassed" classname="dev.changbak.explorer.audio.MissionCommandTest" time="0.018"/>
+  <testcase name="remainingCommandsKeepTheirMeaning" classname="dev.changbak.explorer.audio.MissionCommandTest" time="0.001"/>
+  <testcase name="negativeAnswersNeverBecomeFound" classname="dev.changbak.explorer.audio.MissionCommandTest" time="0.0"/>
+  <testcase name="onlySpacingAndPunctuationAreIgnored" classname="dev.changbak.explorer.audio.MissionCommandTest" time="0.005"/>
+  <testcase name="undoRequiresAnExplicitCorrection" classname="dev.changbak.explorer.audio.MissionCommandTest" time="0.0"/>
+  <system-out><![CDATA[]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>

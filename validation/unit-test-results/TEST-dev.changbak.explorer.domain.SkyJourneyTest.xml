@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="dev.changbak.explorer.domain.SkyJourneyTest" tests="10" skipped="0" failures="0" errors="0" timestamp="2026-11-09T16:01:27.522Z" hostname="gimgyubeom-ui-MacBookPro.local" time="0.005">
+  <properties/>
+  <testcase name="childObservationBelongsToCurrentTravelSegment" classname="dev.changbak.explorer.domain.SkyJourneyTest" time="0.0"/>
+  <testcase name="demoAndRealTripsCannotSilentlyMix" classname="dev.changbak.explorer.domain.SkyJourneyTest" time="0.0"/>
+  <testcase name="duplicatesAreSuppressedButLaterSegmentsRemain" classname="dev.changbak.explorer.domain.SkyJourneyTest" time="0.001"/>
+  <testcase name="tunnelBecomesLightAndDoesNotRestTheConversation" classname="dev.changbak.explorer.domain.SkyJourneyTest" time="0.0"/>
+  <testcase name="storedLandmarksAreBounded" classname="dev.changbak.explorer.domain.SkyJourneyTest" time="0.002"/>
+  <testcase name="invalidAndReverseSpeedAreHandled" classname="dev.changbak.explorer.domain.SkyJourneyTest" time="0.001"/>
+  <testcase name="cloudShapesAreStillCloudsAndQuestionsDoNotCreatePlaces" classname="dev.changbak.explorer.domain.SkyJourneyTest" time="0.0"/>
+  <testcase name="journeyDoesNotGrowByTimeOrInvalidDistance" classname="dev.changbak.explorer.domain.SkyJourneyTest" time="0.0"/>
+  <testcase name="vehicleDistanceUsesFreshSamplesOnly" classname="dev.changbak.explorer.domain.SkyJourneyTest" time="0.0"/>
+  <testcase name="finishFreezesTheIslandAndDoesNotCreateFriends" classname="dev.changbak.explorer.domain.SkyJourneyTest" time="0.0"/>
+  <system-out><![CDATA[]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>

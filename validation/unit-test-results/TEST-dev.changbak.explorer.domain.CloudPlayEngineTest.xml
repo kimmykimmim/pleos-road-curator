@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="dev.changbak.explorer.domain.CloudPlayEngineTest" tests="24" skipped="0" failures="0" errors="0" timestamp="2026-11-09T16:01:27.348Z" hostname="gimgyubeom-ui-MacBookPro.local" time="0.031">
+  <properties/>
+  <testcase name="repeatingAnObservationDoesNotDuplicateTheFriend" classname="dev.changbak.explorer.domain.CloudPlayEngineTest" time="0.005"/>
+  <testcase name="finishingAndStartingNewHaveDifferentEffects" classname="dev.changbak.explorer.domain.CloudPlayEngineTest" time="0.0"/>
+  <testcase name="beginningHasNeitherCharacterNorScenery" classname="dev.changbak.explorer.domain.CloudPlayEngineTest" time="0.001"/>
+  <testcase name="aNewCloudWaitsForARoleWithoutReplacingTheRabbit" classname="dev.changbak.explorer.domain.CloudPlayEngineTest" time="0.0"/>
+  <testcase name="aShapeWithoutTheWordCloudStillWorksInTheEmptySky" classname="dev.changbak.explorer.domain.CloudPlayEngineTest" time="0.001"/>
+  <testcase name="helloOrAPlanCannotInventTheFirstFriend" classname="dev.changbak.explorer.domain.CloudPlayEngineTest" time="0.001"/>
+  <testcase name="expectationIsOptionalAndNeverCreatesACharacter" classname="dev.changbak.explorer.domain.CloudPlayEngineTest" time="0.001"/>
+  <testcase name="theChildCanRememberABackgroundCloudWithoutChangingTheSpeaker" classname="dev.changbak.explorer.domain.CloudPlayEngineTest" time="0.001"/>
+  <testcase name="restClearsThePreviewAndPreservesEveryCommittedCloud" classname="dev.changbak.explorer.domain.CloudPlayEngineTest" time="0.001"/>
+  <testcase name="correctionChangesOnlyTheMostRecentlyHandledCloud" classname="dev.changbak.explorer.domain.CloudPlayEngineTest" time="0.0"/>
+  <testcase name="secondFriendCanBeCreatedAndEitherFriendSelected" classname="dev.changbak.explorer.domain.CloudPlayEngineTest" time="0.001"/>
+  <testcase name="aMemoryIsChosenByTheChildRatherThanPreselected" classname="dev.changbak.explorer.domain.CloudPlayEngineTest" time="0.0"/>
+  <testcase name="finishingDoesNotSilentlyPickAFavorite" classname="dev.changbak.explorer.domain.CloudPlayEngineTest" time="0.001"/>
+  <testcase name="anExplicitRoleDoesNotRequireASecondUtterance" classname="dev.changbak.explorer.domain.CloudPlayEngineTest" time="0.0"/>
+  <testcase name="namesBelongOnlyToTheSelectedFriend" classname="dev.changbak.explorer.domain.CloudPlayEngineTest" time="0.001"/>
+  <testcase name="backgroundChoiceKeepsTheSpeakingFriend" classname="dev.changbak.explorer.domain.CloudPlayEngineTest" time="0.007"/>
+  <testcase name="unknownShapesKeepTheirNameWithoutClaimingASpecificMesh" classname="dev.changbak.explorer.domain.CloudPlayEngineTest" time="0.001"/>
+  <testcase name="questionsDoNotCreateCloudsOrRenameCharacters" classname="dev.changbak.explorer.domain.CloudPlayEngineTest" time="0.001"/>
+  <testcase name="firstObservedShapeBecomesACoPassengerAndAsksAboutTheWindow" classname="dev.changbak.explorer.domain.CloudPlayEngineTest" time="0.001"/>
+  <testcase name="explicitCancellationDoesNotCreateACloud" classname="dev.changbak.explorer.domain.CloudPlayEngineTest" time="0.003"/>
+  <testcase name="everydayPlansNeverBecomeScenery" classname="dev.changbak.explorer.domain.CloudPlayEngineTest" time="0.0"/>
+  <testcase name="aBackgroundCanBeTheFirstCreationWithoutMakingAnAvatar" classname="dev.changbak.explorer.domain.CloudPlayEngineTest" time="0.001"/>
+  <testcase name="skippingTheQuestionOrImmediatelyDescribingACloudBothWork" classname="dev.changbak.explorer.domain.CloudPlayEngineTest" time="0.001"/>
+  <testcase name="correctionOfAPreviewDoesNotCommitIt" classname="dev.changbak.explorer.domain.CloudPlayEngineTest" time="0.0"/>
+  <system-out><![CDATA[]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>

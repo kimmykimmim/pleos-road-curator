@@ -1,0 +1,22 @@
+2026-11-09
+BUILD SUCCESSFUL
+180 tests, 0 failures, 0 errors
+SDK_PROBE connected=true mode=SAFE_GUIDING stateCallbacks=1 locationCallbacks=1 destinationCallbacks=1 waypointCallbacks=1 errors=0 failure=none
+PASS: five bundled MP4s, six-second duration, 960x540 decoding, visible motion and distinct role scenes at all six places
+PASS: five-minute question, prediction, unseen encounter, automatic passage explanation, role play, six production Canvas renders
+Installed versionCode=11 versionName=0.11.0
+Foreground activity verified: dev.changbak.explorer/.MainActivity
+ACCESS_FINE_LOCATION granted=false
+Real route-guidance trip and background audio service not verified.
+
+2026-11-10 (macOS arm64 build host, Temurin 21, Gradle 9.3.1, AGP 9.1.0)
+BUILD SUCCESSFUL: testDebugUnitTest assembleDebug assembleRelease
+188 tests, 0 failures, 0 errors (180 carried forward + 8 new NarrationRecoveryTest)
+PASS: apksigner verify on apk/김규범_길위의큐레이터_release.apk
+  v2 scheme = true, signers = 1, RSA 4096
+  cert SHA-256 ffab697cfd4305fa022824870aca11dd02dc536ec89ab20f149b5c63aabfed42
+PASS: aapt2 badging package=dev.changbak.explorer versionCode=12 versionName=0.12.0 targetSdk=34
+  label='길 위의 큐레이터', pleos TTS/STT/NAVI_ROUTE permissions present
+APK SHA-256 88a29fb4872f638f9f71ec139c35d7224932818fcc1583a9f176d22dc671e16f
+NOT VERIFIED on this host: no emulator or device. No install, no runtime, no SDK probe.
+  Device and real route-guidance verification still pending (see docs/현재상태와_다음작업.md).
