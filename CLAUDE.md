@@ -108,6 +108,9 @@
 
 ## 9. 원본 작업 위치
 
+- 기준 작업 위치: 비공개 깃허브 `kimmykimmim/pleos-road-curator`. 로컬 사본은 `~/dev/pleos-road-curator`
+- Drive 폴더의 `native-app`과 `apk`는 0.11.0 시점이며 더 갱신하지 않습니다. 코드는 저장소에서 고칩니다.
+- 서명 키와 비밀번호는 Drive의 `signing-private` 폴더에만 있습니다. 저장소에는 올리지 않습니다.
 - Windows 원본: `C:/Users/pc/Documents/Codex/2026-11-07/new-chat/work/changbak-pleos`
 - 결과물 원본: `C:/Users/pc/Documents/Codex/2026-11-07/new-chat/outputs`
 - 현재 인계본은 비밀정보를 제외한 복사본입니다. 어느 쪽을 수정할지 먼저 정하고 두 프로젝트를 동시에 수정하지 마세요.
