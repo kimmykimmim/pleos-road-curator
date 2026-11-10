@@ -1,6 +1,6 @@
 package dev.changbak.explorer.domain
 
-enum class CuratorPhase { READY, WAITING, PREDICT, WATCH, EXPLAIN, PLAY, COMPARE, MEMORY, FINISHED }
+enum class CuratorPhase { READY, WAITING, PREDICT, WATCH, EXPLAIN, FAMILY, PLAY, COMPARE, MEMORY, FINISHED }
 enum class SeenStatus { UNKNOWN, SEEN, NOT_SEEN }
 enum class Reflection(val label: String) { SAME("생각과 비슷했어"), DIFFERENT("생각과 달랐어"), UNSURE("아직 잘 모르겠어") }
 enum class CuratorVisual { GATE, TOWER, GLASS, ISLAND, RECIPE }
@@ -16,7 +16,9 @@ data class PlaceApproach(val placeId: String, val etaSeconds: Int?, val passed: 
 data class CuratorFix(val routeId: String, val sequence: Long, val approaches: List<PlaceApproach>, val fresh: Boolean = true)
 data class PlaceMemory(val placeId: String, val guess: String? = null, val seen: SeenStatus = SeenStatus.UNKNOWN,
     val reflection: Reflection? = null, val explained: Boolean = false,
-    val activityId: String? = null, val activityLabel: String? = null)
+    val activityId: String? = null, val activityLabel: String? = null,
+    /** The family record was spoken here. It does not claim the child remembered anything. */
+    val familyRecalled: Boolean = false)
 data class CuratorState(val phase: CuratorPhase = CuratorPhase.READY, val routeId: String? = null,
     val sequence: Long = -1, val currentId: String? = null, val etaSeconds: Int? = null,
     val visits: List<PlaceMemory> = emptyList(), val deferred: Set<String> = emptySet(), val message: String = "",
@@ -77,9 +79,30 @@ class RouteCurator(private val catalog: List<CuratorPlace>) {
         val text = (if (memory(state)?.seen == SeenStatus.SEEN) "네가 본 ${p.name} 이야기야. " else if(arrived) "${p.name}에 도착했어. 보지 못했어도 괜찮아. " else "${p.name} 근처를 지났어. 보지 못했어도 괜찮아. ") + p.explanation
         return CuratorTurn(updateMemory(state) { it.copy(explained = true) }.copy(phase = CuratorPhase.EXPLAIN, message = text), text)
     }
-    fun afterExplanation(state: CuratorState): CuratorTurn {
+    /**
+     * The one way out of EXPLAIN, shared by the child's button, finished narration and recovery.
+     * A guardian's family record earns its own beat here, between the place's own story and the
+     * pretend play, so a real shared memory is never mixed into either.
+     */
+    fun afterExplanation(state: CuratorState, album: FamilyAlbum = FamilyAlbum()): CuratorTurn {
         if (state.phase != CuratorPhase.EXPLAIN) return CuratorTurn(state)
         val p = place(state) ?: return CuratorTurn(state)
+        val recall = if (memory(state)?.familyRecalled == true) null else album.recall(p)
+        if (recall != null) {
+            return CuratorTurn(updateMemory(state) { it.copy(familyRecalled = true) }
+                .copy(phase = CuratorPhase.FAMILY, message = recall), recall)
+        }
+        return play(state, p)
+    }
+
+    /** Leaves the family beat the same way whatever the child said, or said nothing at all. */
+    fun afterFamilyMemory(state: CuratorState): CuratorTurn {
+        if (state.phase != CuratorPhase.FAMILY) return CuratorTurn(state)
+        val p = place(state) ?: return CuratorTurn(state)
+        return play(state, p)
+    }
+
+    private fun play(state: CuratorState, p: CuratorPlace): CuratorTurn {
         val text = "이제 우리가 상상해 보자. 너는 ${p.activity.role}야! ${p.activity.prompt}"
         return CuratorTurn(state.copy(phase = CuratorPhase.PLAY, message = text), text)
     }

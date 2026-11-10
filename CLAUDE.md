@@ -6,7 +6,8 @@
 - 실제 차량 UI와 하단 공조 영역은 Pleos가 담당합니다. 앱은 자기 화면 영역만 사용합니다.
 - 아이가 가는 길의 장소를 바라보고, 짧고 재미있는 질문과 해설을 통해 운행을 기억하게 하는 앱입니다.
 - 현재 방향은 구름 캐릭터 생성이나 합주가 아닙니다. 과거 코드는 남아 있지만 기능을 되돌리지 마세요.
-- 기본 흐름: 장소가 가까워짐 → 궁금한 질문 → 창밖 관찰 → 지점 통과 또는 도착 → 짧은 해설과 그림 → 역할 놀이 → 다음 장소.
+- 기본 흐름: 장소가 가까워짐 → 궁금한 질문 → 창밖 관찰 → 지점 통과 또는 도착 → 짧은 해설과 그림 → 가족의 기억[기록이 있을 때만] → 역할 놀이 → 다음 장소.
+- 가족의 기억은 보호자가 직접 적은 기록만 씁니다. 위치 기록으로 추측하지 않고, 기기 밖으로 보내지 않으며, 아이에게 기억을 요구하거나 채점하지 않습니다.
 - 모든 핵심 활동은 이동 과정에서 일어납니다. 목적지 도착 후 과제로 미루지 않습니다.
 - 아이에게 정답을 요구하거나 처음 생각과 비교 채점을 하지 않습니다. 듣기만 해도 진행합니다.
 - 글은 짧게, 버튼은 크게, 음성 중심으로 구성합니다. 시각 전환은 기존 페이드 효과를 유지합니다.
@@ -28,7 +29,7 @@
 
 - 프로젝트: `native-app`
 - 패키지: `dev.changbak.explorer`
-- 버전: `0.12.0`, versionCode `12`
+- 버전: `0.13.0`, versionCode `13`
 - 저장소: 비공개 깃허브 `kimmykimmim/pleos-road-curator`. 작업 사본은 Drive 밖 로컬에 둡니다.
 - API 34, minSdk 28, Kotlin, Android 기본 View 및 Canvas
 - SDK: NaviHelper 3.0.5, TextToSpeech 3.3.1, SpeechToText 3.3.1
@@ -41,7 +42,9 @@
 - `domain/CuratorContent.kt`: 확인한 자료를 바탕으로 만든 6개 장소 해설과 역할 놀이
 - `CuratorMediaArt.kt`, `CuratorSceneView.kt`, `CuratorMediaPanel.kt`: 자체 제작 그림, 페이드 전환, 로컬 MP4
 - `audio/VoiceGuide.kt`: Pleos 음성 및 Android TTS 대체 처리, 음성 우선순위 처리, 한 번만 오는 결과 통보[`onDone` 또는 `onAborted`]
-- `domain/NarrationRecovery.kt`: 해설 음성이 완료되지 않고 끝났을 때 EXPLAIN을 벗어날지 판단
+- `domain/NarrationRecovery.kt`: 음성이 완료되지 않고 끝났을 때 대기 단계[EXPLAIN, FAMILY]를 벗어날지 판단
+- `domain/FamilyAlbum.kt`: 보호자가 적은 가족 방문 기록과 그때 들려줄 문장
+- `FamilyAlbumStore.kt`: 가족 기록의 기기 내 저장. 외부로 보내지 않음
 - 각 경로는 `native-app/app/src/main/java/dev/changbak/explorer/` 기준입니다.
 
 ## 4. 장소와 미디어 범위
@@ -61,7 +64,7 @@
 ## 5. 확인한 결과
 
 - `testDebugUnitTest assembleDebug assembleRelease`: 성공
-- 자동 검사 188개, 실패 0, 오류 0
+- 자동 검사 203개, 실패 0, 오류 0
 - 제출용 서명 APK: `apk/김규범_길위의큐레이터_release.apk`, `apksigner verify` 통과[v2, RSA 4096]
 - 실제 Pleos에서 5개 MP4 디코딩, 길이와 크기, 6개 장소의 역할 놀이 그림 차이: 통과
 - 기기 내 시연 처리 검사: 질문 → 관찰 → 통과 → 해설 → 역할 놀이 통과

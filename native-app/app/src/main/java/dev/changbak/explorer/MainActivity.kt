@@ -27,6 +27,7 @@ import org.json.JSONObject
 class MainActivity : Activity() {
     private val handler = Handler(Looper.getMainLooper())
     private val engine = RouteCurator(CuratorCatalog.places)
+    private val album by lazy { FamilyAlbumStore(this) }
     private var state = CuratorState()
     private lateinit var voice: VoiceGuide
     private var drive: CuratorDriveService? = null
@@ -157,6 +158,10 @@ class MainActivity : Activity() {
         runCatching { restrictions?.unregisterListener(); car?.disconnect() }; super.onDestroy()
     }
     private fun usable() = foreground && connected && !restricted && dialog == null
+    /** EXPLAIN and FAMILY both wait for narration; each leaves by its own next step. */
+    private fun advanceAfterNarration() =
+        if (state.phase == CuratorPhase.FAMILY) engine.afterFamilyMemory(state)
+        else engine.afterExplanation(state, album.load())
     private fun quiet() { narrationGeneration++; mic = false; if (::voice.isInitialized) voice.suspend() }
     private fun apply(turn: CuratorTurn) {
         if (!usable()) return
@@ -169,12 +174,13 @@ class MainActivity : Activity() {
         if (changed) { render(); if (state.phase in setOf(CuratorPhase.MEMORY, CuratorPhase.FINISHED)) saveSummary() }
         val text = turn.narration ?: return
         quiet(); val token = narrationGeneration
-        // A narration that fails must still release EXPLAIN, the only phase that waits for it.
-        val leaveExplanation: () -> Unit = {
-            if (token == narrationGeneration && usable() && state.phase == CuratorPhase.EXPLAIN)
-                apply(engine.afterExplanation(state))
+        // A narration that fails must still release the phase that is waiting for it.
+        val release: () -> Unit = {
+            if (token == narrationGeneration && usable() &&
+                NarrationRecovery.shouldAdvance(state.phase, token, narrationGeneration, false, false)
+            ) apply(advanceAfterNarration())
         }
-        voice.speak(text, onAborted = leaveExplanation, onDone = leaveExplanation)
+        voice.speak(text, onAborted = release, onDone = release)
     }
     private fun startDemo(route: CuratorDemoRoute = selectedRoute) {
         selectedRoute = route
@@ -299,7 +305,7 @@ class MainActivity : Activity() {
             action("한강의 과학 여행") { startDemo(CuratorRoutes.routes[0]) }
             action("도심의 오래된 이야기") { startDemo(CuratorRoutes.routes[1]) }; return
         }
-        val heading=when(state.phase) { CuratorPhase.PREDICT -> "01  먼저 상상해 보기"; CuratorPhase.WATCH -> "02  창밖에서 만나기"; CuratorPhase.EXPLAIN -> "03  장소의 이야기"; CuratorPhase.PLAY -> "04  오늘의 ${engine.place(state)?.activity?.role ?: "상상 놀이"}"; CuratorPhase.COMPARE -> "04  상상 놀이"; CuratorPhase.MEMORY -> "오늘의 발견"; CuratorPhase.FINISHED -> "오늘 만난 이야기"; else -> "다음 이야기를 기다려요" }
+        val heading=when(state.phase) { CuratorPhase.PREDICT -> "01  먼저 상상해 보기"; CuratorPhase.WATCH -> "02  창밖에서 만나기"; CuratorPhase.EXPLAIN -> "03  장소의 이야기"; CuratorPhase.FAMILY -> "우리 가족의 기억"; CuratorPhase.PLAY -> "04  오늘의 ${engine.place(state)?.activity?.role ?: "상상 놀이"}"; CuratorPhase.COMPARE -> "04  상상 놀이"; CuratorPhase.MEMORY -> "오늘의 발견"; CuratorPhase.FINISHED -> "오늘 만난 이야기"; else -> "다음 이야기를 기다려요" }
         card.addView(label(heading,21f,accent,true)); gap(card,22)
         val text=when(state.phase) {
             CuratorPhase.PREDICT -> engine.place(state)?.question ?: state.message
@@ -322,10 +328,16 @@ class MainActivity : Activity() {
             }
             CuratorPhase.WATCH -> { action("봤어!",true) { apply(engine.seen(state,true)) }; action("안 보여") { apply(engine.seen(state,false)) } }
             CuratorPhase.EXPLAIN -> {
-                action("이제 내가 해 볼래!") { quiet(); apply(engine.afterExplanation(state)) }
+                action("이제 내가 해 볼래!") { quiet(); apply(advanceAfterNarration()) }
                 action("해설을 글로 보기") {
                     show(AlertDialog.Builder(this).setTitle(engine.place(state)?.name).setMessage(state.message).setPositiveButton("닫기",null).create())
                 }
+            }
+            CuratorPhase.FAMILY -> {
+                card.addView(label("보호자가 적어 둔 기억이에요",19f,muted)); gap(card,8)
+                // Both answers go to the same place. The child is never graded on remembering.
+                action("기억나!",true) { quiet(); apply(engine.afterFamilyMemory(state)) }
+                action("잘 모르겠어") { quiet(); apply(engine.afterFamilyMemory(state)) }
             }
             CuratorPhase.PLAY -> {
                 card.addView(label("여기부터는 우리의 상상 놀이",19f,muted)); gap(card,8)
@@ -357,17 +369,18 @@ class MainActivity : Activity() {
         next.setOnDismissListener { if(dialog===next) { dialog=null;drive?.suppress(false);render();armRoleIdle() } }; next.show()
     }
     private fun parentMenu() {
-        val items=arrayOf(if(playing) "이야기 잠깐 멈추기" else "이야기 이어서 재생", "시점 이동해서 확인", "말 대신 입력", "오늘 이야기 마치기", "설명 출처", "지난 시연 기억", "실제 내비 음성 여행 시작", "다른 시연 경로 선택")
+        val items=arrayOf(if(playing) "이야기 잠깐 멈추기" else "이야기 이어서 재생", "시점 이동해서 확인", "말 대신 입력", "가족이 함께 갔던 곳 기록", "오늘 이야기 마치기", "설명 출처", "지난 시연 기억", "실제 내비 음성 여행 시작", "다른 시연 경로 선택")
         show(AlertDialog.Builder(this).setTitle("보호자 / 정차 시연").setItems(items) { _,i -> handler.post {
             when(i) {
                 0 -> { if(live) drive?.setPaused(!drive!!.paused) else if(demo) { playing=!playing;render() } }
                 1 -> demoControls()
                 2 -> textInput()
-                3 -> { playing=false;if(live) drive?.end() else apply(engine.finish(state)) }
-                4 -> sources()
-                5 -> previousSummary()
-                6 -> startLive()
-                7 -> routeMenu()
+                3 -> familyMenu()
+                4 -> { playing=false;if(live) drive?.end() else apply(engine.finish(state)) }
+                5 -> sources()
+                6 -> previousSummary()
+                7 -> startLive()
+                8 -> routeMenu()
             }
         } }.setNegativeButton("닫기",null).create())
     }
@@ -392,6 +405,58 @@ class MainActivity : Activity() {
             apply(engine.tick(state,CuratorFix(selectedRoute.id,++sequence,listOf(PlaceApproach(chosen,300)))))
             if(stage>0) {demoTime=seconds+if(stage==1) -20 else 10;apply(engine.tick(state,CuratorFix(selectedRoute.id,++sequence,listOf(PlaceApproach(chosen,if(stage==1)20 else -10,stage==2)))))}
         } }.setNegativeButton("닫기",null).create())
+    }
+    /**
+     * The guardian's own record of where the family has been. The app never fills this in from
+     * location history; a place is listed here only because a guardian chose it. Everything
+     * written here stays in this car.
+     */
+    private fun familyMenu() {
+        playing=false
+        val saved=album.load()
+        val places=CuratorCatalog.places
+        val labels=places.map { place ->
+            saved.of(place.id)?.let { "${place.name}  ·  ${it.whenLabel}" } ?: place.name
+        }.toTypedArray()
+        show(AlertDialog.Builder(this).setTitle("가족이 함께 갔던 곳")
+            .setItems(labels) { _,index -> handler.post { familyEntry(places[index]) } }
+            .setNegativeButton("닫기",null).create())
+    }
+    private fun familyEntry(place: CuratorPlace) {
+        playing=false
+        val existing=album.load().of(place.id)
+        val column=LinearLayout(this).apply {
+            orientation=LinearLayout.VERTICAL
+            setPadding(dp(24),dp(12),dp(24),0)
+        }
+        column.addView(label("언제 갔는지 골라 주세요. 아이에게 그대로 말해 줄 표현이에요.",19f,muted))
+        val choices=RadioGroup(this).apply { orientation=LinearLayout.VERTICAL }
+        FamilyVisit.WHEN_CHOICES.forEachIndexed { index,choice ->
+            choices.addView(RadioButton(this).apply {
+                id=index+1; text=choice; textSize=21f
+                isChecked=existing?.whenLabel==choice || (existing==null && index==0)
+            })
+        }
+        column.addView(choices)
+        val note=EditText(this).apply {
+            hint="같이 무엇을 했는지 한 줄로 적어도 좋아요"
+            textSize=21f; setText(existing?.note.orEmpty())
+            filters=arrayOf(android.text.InputFilter.LengthFilter(FamilyVisit.MAX_NOTE))
+            importantForAutofill=View.IMPORTANT_FOR_AUTOFILL_NO
+        }
+        column.addView(note)
+        val builder=AlertDialog.Builder(this).setTitle(place.name).setView(column)
+            .setNegativeButton("닫기",null)
+            .setPositiveButton("기록하기") { _,_ -> handler.post {
+                val picked=FamilyVisit.WHEN_CHOICES.getOrNull(choices.checkedRadioButtonId-1)
+                    ?: FamilyVisit.WHEN_CHOICES.first()
+                album.remember(FamilyVisit(place.id,picked,note.text.toString().trim().takeIf(String::isNotEmpty)))
+                status="${place.name}을 가족의 기억으로 적어 두었어요."; render()
+            } }
+        if(existing!=null) builder.setNeutralButton("기록 지우기") { _,_ -> handler.post {
+            album.forget(place.id); status="${place.name}의 기록을 지웠어요."; render()
+        } }
+        show(builder.create())
     }
     private fun textInput() {
         playing=false

@@ -12,7 +12,7 @@ class NarrationRecoveryTest {
         current: Long = 7,
         paused: Boolean = false,
         suppressed: Boolean = false,
-    ) = NarrationRecovery.shouldLeaveExplanation(phase, token, current, paused, suppressed)
+    ) = NarrationRecovery.shouldAdvance(phase, token, current, paused, suppressed)
 
     @Test
     fun `a failed explanation releases the phase that waits for it`() {
@@ -20,9 +20,14 @@ class NarrationRecoveryTest {
     }
 
     @Test
-    fun `phases that do not wait for narration are left alone`() {
+    fun `only the phases that wait for narration are advanced`() {
         val waiting = CuratorPhase.entries.filter { decide(it) }
-        assertEquals(listOf(CuratorPhase.EXPLAIN), waiting)
+        assertEquals(listOf(CuratorPhase.EXPLAIN, CuratorPhase.FAMILY), waiting)
+    }
+
+    @Test
+    fun `a failed family memory releases its phase too`() {
+        assertTrue(decide(CuratorPhase.FAMILY))
     }
 
     @Test

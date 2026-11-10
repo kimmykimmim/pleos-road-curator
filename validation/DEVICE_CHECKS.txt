@@ -60,3 +60,12 @@ NOT VERIFIED - needs the Pleos emulator or a vehicle:
   crashing and shows 예고 가능한 장소 0곳 / 가까운 장소 0곳.
   So: real route guidance, per-place remainTime units, the 300-second question, real passage
   detection, and Pleos on-device TTS/STT remain unverified.
+
+2026-11-10 0.13.0 가족의 기억 (build host only, no device run yet)
+BUILD SUCCESSFUL: testDebugUnitTest assembleRelease
+203 tests, 0 failures, 0 errors (188 carried forward + 14 FamilyAlbumTest + 1 NarrationRecovery)
+PASS apksigner verify: v2, signer cert SHA-256 ffab697cfd4305fa022824870aca11dd02dc536ec89ab20f149b5c63aabfed42
+PASS aapt2 badging: versionCode=13 versionName=0.13.0
+PASS org.json is test scope only: no org/json entries inside the APK
+APK SHA-256 ee415ce90f6c3b71faa2b5b21c1fe6fcf6a6989cb2e40a05d4cc4c57973dd86d
+NOT YET RUN on the emulator: the family-memory beat has unit coverage only.

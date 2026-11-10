@@ -155,3 +155,7 @@ ERROR        | Failed to bind to texture: invalid color buffer.
 [h264 @ 0x982373700] no frame!
 ERROR        | Failed to find ColorBuffer: 694
 ERROR        | Failed to bind to texture: invalid color buffer.
+[h264 @ 0x98380f700] no frame!
+[h264 @ 0x98380f700] no frame!
+ERROR        | Failed to find ColorBuffer: 763
+ERROR        | Failed to bind to texture: invalid color buffer.

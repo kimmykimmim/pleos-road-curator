@@ -23,8 +23,8 @@ android {
         applicationId = "dev.changbak.explorer"
         minSdk = 28
         targetSdk = 34
-        versionCode = 12
-        versionName = "0.12.0"
+        versionCode = 13
+        versionName = "0.13.0"
         testInstrumentationRunner = "dev.changbak.explorer.SceneRenderCheck"
     }
 
@@ -74,4 +74,8 @@ dependencies {
     implementation("ai.pleos.playground:TextToSpeech:3.3.1")
     implementation("ai.pleos.playground:SpeechToText:3.3.1")
     testImplementation("junit:junit:4.13.2")
+    // Android supplies org.json at runtime, but the unit-test stub throws on every call, which
+    // would let a stored-record bug hide behind the decoder's own corrupt-record handling.
+    // Test scope only, so the real classes never reach the APK.
+    testImplementation("org.json:json:20240303")
 }

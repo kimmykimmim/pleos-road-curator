@@ -16,6 +16,7 @@ class CuratorDriveService:Service() {
     private val binder=LocalBinder()
     private val main=Handler(Looper.getMainLooper())
     private val engine=RouteCurator(CuratorCatalog.places)
+    private val album by lazy { FamilyAlbumStore(this) }
     private val discovery=LiveNavigation()
     private lateinit var voice:VoiceGuide
     private lateinit var navi:CuratorNaviSource
@@ -31,11 +32,14 @@ class CuratorDriveService:Service() {
     private val observers=mutableSetOf<()->Unit>()
     private val roleIdle=Runnable { if(!paused && state.phase==CuratorPhase.PLAY) perform(engine.listenOnly(state)) }
     private var explainToken=0L
-    private fun leaveExplanation(token:Long) {
-        if(!NarrationRecovery.shouldLeaveExplanation(state.phase,token,generation,paused,suppressAudio)) return
-        main.removeCallbacks(explainWatchdog);perform(engine.afterExplanation(state))
+    /** Each waiting phase leaves by the same path the child's own button uses. */
+    private fun advanceAfterNarration(token:Long) {
+        if(!NarrationRecovery.shouldAdvance(state.phase,token,generation,paused,suppressAudio)) return
+        main.removeCallbacks(explainWatchdog)
+        perform(if(state.phase==CuratorPhase.FAMILY) engine.afterFamilyMemory(state)
+                else engine.afterExplanation(state,album.load()))
     }
-    private val explainWatchdog=Runnable { leaveExplanation(explainToken) }
+    private val explainWatchdog=Runnable { advanceAfterNarration(explainToken) }
     fun observe(callback:()->Unit) { observers.add(callback);callback() }
     fun removeObserver(callback:()->Unit) { observers.remove(callback) }
     private fun publish() { observers.toList().forEach { it() };if(started) notificationManager().notify(71,notification()) }
@@ -119,7 +123,7 @@ class CuratorDriveService:Service() {
         // Backstop for a narration that neither finishes nor reports a failure, so one silent
         // engine cannot hold the journey on a single place for the rest of the drive.
         main.postDelayed(explainWatchdog,(12_000L+text.length*200L).coerceAtMost(60_000L))
-        val release:()->Unit={ leaveExplanation(token) }
+        val release:()->Unit={ advanceAfterNarration(token) }
         voice.speak(text,onAborted=release,onDone=release)
     }
     fun end() {
