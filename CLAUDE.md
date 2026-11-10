@@ -29,10 +29,10 @@
 
 - 프로젝트: `native-app`
 - 패키지: `dev.changbak.explorer`
-- 버전: `0.13.1`, versionCode `14`
+- 버전: `0.14.0`, versionCode `15`
 - 저장소: 비공개 깃허브 `kimmykimmim/pleos-road-curator`. 작업 사본은 Drive 밖 로컬에 둡니다.
 - API 34, minSdk 28, Kotlin, Android 기본 View 및 Canvas
-- SDK: NaviHelper 3.0.5, TextToSpeech 3.3.1, SpeechToText 3.3.1
+- SDK: NaviHelper 3.0.5, Vehicle 2.3.2, TextToSpeech 3.3.1, SpeechToText 3.3.1
 - `MainActivity.kt`: 화면, 정차 제한, 시연 흐름, 실제 음성 서비스 시작 버튼, 위치 권한 요청, 서비스 연결
 - `CuratorNaviSource.kt`: 공개 SDK 읽기 전용 연결. 위치와 경로 상태는 2초 간격, 목적지와 경유지는 약 6초 간격 조회.
 - `CuratorDriveService.kt`: 사용자가 시작하는 위치 및 음성 전경 서비스[화면 밖에서도 상태 알림을 표시하며 실행하는 서비스]. 마이크는 사용하지 않음.
@@ -43,7 +43,10 @@
 - `CuratorMediaArt.kt`, `CuratorSceneView.kt`, `CuratorMediaPanel.kt`: 자체 제작 그림, 페이드 전환, 로컬 MP4
 - `audio/VoiceGuide.kt`: Pleos 음성 및 Android TTS 대체 처리, 음성 우선순위 처리, 한 번만 오는 결과 통보[`onDone` 또는 `onAborted`]
 - `domain/NarrationRecovery.kt`: 음성이 완료되지 않고 끝났을 때 대기 단계[EXPLAIN, FAMILY]를 벗어날지 판단
-- `domain/FamilyAlbum.kt`: 보호자가 적은 가족 방문 기록과 그때 들려줄 문장
+- `domain/FamilyAlbum.kt`: 보호자가 적은 가족 방문 기록, 들려줄 문장, 보호자가 추가한 장소
+- `domain/WindowDirection.kt`: 차가 가는 방향으로 왼쪽인지 오른쪽인지 판단
+- `domain/Stillness.kt`: 기어와 브레이크로 차가 서 있는지 판단
+- `VehicleStillness.kt`: Pleos Vehicle SDK 읽기 전용 연결. 값을 바꾸지 않음
 - `FamilyAlbumStore.kt`: 가족 기록의 기기 내 저장. 외부로 보내지 않음
 - 각 경로는 `native-app/app/src/main/java/dev/changbak/explorer/` 기준입니다.
 
@@ -64,7 +67,7 @@
 ## 5. 확인한 결과
 
 - `testDebugUnitTest assembleDebug assembleRelease`: 성공
-- 자동 검사 203개, 실패 0, 오류 0
+- 자동 검사 241개, 실패 0, 오류 0
 - 제출용 서명 APK: `apk/김규범_길위의큐레이터_release.apk`, `apksigner verify` 통과[v2, RSA 4096]
 - 실제 Pleos에서 5개 MP4 디코딩, 길이와 크기, 6개 장소의 역할 놀이 그림 차이: 통과
 - 기기 내 시연 처리 검사: 질문 → 관찰 → 통과 → 해설 → 역할 놀이 통과

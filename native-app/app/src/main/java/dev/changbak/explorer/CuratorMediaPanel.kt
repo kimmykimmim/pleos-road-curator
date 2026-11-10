@@ -13,6 +13,9 @@ import dev.changbak.explorer.domain.*
 /** Bundled, silent clips never request audio focus or interrupt the spoken curator. */
 class CuratorMediaPanel(context:Context): FrameLayout(context) {
     private val scene=CuratorSceneView(context)
+    /** Set by the host so guardian places resolve here too, not just catalog ones. */
+    var places: () -> List<CuratorPlace> = { CuratorCatalog.places }
+        set(value) { field=value; scene.places=value }
     private val video=VideoView(context).apply { setAudioFocusRequest(AudioManager.AUDIOFOCUS_NONE); visibility=View.INVISIBLE }
     private var current=CuratorState()
     private var permitted=false
@@ -32,7 +35,7 @@ class CuratorMediaPanel(context:Context): FrameLayout(context) {
         val key=mediaKey(current) ?: return
         stop();play(key)
     }
-    private fun mediaKey(state:CuratorState)=CuratorCatalog.places.firstOrNull { it.id==state.currentId }?.mediaKey
+    private fun mediaKey(state:CuratorState)=places().firstOrNull { it.id==state.currentId }?.mediaKey?.takeIf { it.isNotBlank() }
     private fun play(key:String) {
         val resource=resources.getIdentifier("curator_$key","raw",context.packageName)
         if(resource==0) return

@@ -15,9 +15,10 @@ class CuratorDriveService:Service() {
     inner class LocalBinder:Binder() { val service get()=this@CuratorDriveService }
     private val binder=LocalBinder()
     private val main=Handler(Looper.getMainLooper())
-    private val engine=RouteCurator(CuratorCatalog.places)
     private val album by lazy { FamilyAlbumStore(this) }
-    private val discovery=LiveNavigation()
+    // The catalog and the proximity list both grow when a guardian adds a place of their own.
+    private val engine=RouteCurator { CuratorCatalog.places+album.load().ownCuratorPlaces() }
+    private val discovery=LiveNavigation { LivePlaces.all+album.load().ownLocatedPlaces() }
     private lateinit var voice:VoiceGuide
     private lateinit var navi:CuratorNaviSource
     private lateinit var session:MediaSession
@@ -32,6 +33,25 @@ class CuratorDriveService:Service() {
     private val observers=mutableSetOf<()->Unit>()
     private val roleIdle=Runnable { if(!paused && state.phase==CuratorPhase.PLAY) perform(engine.listenOnly(state)) }
     private var explainToken=0L
+    private lateinit var stillness:VehicleStillness
+    /** The place whose short film was already offered, so a long red light does not repeat it. */
+    private var offeredFilmFor:String?=null
+    var carStopped=false;private set
+    /**
+     * Standing still is the one moment when looking at the screen costs the child nothing,
+     * so the film is offered then instead of being nagged about on the move.
+     */
+    private fun onStillnessChanged(value:Boolean) {
+        carStopped=value
+        if(!value) { publish();return }
+        val place=engine.place(state)
+        if(started && !paused && !suppressAudio && place!=null && offeredFilmFor!=place.id &&
+            state.phase in setOf(CuratorPhase.EXPLAIN,CuratorPhase.FAMILY,CuratorPhase.PLAY,CuratorPhase.MEMORY)) {
+            offeredFilmFor=place.id
+            narrate("차가 멈췄네. 지금은 화면을 봐도 괜찮아. ${place.name} 짧은 영상 같이 볼래?")
+        }
+        publish()
+    }
     /** Each waiting phase leaves by the same path the child's own button uses. */
     private fun advanceAfterNarration(token:Long) {
         if(!NarrationRecovery.shouldAdvance(state.phase,token,generation,paused,suppressAudio)) return
@@ -55,6 +75,7 @@ class CuratorDriveService:Service() {
             });isActive=true
         }
         voice=VoiceGuide(this,onState={},onCommand={},onError={ connectionStatus=it;publish() },initializeListening=false)
+        stillness=VehicleStillness(this,::onStillnessChanged).also { it.start() }
         navi=CuratorNaviSource(this,status={ connectionStatus=it;publish() },onFrame={ frame ->
             if(started && !paused) {
                 val result=discovery.discover(frame)
@@ -130,5 +151,5 @@ class CuratorDriveService:Service() {
         silence();navi.close();started=false;paused=true;state=engine.finish(state).state;updatePlayback();publish()
         stopForeground(STOP_FOREGROUND_REMOVE);stopSelf()
     }
-    override fun onDestroy() { main.removeCallbacksAndMessages(null);navi.close();voice.release();session.release();observers.clear();super.onDestroy() }
+    override fun onDestroy() { main.removeCallbacksAndMessages(null);navi.close();stillness.release();voice.release();session.release();observers.clear();super.onDestroy() }
 }

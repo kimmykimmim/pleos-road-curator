@@ -9,6 +9,14 @@ data class GeoPoint(val latitude: Double, val longitude: Double) {
         val d = sin((b-a)/2).pow(2) + cos(a)*cos(b)*sin(Math.toRadians(other.longitude-longitude)/2).pow(2)
         return 6_371_000.0 * 2 * asin(sqrt(d.coerceIn(0.0,1.0)))
     }
+    /** Compass degrees from this point to [other], 0 at north, increasing clockwise. */
+    fun bearingTo(other: GeoPoint): Double {
+        val a = Math.toRadians(latitude); val b = Math.toRadians(other.latitude)
+        val dl = Math.toRadians(other.longitude - longitude)
+        val y = sin(dl) * cos(b)
+        val x = cos(a) * sin(b) - sin(a) * cos(b) * cos(dl)
+        return (Math.toDegrees(atan2(y, x)) + 360.0) % 360.0
+    }
 }
 
 /** Source map markers are encounter anchors, not entrance/road/visibility coordinates. */

@@ -121,3 +121,35 @@ FATAL EXCEPTION 0건.
 여전히 확인하지 못한 것
 - 한국어 음성을 실제로 들어 본 것이 아니라 합성 요청 로그만 확인했습니다.
 - Pleos 내비와 Pleos 기기 내 음성은 이 일반 Automotive 에뮬레이터에 없습니다.
+
+2026-11-10 0.14.0 방향 안내, 보호자가 더하는 장소, 정차 순간
+BUILD SUCCESSFUL: testDebugUnitTest assembleRelease
+241 tests, 0 failures, 0 errors (203 + WindowDirection 13 + FamilyOwnPlace 16 + Stillness 8, 일부 기존 검사 갱신)
+APK versionCode=15 versionName=0.14.0, apksigner verify 통과
+APK SHA-256 dcd050c5458bb55ff7b0ff59be85b3092e26e5fcabce0dcd6acdd1f69b485b83
+Vehicle SDK 권한 ai.pleos.playground.service.vehicle.VEHICLE_BINDING 이 AAR 에서 자동 병합됨
+
+기기에서 확인한 것 (에뮬레이터 pleos_check_aaos33, -gpu host)
+PASS f-01 보호자 메뉴에 "지금 여기를 기억해 두기" 가 맨 위에 나타남
+PASS f-02 가상 GPS(geo fix 126.9780 37.5665) 주입 후 이름, 시점, 메모 입력 화면이 열림
+PASS f-03 "Grandma House · 네가 지금보다 더 어렸을 때" 로 저장되고 앱의 6곳 위에 표시됨
+PASS f-06 f-07 시연에서 보호자 장소가 앱의 장소들과 똑같이 네 단계를 거쳐 끝까지 진행됨
+FATAL EXCEPTION 0건
+
+화면을 직접 보고 찾아 고친 결함 3개 (모두 0.14.0 에서 수정)
+1. f-04 보호자 장소의 그림이 광화문 성문으로 떨어짐. CuratorSceneView 와 CuratorMediaPanel 이
+   CuratorCatalog 만 직접 조회해 보호자 장소가 닿지 못하고 GATE 로 기본값 처리되었음.
+   할머니 집에 성문 그림을 붙이는 것은 본 적 없는 장소의 모습을 지어내는 일임.
+   수정: 두 뷰가 장소 목록을 주입받고, CuratorVisual.FAMILY 전용 기억 표시를 새로 그림.
+2. f-04 해설 큰 글씨가 "문을 지나면 어떤 세상이 펼쳐질까요?" 라는 광화문용 고정 문구였음.
+   수정: 보호자 장소는 보호자가 쓴 문장을 그대로 보여 줌.
+3. f-05 역할 놀이 제목이 "04 오늘의 오늘의 이야기꾼" 으로 중복됨. 화면이 "오늘의" 를 붙이는데
+   역할 이름에도 넣었던 내 실수. 수정: 역할 이름을 "이야기꾼" 으로 바꾸고 회귀 검사 추가.
+또한 보호자 장소에는 짧은 영상이 없으므로 영상 버튼이 나오지 않도록 함.
+
+기기에서 확인하지 못한 것
+- 왼쪽 오른쪽 방향 안내: 움직이는 실제 위치 흐름이 필요한데 이 에뮬레이터에는 Pleos 내비가
+  없어 실제 주행 경로를 만들 수 없음. 단위 검사 13개로만 고정되어 있음.
+- 정차 순간 영상 권유: 이 에뮬레이터에는 Pleos Vehicle 서비스가 없어 기어와 브레이크 신호가
+  오지 않음. 앱은 "서 있지 않음" 으로 두고 충돌 없이 동작함. 단위 검사 8개로만 고정됨.
+- 시점 이동해서 확인 목록에는 보호자 장소가 들어가지 않음. 시연에서는 기다리면 만날 수 있음.

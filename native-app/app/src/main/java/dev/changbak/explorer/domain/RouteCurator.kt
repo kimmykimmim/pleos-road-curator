@@ -3,7 +3,14 @@ package dev.changbak.explorer.domain
 enum class CuratorPhase { READY, WAITING, PREDICT, WATCH, EXPLAIN, FAMILY, PLAY, COMPARE, MEMORY, FINISHED }
 enum class SeenStatus { UNKNOWN, SEEN, NOT_SEEN }
 enum class Reflection(val label: String) { SAME("생각과 비슷했어"), DIFFERENT("생각과 달랐어"), UNSURE("아직 잘 모르겠어") }
-enum class CuratorVisual { GATE, TOWER, GLASS, ISLAND, RECIPE }
+enum class CuratorVisual {
+    GATE, TOWER, GLASS, ISLAND, RECIPE,
+    /**
+     * A guardian's own place. The app has no drawing of it and must not invent one, so this is a
+     * keepsake mark rather than a picture of the place itself.
+     */
+    FAMILY,
+}
 data class PlayChoice(val id: String, val label: String, val response: String, val cues: List<String> = emptyList())
 data class PlaceActivity(val role: String, val prompt: String, val choices: List<PlayChoice>)
 data class CuratorPlace(val id: String, val name: String, val theme: String, val question: String,
@@ -12,7 +19,9 @@ data class CuratorPlace(val id: String, val name: String, val theme: String, val
     val activity: PlaceActivity = PlaceActivity("문지기", "아침 인사를 골라볼래?", listOf(
         PlayChoice("welcome", "좋은 아침!", "네 인사와 함께 도시의 아침이 열렸어."))))
 data class PlaceApproach(val placeId: String, val etaSeconds: Int?, val passed: Boolean = false, val observable: Boolean = true,
-    val nearby: Boolean = false, val arrived: Boolean = false)
+    val nearby: Boolean = false, val arrived: Boolean = false,
+    /** Which window the place is at right now, or UNKNOWN when the fixes cannot say. */
+    val side: WindowSide = WindowSide.UNKNOWN)
 data class CuratorFix(val routeId: String, val sequence: Long, val approaches: List<PlaceApproach>, val fresh: Boolean = true)
 data class PlaceMemory(val placeId: String, val guess: String? = null, val seen: SeenStatus = SeenStatus.UNKNOWN,
     val reflection: Reflection? = null, val explained: Boolean = false,
@@ -26,7 +35,12 @@ data class CuratorState(val phase: CuratorPhase = CuratorPhase.READY, val routeI
 data class CuratorTurn(val state: CuratorState, val narration: String? = null)
 
 /** Provider supplies ETA to each encounter, not ETA to the final destination. No sight detection claims. */
-class RouteCurator(private val catalog: List<CuratorPlace>) {
+class RouteCurator(private val catalogSource: () -> List<CuratorPlace>) {
+    /** A fixed catalog. The journey's own catalog grows when a guardian adds a place. */
+    constructor(catalog: List<CuratorPlace>) : this({ catalog })
+
+    private val catalog: List<CuratorPlace> get() = catalogSource()
+
     fun place(state: CuratorState) = catalog.firstOrNull { it.id == state.currentId }
     fun memory(state: CuratorState) = state.visits.firstOrNull { it.placeId == state.currentId }
     fun start() = CuratorState(phase = CuratorPhase.WAITING, message = "가는 길에서 만날 이야기를 기다리고 있어.")
@@ -44,7 +58,7 @@ class RouteCurator(private val catalog: List<CuratorPlace>) {
                 if (current.passed || current.arrived) return explain(next, current.arrived)
                 if ((current.etaSeconds in 0..30 || current.nearby) && state.phase == CuratorPhase.PREDICT) {
                     val p = place(next) ?: return CuratorTurn(next)
-                    val text = if (current.observable) "곧 ${p.name} 근처야. ${p.observe} 안 보이면 그냥 지나가도 좋아."
+                    val text = if (current.observable) "곧 ${p.name} 근처야.${point(current)} ${p.observe} 안 보이면 그냥 지나가도 좋아."
                         else "지금은 보기 어려운 구간이야. 지나간 뒤 이야기로 만나자."
                     return CuratorTurn(next.copy(phase = CuratorPhase.WATCH, message = text), text)
                 }
@@ -56,11 +70,14 @@ class RouteCurator(private val catalog: List<CuratorPlace>) {
             .minByOrNull { it.etaSeconds ?: 0 } ?: return CuratorTurn(next)
         val p = catalog.first { it.id == candidate.placeId }
         val close = candidate.nearby || candidate.etaSeconds in 0..30
-        val text = if(close) "${p.name} 근처야. ${p.question} ${p.observe} 안 보이면 듣기만 해도 좋아."
+        val text = if(close) "${p.name} 근처야.${point(candidate)} ${p.question} ${p.observe} 안 보이면 듣기만 해도 좋아."
             else "약 ${((requireNotNull(candidate.etaSeconds) + 59)/60).coerceAtLeast(1)}분 뒤에 ${p.name} 근처를 지나갈 거야. ${p.question}"
         return CuratorTurn(next.copy(phase = if(close) CuratorPhase.WATCH else CuratorPhase.PREDICT, currentId = p.id, etaSeconds = candidate.etaSeconds,
             visits = next.visits + PlaceMemory(p.id), message = text), text)
     }
+    /** Names the window only when the fixes are confident enough to name one. */
+    private fun point(approach: PlaceApproach) = approach.side.hint?.let { " $it" } ?: ""
+
     fun predict(state: CuratorState, guess: String): CuratorTurn {
         if (state.phase != CuratorPhase.PREDICT || guess.isBlank()) return CuratorTurn(state)
         val clean = guess.trim().take(160)

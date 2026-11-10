@@ -10,7 +10,12 @@ data class NaviFrame(val routeId: String, val sequence: Long, val nowMs: Long, v
 data class LiveDiscovery(val fix: CuratorFix, val timedCount: Int, val nearbyCount: Int)
 
 /** Only per-stop SDK ETAs may announce five minutes. Proximity never fabricates an ETA or visibility. */
-class LiveNavigation(private val places: List<LocatedPlace> = LivePlaces.all) {
+class LiveNavigation(private val placesSource: () -> List<LocatedPlace> = { LivePlaces.all }) {
+    /** A fixed list. The live journey's list grows when a guardian adds a place. */
+    constructor(places: List<LocatedPlace>) : this({ places })
+
+    private val places: List<LocatedPlace> get() = placesSource()
+
     private var routeId: String?=null
     private var sequence=-1L
     private var lastPosition: TimedPosition?=null
@@ -63,7 +68,9 @@ class LiveNavigation(private val places: List<LocatedPlace> = LivePlaces.all) {
             val nearby=position!=null && p.proximityEnabled && position.point.metersTo(p.anchor)<=p.radiusMeters
             val tracking=position!=null && track!=null && track.min<=p.radiusMeters && track.approached && track.passedAt==null
             if(stop==null && !nearby && !passed && !arrived && !tracking) return@mapNotNull null
-            PlaceApproach(p.id,stop?.etaSeconds,passed=passed,nearby=nearby,arrived=arrived)
+            // Which window to look through, from how the car actually moved between these two fixes.
+            val side=WindowDirection.of(previous,position,p.anchor)
+            PlaceApproach(p.id,stop?.etaSeconds,passed=passed,nearby=nearby,arrived=arrived,side=side)
         }
         return LiveDiscovery(CuratorFix(frame.routeId,frame.sequence,approaches),timed.size,approaches.count { it.nearby })
     }

@@ -26,8 +26,8 @@ import org.json.JSONObject
 /** The vehicle shell belongs to Pleos; only this app area is replaced. */
 class MainActivity : Activity() {
     private val handler = Handler(Looper.getMainLooper())
-    private val engine = RouteCurator(CuratorCatalog.places)
     private val album by lazy { FamilyAlbumStore(this) }
+    private val engine = RouteCurator { CuratorCatalog.places + album.load().ownCuratorPlaces() }
     private var state = CuratorState()
     private lateinit var voice: VoiceGuide
     private var drive: CuratorDriveService? = null
@@ -104,7 +104,7 @@ class MainActivity : Activity() {
     private val timer = object : Runnable {
         override fun run() {
             if (foreground && demo && playing && !restricted && dialog == null) {
-                demoTime = (demoTime + 10).coerceAtMost(selectedRoute.endSeconds)
+                demoTime = (demoTime + 10).coerceAtMost(selectedRoute.endSeconds(album.load().ownPlaceIds))
                 feedDemo()
             }
             if (foreground) handler.postDelayed(this, 1000L)
@@ -189,8 +189,9 @@ class MainActivity : Activity() {
     }
     private fun feedDemo() {
         if(!demo || live) return
-        apply(engine.tick(state, selectedRoute.fix(demoTime, ++sequence)))
-        if (demoTime >= selectedRoute.endSeconds) playing = false
+        val own = album.load().ownPlaceIds
+        apply(engine.tick(state, selectedRoute.fix(demoTime, ++sequence, own)))
+        if (demoTime >= selectedRoute.endSeconds(own)) playing = false
     }
 
     private fun jump(seconds: Int) { quiet(); demoTime = seconds; feedDemo() }
@@ -256,6 +257,7 @@ class MainActivity : Activity() {
         subline = label("경로에서 만나는 발견",20f,accent,true).also { left.addView(it) }
         scene = CuratorMediaPanel(this).also { left.addView(it,LinearLayout.LayoutParams(-1,dp(290))) }
         placeName = label("어떤 곳을 만나게 될까?",31f,ink,true).also { left.addView(it) }
+        scene.places={ CuratorCatalog.places+album.load().ownCuratorPlaces() }
         mediaButton=button("짧은 원리 영상 다시 보기") { scene.replay() }.apply { textSize=18f }
         left.addView(mediaButton,LinearLayout.LayoutParams(-1,dp(58)))
         gap(left,12); left.addView(label("예고 → 관찰 → 이야기 → 역할 놀이",19f,muted))
@@ -272,7 +274,9 @@ class MainActivity : Activity() {
         subline.text = if (state.phase==CuratorPhase.FINISHED) "오늘 지나온 발견" else state.etaSeconds?.let { if(it>0) "이 지점까지 약 ${(it+59)/60}분" else "이 지점 근처를 지났어요" } ?: "경로에서 만나는 발견"
         scene.visibility=if(restricted) View.INVISIBLE else View.VISIBLE
         scene.present(state, !restricted && foreground && dialog==null)
-        mediaButton.visibility=if(state.phase in setOf(CuratorPhase.EXPLAIN,CuratorPhase.PLAY,CuratorPhase.MEMORY)) View.VISIBLE else View.GONE
+        // A guardian's own place has no bundled film, so the button must not promise one.
+        val hasFilm=engine.place(state)?.mediaKey?.isNotBlank()==true
+        mediaButton.visibility=if(hasFilm && state.phase in setOf(CuratorPhase.EXPLAIN,CuratorPhase.PLAY,CuratorPhase.MEMORY)) View.VISIBLE else View.GONE
         val snapshot = listOf(state.phase,state.currentId,state.message,state.visits,restricted,connected,demo,live,playing,naviStatus,mic,state.routeValid,drive?.timedCount,drive?.nearbyCount)
         if(snapshot==lastCard) return
         lastCard=snapshot; val generation=++cardGeneration
@@ -315,6 +319,8 @@ class MainActivity : Activity() {
                 CuratorVisual.GLASS -> "뼈대와 유리벽은 역할이 달라요."
                 CuratorVisual.ISLAND -> "모래섬 위에 도시가 자랐어요."
                 CuratorVisual.RECIPE -> "가게의 이야기가 다음 사람에게 이어져요."
+                // A guardian's place has no headline of ours to give it. Theirs is the only true one.
+                CuratorVisual.FAMILY -> state.message
                 else -> "문을 지나면 어떤 세상이 펼쳐질까요?"
             }
             else -> state.message
@@ -421,14 +427,80 @@ class MainActivity : Activity() {
     private fun familyMenu() {
         playing=false
         val saved=album.load()
-        val places=CuratorCatalog.places
-        val labels=places.map { place ->
+        val places=saved.ownCuratorPlaces()+CuratorCatalog.places
+        val labels=(listOf("지금 여기를 기억해 두기")+places.map { place ->
             saved.of(place.id)?.let { "${place.name}  ·  ${it.whenLabel}" } ?: place.name
-        }.toTypedArray()
+        }).toTypedArray()
         show(AlertDialog.Builder(this).setTitle("가족이 함께 갔던 곳")
-            .setItems(labels) { _,index -> handler.post { familyEntry(places[index]) } }
+            .setItems(labels) { _,index -> handler.post {
+                if(index==0) rememberHere() else familyEntry(places[index-1])
+            } }
             .setNegativeButton("닫기",null).create())
     }
+    /**
+     * Saves where the car is standing as a place of the family's own. This is how a family gets
+     * past the app's six places without the app inventing anything: the guardian is parked at a
+     * place that matters to them, and every word of its story is theirs.
+     *
+     * The guardian menu only opens while the car is stopped, so this cannot be done on the move.
+     */
+    private fun rememberHere() {
+        playing=false
+        if(checkSelfPermission(android.Manifest.permission.ACCESS_FINE_LOCATION)!=PackageManager.PERMISSION_GRANTED) {
+            show(AlertDialog.Builder(this).setTitle("위치 권한이 필요해요")
+                .setMessage("지금 있는 곳을 저장하려면 위치 권한을 허용해 주세요. 저장한 위치는 차 안에만 남습니다.")
+                .setPositiveButton("닫기",null).create());return
+        }
+        val here=currentPoint()
+        if(here==null) {
+            show(AlertDialog.Builder(this).setTitle("아직 위치를 못 찾았어요")
+                .setMessage("차량 위치 설정을 켜고 잠시 뒤에 다시 눌러 주세요.")
+                .setPositiveButton("닫기",null).create());return
+        }
+        val column=LinearLayout(this).apply { orientation=LinearLayout.VERTICAL;setPadding(dp(24),dp(12),dp(24),0) }
+        column.addView(label("지금 차가 서 있는 곳을 우리 가족의 장소로 저장해요. 위치는 차 안에만 남아요.",19f,muted))
+        val name=EditText(this).apply {
+            hint="이곳을 뭐라고 부를까요. 예: 할머니 집"
+            textSize=21f
+            filters=arrayOf(android.text.InputFilter.LengthFilter(FamilyVisit.MAX_NAME))
+            importantForAutofill=View.IMPORTANT_FOR_AUTOFILL_NO
+        }
+        column.addView(name)
+        val choices=RadioGroup(this).apply { orientation=LinearLayout.VERTICAL }
+        FamilyVisit.WHEN_CHOICES.forEachIndexed { index,choice ->
+            choices.addView(RadioButton(this).apply { id=index+1;text=choice;textSize=21f;isChecked=index==0 })
+        }
+        column.addView(choices)
+        val note=EditText(this).apply {
+            hint="같이 무엇을 했는지 한 줄로 적어도 좋아요"
+            textSize=21f
+            filters=arrayOf(android.text.InputFilter.LengthFilter(FamilyVisit.MAX_NOTE))
+            importantForAutofill=View.IMPORTANT_FOR_AUTOFILL_NO
+        }
+        column.addView(note)
+        show(AlertDialog.Builder(this).setTitle("지금 여기를 기억해 두기").setView(column)
+            .setNegativeButton("닫기",null)
+            .setPositiveButton("저장하기") { _,_ -> handler.post {
+                val called=name.text.toString().trim()
+                if(called.isEmpty()) { status="이곳을 부를 이름을 적어 주세요.";render();return@post }
+                val picked=FamilyVisit.WHEN_CHOICES.getOrNull(choices.checkedRadioButtonId-1)
+                    ?: FamilyVisit.WHEN_CHOICES.first()
+                album.rememberHere(called,here,picked,note.text.toString().trim().takeIf(String::isNotEmpty))
+                status="${called}을 우리 가족의 장소로 저장했어요."
+                render()
+            } }.create())
+    }
+    /** Last known position only. This never starts its own location updates. */
+    private fun currentPoint(): GeoPoint? = runCatching {
+        val manager=getSystemService(android.location.LocationManager::class.java)
+        if(!manager.isLocationEnabled) return null
+        manager.getProviders(true)
+            .mapNotNull { provider -> manager.getLastKnownLocation(provider) }
+            .maxByOrNull { it.time }
+            ?.let { GeoPoint(it.latitude,it.longitude) }
+            ?.takeIf { it.valid() }
+    }.getOrNull()
+
     private fun familyEntry(place: CuratorPlace) {
         playing=false
         val existing=album.load().of(place.id)

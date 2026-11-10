@@ -54,9 +54,12 @@ object CuratorCatalog {
 
 data class CuratorDemoRoute(val id: String, val title: String, val subtitle: String, val placeIds: List<String>) {
     fun passageAt(index: Int) = 360 + index * 720
-    val endSeconds get() = passageAt(placeIds.lastIndex) + 180
-    fun fix(seconds: Int, sequence: Long) = CuratorFix(id, sequence, placeIds.mapIndexed { index,id ->
-        PlaceApproach(id, passageAt(index)-seconds, seconds>passageAt(index)) })
+    /** Guardian places join the end of the demo so a family's own place can be shown too. */
+    fun stops(alsoVisit: List<String> = emptyList()) = placeIds + alsoVisit.filter { it !in placeIds }
+    fun endSeconds(alsoVisit: List<String> = emptyList()) = passageAt(stops(alsoVisit).lastIndex) + 180
+    fun fix(seconds: Int, sequence: Long, alsoVisit: List<String> = emptyList()) =
+        CuratorFix(id, sequence, stops(alsoVisit).mapIndexed { index,id ->
+            PlaceApproach(id, passageAt(index)-seconds, seconds>passageAt(index)) })
 }
 object CuratorRoutes {
     val routes = listOf(

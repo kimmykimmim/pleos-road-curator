@@ -8,6 +8,11 @@ import dev.changbak.explorer.domain.*
 
 /** Code-drawn landmark sketch, not a photograph or a claim about the current camera view. */
 class CuratorSceneView(context: Context): View(context) {
+    /**
+     * Where to look a place up. A guardian's own place is not in the bundled catalog, and
+     * falling back to the catalog would draw it with another place's artwork.
+     */
+    var places: () -> List<CuratorPlace> = { CuratorCatalog.places }
     private var state = CuratorState()
     private var prior = state
     private var progress = 1f
@@ -24,12 +29,19 @@ class CuratorSceneView(context: Context): View(context) {
     }
     override fun onDetachedFromWindow() { animator?.cancel(); super.onDetachedFromWindow() }
     override fun onDraw(canvas: Canvas) {
-        if(progress<1f) { canvas.saveLayerAlpha(0f,0f,width.toFloat(),height.toFloat(),((1f-progress)*255).toInt()); drawScene(canvas,width.toFloat(),height.toFloat(),prior); canvas.restore() }
+        if(progress<1f) { canvas.saveLayerAlpha(0f,0f,width.toFloat(),height.toFloat(),((1f-progress)*255).toInt()); drawScene(canvas,width.toFloat(),height.toFloat(),prior,lookUp(prior)); canvas.restore() }
         canvas.saveLayerAlpha(0f,0f,width.toFloat(),height.toFloat(),(progress*255).toInt())
-        drawScene(canvas,width.toFloat(),height.toFloat(),state); canvas.restore()
+        drawScene(canvas,width.toFloat(),height.toFloat(),state,lookUp(state)); canvas.restore()
     }
+    private fun lookUp(value: CuratorState) = places().firstOrNull { it.id==value.currentId }
+
     companion object {
-        fun drawScene(c: Canvas,w: Float,h: Float,state: CuratorState) {
+        /**
+         * [place] is passed in rather than looked up here: a guardian's own place lives in their
+         * records, not in the bundled catalog, and defaulting would draw another place's artwork.
+         */
+        fun drawScene(c: Canvas,w: Float,h: Float,state: CuratorState,
+                      place: CuratorPlace? = CuratorCatalog.places.firstOrNull { it.id==state.currentId }) {
             val p=Paint(Paint.ANTI_ALIAS_FLAG)
             fun line(x1:Float,y1:Float,x2:Float,y2:Float,color:Int,width:Float) {
                 p.color=color;p.strokeWidth=width;p.strokeCap=Paint.Cap.ROUND;c.drawLine(x1,y1,x2,y2,p)
@@ -42,7 +54,6 @@ class CuratorSceneView(context: Context): View(context) {
                 p.color=teal;p.textAlign=Paint.Align.CENTER;p.textSize=h*.23f;p.typeface=Typeface.create("sans-serif",Typeface.BOLD)
                 c.drawText("?",w*.5f,h*.54f,p)
             } else {
-                val place=CuratorCatalog.places.firstOrNull { it.id==state.currentId }
                 val variant=state.visits.firstOrNull { it.placeId==state.currentId }?.activityId.orEmpty()
                 c.save();c.translate(0f,h*.03f);c.scale(1f,.82f)
                 val pose=when {

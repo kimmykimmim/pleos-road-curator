@@ -31,9 +31,12 @@ object CuratorMediaArt {
             CuratorVisual.ISLAND -> "모래섬에서 오늘의 도시까지"
             CuratorVisual.RECIPE -> "사람에서 사람으로 건너가는 이야기"
             CuratorVisual.GATE -> "도시의 아침을 여는 문"
+            CuratorVisual.FAMILY -> "우리 가족이 함께 왔던 곳"
         }
         text(titles,42f,56f,32f,ink,true)
-        text("원리를 간단하게 그린 설명용 모형",42f,89f,20f,muted)
+        // A guardian place is a memory, not a mechanism, so it is not labelled as a model of one.
+        text(if(kind==CuratorVisual.FAMILY) "보호자가 적어 둔 기억을 담은 표시"
+             else "원리를 간단하게 그린 설명용 모형",42f,89f,20f,muted)
         when(kind) {
             CuratorVisual.TOWER -> {
                 rect(90f,430f,530f,450f,Color.rgb(200,216,210))
@@ -129,6 +132,25 @@ object CuratorMediaArt {
                 rect(480f+46*open,345f,528f,425f,Color.rgb(148,113,83),2f)
                 dot(782f,163f,30f,gold)
                 text(if(variant=="greet") "오늘도 즐겁게 다녀오세요!" else "좋은 아침! 문을 열어요",282f,491f,28f,teal,true)
+            }
+            CuratorVisual.FAMILY -> {
+                // Deliberately not a building. Drawing one would be inventing what this place
+                // looks like, and the only true thing the app holds here is the guardian's line.
+                rect(250f,196f,710f,430f,Color.WHITE,28f)
+                rect(250f,196f,710f,252f,Color.rgb(119,163,157),28f)
+                rect(250f,236f,710f,252f,Color.rgb(119,163,157),0f)
+                for(i in 0..2) rect(296f,296f+i*44f,664f-i*96f,316f+i*44f,Color.rgb(222,234,230),10f)
+                val beat=1f+0.08f*sin(t*2f*PI.toFloat())
+                val heart=Path().apply {
+                    val cx=480f;val cy=404f;val s=34f*beat
+                    moveTo(cx,cy+s*0.9f)
+                    cubicTo(cx-s*1.6f,cy-s*0.2f,cx-s*0.7f,cy-s*1.2f,cx,cy-s*0.3f)
+                    cubicTo(cx+s*0.7f,cy-s*1.2f,cx+s*1.6f,cy-s*0.2f,cx,cy+s*0.9f)
+                    close()
+                }
+                p.color=gold;c.drawPath(heart,p)
+                dot(292f,224f,11f,Color.rgb(251,242,215))
+                text("오늘 이 길에서 다시 만났어요",286f,491f,26f,teal,true)
             }
         }
         if(variant=="own") chip("네가 더한 상상",635f,126f,260f)
