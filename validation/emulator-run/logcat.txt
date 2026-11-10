@@ -1,22 +1,25 @@
-11-10 01:24:35.416 I/CarAudioFocus(  998): Evaluating GAIN_TRANSIENT request for client android.media.AudioManager@1c5a680dev.changbak.explorer.audio.VoiceGuide$$ExternalSyntheticLambda16@e314b9 with usage USAGE_MEDIA
-11-10 01:24:35.417 I/CarAudioFocus(  998): onAudioFocusRequest for client android.media.AudioManager@1c5a680dev.changbak.explorer.audio.VoiceGuide$$ExternalSyntheticLambda16@e314b9 with gain type GAIN_TRANSIENT resulted in REQUEST_GRANTED
-11-10 01:24:35.425 I/GoogleTTSServiceImpl( 7782): Synthesis request for locale kor-KOR and name ko-kr-x-kod-local
-11-10 01:24:43.084 I/CarAudioFocus(  998): onAudioFocusAbandon for client android.media.AudioManager@1c5a680dev.changbak.explorer.audio.VoiceGuide$$ExternalSyntheticLambda16@e314b9
-11-10 01:24:43.084 I/CarAudioFocus(  998): removeFocusEntry android.media.AudioManager@1c5a680dev.changbak.explorer.audio.VoiceGuide$$ExternalSyntheticLambda16@e314b9
-11-10 01:25:02.562 I/CarAudioFocus(  998): Evaluating GAIN_TRANSIENT request for client android.media.AudioManager@1c5a680dev.changbak.explorer.audio.VoiceGuide$$ExternalSyntheticLambda16@bc8433b with usage USAGE_MEDIA
-11-10 01:25:02.564 I/CarAudioFocus(  998): onAudioFocusRequest for client android.media.AudioManager@1c5a680dev.changbak.explorer.audio.VoiceGuide$$ExternalSyntheticLambda16@bc8433b with gain type GAIN_TRANSIENT resulted in REQUEST_GRANTED
-11-10 01:25:02.574 I/GoogleTTSServiceImpl( 7782): Synthesis request for locale kor-KOR and name ko-kr-x-kod-local
-11-10 01:25:06.694 I/CarAudioFocus(  998): onAudioFocusAbandon for client android.media.AudioManager@1c5a680dev.changbak.explorer.audio.VoiceGuide$$ExternalSyntheticLambda16@bc8433b
-11-10 01:25:06.694 I/CarAudioFocus(  998): removeFocusEntry android.media.AudioManager@1c5a680dev.changbak.explorer.audio.VoiceGuide$$ExternalSyntheticLambda16@bc8433b
-11-10 01:25:06.695 I/CarAudioFocus(  998): Evaluating GAIN_TRANSIENT request for client android.media.AudioManager@1c5a680dev.changbak.explorer.audio.VoiceGuide$$ExternalSyntheticLambda16@1446d71 with usage USAGE_MEDIA
-11-10 01:25:06.695 I/CarAudioFocus(  998): onAudioFocusRequest for client android.media.AudioManager@1c5a680dev.changbak.explorer.audio.VoiceGuide$$ExternalSyntheticLambda16@1446d71 with gain type GAIN_TRANSIENT resulted in REQUEST_GRANTED
-11-10 01:25:06.697 I/GoogleTTSServiceImpl( 7782): Synthesis request for locale kor-KOR and name ko-kr-x-kod-local
-11-10 01:25:40.321 W/TextToSpeech( 7754): stop failed: not bound to TTS engine
-11-10 01:25:40.324 I/CarAudioFocus(  998): onAudioFocusAbandon for client android.media.AudioManager@1c5a680dev.changbak.explorer.audio.VoiceGuide$$ExternalSyntheticLambda16@1446d71
-11-10 01:25:40.324 I/CarAudioFocus(  998): removeFocusEntry android.media.AudioManager@1c5a680dev.changbak.explorer.audio.VoiceGuide$$ExternalSyntheticLambda16@1446d71
-11-10 01:25:40.408 I/CarAudioFocus(  998): Evaluating GAIN_TRANSIENT request for client android.media.AudioManager@1c5a680dev.changbak.explorer.audio.VoiceGuide$$ExternalSyntheticLambda16@b7d13d8 with usage USAGE_MEDIA
-11-10 01:25:40.408 I/CarAudioFocus(  998): onAudioFocusRequest for client android.media.AudioManager@1c5a680dev.changbak.explorer.audio.VoiceGuide$$ExternalSyntheticLambda16@b7d13d8 with gain type GAIN_TRANSIENT resulted in REQUEST_GRANTED
-11-10 01:25:40.410 W/TextToSpeech( 7754): playSilentUtterance failed: not bound to TTS engine
-11-10 01:25:40.410 W/TextToSpeech( 7754): stop failed: not bound to TTS engine
-11-10 01:25:40.411 I/CarAudioFocus(  998): onAudioFocusAbandon for client android.media.AudioManager@1c5a680dev.changbak.explorer.audio.VoiceGuide$$ExternalSyntheticLambda16@b7d13d8
-11-10 01:25:40.411 I/CarAudioFocus(  998): removeFocusEntry android.media.AudioManager@1c5a680dev.changbak.explorer.audio.VoiceGuide$$ExternalSyntheticLambda16@b7d13d8
+I/AndroidRuntime( 2807): Leaving lock profiling enabled
+D/AndroidRuntime( 2807): Calling main entry com.android.commands.uiautomator.Launcher
+I/ActivityTaskManager(  571): START u10 {flg=0x10000000 cmp=dev.changbak.explorer/.MainActivity} from uid 2000
+D/CoreBackPreview(  571): Window{c4b1cbc u10 Splash Screen dev.changbak.explorer}: Setting back callback OnBackInvokedCallbackInfo{mCallback=android.window.IOnBackInvokedCallback$Stub$Proxy@4ebf79a, mPriority=0}
+I/ActivityManager(  571): Start proc 3090:dev.changbak.explorer/u10a204 for next-top-activity {dev.changbak.explorer/dev.changbak.explorer.MainActivity}
+V/GraphicsEnvironment( 3090): ANGLE Developer option for 'dev.changbak.explorer' set to: 'default'
+V/GraphicsEnvironment( 3090): ANGLE GameManagerService for dev.changbak.explorer: false
+D/AndroidRuntime( 2807): Shutting down VM
+D/CoreBackPreview(  571): Window{79fff55 u10 dev.changbak.explorer/dev.changbak.explorer.MainActivity}: Setting back callback OnBackInvokedCallbackInfo{mCallback=android.window.IOnBackInvokedCallback$Stub$Proxy@2eb382f, mPriority=0}
+D/AndroidRuntime( 3161): >>>>>> START com.android.internal.os.RuntimeInit uid 2000 <<<<<<
+I/AndroidRuntime( 3161): Using default boot image
+I/AndroidRuntime( 3161): Leaving lock profiling enabled
+I/ActivityTaskManager(  571): Displayed dev.changbak.explorer/.MainActivity: +3s333ms
+V/RotaryController( 2272): onAccessibilityEvent: EventType: TYPE_WINDOW_STATE_CHANGED; EventTime: 30062; PackageName: dev.changbak.explorer; MovementGranularity: 0; Action: 0; ContentChangeTypes: []; WindowChangeTypes: [] [ ClassName: dev.changbak.explorer.MainActivity; Text: [길 위의 큐레이터]; ContentDescription: null; ItemCount: -1; CurrentItemIndex: -1; Enabled: true; Password: false; Checked: false; FullScreen: true; Scrollable: false; BeforeText: null; FromIndex: -1; ToIndex: -1; ScrollX: 0; ScrollY: 0; MaxScrollX: 0; MaxScrollY: 0; ScrollDeltaX: -1; ScrollDeltaY: -1; AddedCount: -1; RemovedCount: -1; ParcelableData: null ]; recordCount: 0
+V/RotaryController( 2272): event source: android.view.accessibility.AccessibilityNodeInfo@80006cd5; boundsInParent: Rect(0, 0 - 1080, 600); boundsInScreen: Rect(0, 0 - 1080, 600); packageName: dev.changbak.explorer; className: android.widget.FrameLayout; text: null; error: null; maxTextLength: -1; stateDescription: null; contentDescription: null; tooltipText: null; viewIdResName: null; uniqueId: null; checkable: false; checked: false; focusable: false; focused: false; selected: false; clickable: false; longClickable: false; contextClickable: false; enabled: true; password: false; scrollable: false; importantForAccessibility: true; visible: true; actions: [AccessibilityAction: ACTION_SELECT - null, AccessibilityAction: ACTION_CLEAR_SELECTION - null, AccessibilityAction: ACTION_ACCESSIBILITY_FOCUS - null, AccessibilityAction: ACTION_SHOW_ON_SCREEN - null]; isTextSelectable: false
+D/AndroidRuntime( 3161): Calling main entry com.android.commands.uiautomator.Launcher
+D/CoreBackPreview(  571): Window{c4b1cbc u10 Splash Screen dev.changbak.explorer EXITING}: Setting back callback null
+W/InputManager-JNI(  571): Input channel object 'c4b1cbc Splash Screen dev.changbak.explorer (client)' was disposed without first being removed with the input manager!
+D/AndroidRuntime( 3161): Shutting down VM
+D/AndroidRuntime( 3435): >>>>>> START com.android.internal.os.RuntimeInit uid 2000 <<<<<<
+I/AndroidRuntime( 3435): Using default boot image
+I/AndroidRuntime( 3435): Leaving lock profiling enabled
+D/AndroidRuntime( 3435): Calling main entry com.android.commands.uiautomator.Launcher
+D/ProfileInstaller( 3090): Installing profile for dev.changbak.explorer
+D/AndroidRuntime( 3435): Shutting down VM

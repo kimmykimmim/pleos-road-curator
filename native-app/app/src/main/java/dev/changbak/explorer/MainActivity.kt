@@ -364,7 +364,14 @@ class MainActivity : Activity() {
         card.addView(label(guess+observed+"\n"+(memory.activityLabel ?: "다음에 해 볼 놀이로 남겼어"),21f,muted)); gap(card,18)
     }
     private fun show(next: AlertDialog) {
-        if(!usable()) return
+        // A guardian-menu item opens its screen from a posted runnable. The list dialog's own
+        // dismiss callback is queued after that runnable, so `dialog` still holds the closing
+        // menu when the new screen asks to open. usable() would read that as "a dialog is
+        // already up" and drop the screen without a word, which is what hid every guardian
+        // screen behind the menu. Replace the open dialog here instead of refusing.
+        if(!foreground || !connected || restricted) return
+        // Drop the old listener first: once it runs it would clear the dialog we just stored.
+        dialog?.let { previous -> previous.setOnDismissListener(null); previous.dismiss() }
         quiet();drive?.suppress(true);handler.removeCallbacks(roleIdle);scene.stop();dialog=next
         next.setOnDismissListener { if(dialog===next) { dialog=null;drive?.suppress(false);render();armRoleIdle() } }; next.show()
     }

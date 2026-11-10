@@ -1,0 +1,263 @@
+--------- beginning of main
+11-10 02:19:13.316 12938 13159 D CCodecBufferChannel: [c2.android.vorbis.decoder#398] Configured output block pool ids 54 => OK
+11-10 02:19:13.318   416 13161 D SimpleC2Component: Using output block pool with poolID 54 => got 54 - 0
+11-10 02:19:13.334 12938 13159 D CCodecBufferChannel: [c2.android.vorbis.decoder#398] MediaCodec discarded an unknown buffer
+11-10 02:19:13.335 12938 13159 D CCodecBufferChannel: [c2.android.vorbis.decoder#398] MediaCodec discarded an unknown buffer
+11-10 02:19:13.335 12938 13159 D CCodecBufferChannel: [c2.android.vorbis.decoder#398] MediaCodec discarded an unknown buffer
+11-10 02:19:13.340 12938 13159 I hw-BpHwBinder: onLastStrongRef automatically unlinking death recipients
+11-10 02:19:13.340   416   958 I hw-BpHwBinder: onLastStrongRef automatically unlinking death recipients
+11-10 02:19:13.341 12938 13180 E system_server: Can't open file: /sys/kernel/ion/total_heaps_kb
+11-10 02:19:13.341 12938 13180 E system_server: Can't open file: /sys/kernel/ion/total_pools_kb
+11-10 02:19:13.342 12938 13118 D MediaCodec: flushMediametrics
+11-10 02:19:13.342 12938 13160 D CCodecBufferChannel: [c2.android.vorbis.decoder#443] MediaCodec discarded an unknown buffer
+11-10 02:19:13.345   416 12826 I hw-BpHwBinder: onLastStrongRef automatically unlinking death recipients
+11-10 02:19:13.345   416 12826 I hw-BpHwBinder: onLastStrongRef automatically unlinking death recipients
+11-10 02:19:13.345   416 12826 V C2Store : in ~ComponentModule
+11-10 02:19:13.345   416 12826 V C2Store : unloading dll
+11-10 02:19:13.345 12938 13160 I hw-BpHwBinder: onLastStrongRef automatically unlinking death recipients
+11-10 02:19:13.345 12938 13117 D MediaCodec: flushMediametrics
+11-10 02:19:13.354 12938 13118 D MediaCodecList: codecHandlesFormat: no format, so no extra checks
+11-10 02:19:13.355 12938 13183 D CCodec  : allocate(c2.android.vorbis.decoder)
+11-10 02:19:13.357 13170 13170 I WebViewZygoteInit: Beginning application preload for com.google.android.webview
+11-10 02:19:13.357 12938 13183 I CCodec  : setting up 'default' as default (vendor) store
+11-10 02:19:13.358   416 12826 V C2Store : in init
+11-10 02:19:13.358   416 12826 V C2Store : loading dll
+11-10 02:19:13.359 13170 13170 W ziparchive: Unable to open '/product/app/TrichromeLibrary/TrichromeLibrary.dm': No such file or directory
+11-10 02:19:13.359 12938 13183 I CCodec  : Created component [c2.android.vorbis.decoder]
+11-10 02:19:13.359 13170 13170 W ziparchive: Unable to open '/product/app/TrichromeLibrary/TrichromeLibrary.dm': No such file or directory
+11-10 02:19:13.359 12938 13183 D CCodecConfig: read media type: audio/vorbis
+11-10 02:19:13.359 13170 13170 W webview_zygote: Entry not found
+11-10 02:19:13.359 12938 13183 D ReflectedParamUpdater: extent() != 1 for single value type: algo.buffers.max-count.values
+11-10 02:19:13.360 13170 13170 D nativeloader: classloader namespace configured for unbundled product apk. library_path=/product/app/WebViewGoogle/lib/arm64:/product/app/WebViewGoogle/WebViewGoogle.apk!/lib/arm64-v8a:/product/app/TrichromeLibrary/TrichromeLibrary.apk!/lib/arm64-v8a:/product/lib64:/system/product/lib64
+11-10 02:19:13.360 12938 13183 D ReflectedParamUpdater: extent() != 1 for single value type: output.subscribed-indices.values
+11-10 02:19:13.360 12938 13183 D ReflectedParamUpdater: extent() != 1 for single value type: input.buffers.allocator-ids.values
+11-10 02:19:13.360 12938 13183 D ReflectedParamUpdater: extent() != 1 for single value type: output.buffers.allocator-ids.values
+11-10 02:19:13.360 12938 13183 D ReflectedParamUpdater: extent() != 1 for single value type: algo.buffers.allocator-ids.values
+11-10 02:19:13.361 12938 13183 D ReflectedParamUpdater: extent() != 1 for single value type: output.buffers.pool-ids.values
+11-10 02:19:13.361 12938 13183 D ReflectedParamUpdater: extent() != 1 for single value type: algo.buffers.pool-ids.values
+11-10 02:19:13.362 13170 13170 D nativeloader: classloader namespace configured for unbundled product apk. library_path=/product/app/WebViewGoogle/lib/arm64:/product/app/WebViewGoogle/WebViewGoogle.apk!/lib/arm64-v8a:/product/app/TrichromeLibrary/TrichromeLibrary.apk!/lib/arm64-v8a:/product/lib64:/system/product/lib64
+11-10 02:19:13.364 12938 13183 I CCodecConfig: query failed after returning 7 values (BAD_INDEX)
+11-10 02:19:13.364 12938 13183 D CCodecConfig: c2 config diff is Dict {
+11-10 02:19:13.364 12938 13183 D CCodecConfig:   c2::u32 coded.bitrate.value = 64000
+11-10 02:19:13.364 12938 13183 D CCodecConfig:   c2::u32 input.buffers.max-size.value = 32768
+11-10 02:19:13.364 12938 13183 D CCodecConfig:   c2::u32 input.delay.value = 0
+11-10 02:19:13.364 12938 13183 D CCodecConfig:   string input.media-type.value = "audio/vorbis"
+11-10 02:19:13.364 12938 13183 D CCodecConfig:   string output.media-type.value = "audio/raw"
+11-10 02:19:13.364 12938 13183 D CCodecConfig:   c2::u32 raw.channel-count.value = 1
+11-10 02:19:13.364 12938 13183 D CCodecConfig:   c2::u32 raw.sample-rate.value = 48000
+11-10 02:19:13.364 12938 13183 D CCodecConfig: }
+11-10 02:19:13.364 12938 13183 D MediaCodec: flushMediametrics
+11-10 02:19:13.365 12938 13183 D CCodec  : [c2.android.vorbis.decoder] buffers are bound to CCodec for this session
+11-10 02:19:13.365 12938 13183 D CCodecConfig: no c2 equivalents for durationUs
+11-10 02:19:13.365 12938 13183 D CCodecConfig: no c2 equivalents for track-id
+11-10 02:19:13.365 12938 13183 D CCodecConfig: no c2 equivalents for csd-1
+11-10 02:19:13.365 12938 13183 D CCodecConfig: no c2 equivalents for flags
+11-10 02:19:13.366 12938 13183 D CCodecConfig: c2 config diff is   c2::u32 coded.bitrate.value = 239920
+11-10 02:19:13.366 12938 13183 D CCodecConfig:   c2::u32 raw.sample-rate.value = 44100
+11-10 02:19:13.367 12938 13183 W Codec2Client: query -- param skipped: index = 1107298332.
+11-10 02:19:13.367 12938 13183 D CCodec  : encoding statistics level = 0
+11-10 02:19:13.367 12938 13183 D CCodec  : setup formats input: AMessage(what = 0x00000000) = {
+11-10 02:19:13.367 12938 13183 D CCodec  :   int32_t bitrate = 239920
+11-10 02:19:13.367 12938 13183 D CCodec  :   int32_t channel-count = 1
+11-10 02:19:13.367 12938 13183 D CCodec  :   int32_t max-input-size = 32768
+11-10 02:19:13.367 12938 13183 D CCodec  :   string mime = "audio/vorbis"
+11-10 02:19:13.367 12938 13183 D CCodec  :   int32_t sample-rate = 44100
+11-10 02:19:13.367 12938 13183 D CCodec  : }
+11-10 02:19:13.367 12938 13183 D CCodec  : setup formats output: AMessage(what = 0x00000000) = {
+11-10 02:19:13.367 12938 13183 D CCodec  :   int32_t channel-count = 1
+11-10 02:19:13.367 12938 13183 D CCodec  :   string mime = "audio/raw"
+11-10 02:19:13.367 12938 13183 D CCodec  :   int32_t sample-rate = 44100
+11-10 02:19:13.367 12938 13183 D CCodec  :   int32_t channel-mask = 1
+11-10 02:19:13.367 12938 13183 D CCodec  :   int32_t android._config-pcm-encoding = 2
+11-10 02:19:13.367 12938 13183 D CCodec  : }
+11-10 02:19:13.367 12938 13183 I CCodecConfig: query failed after returning 7 values (BAD_INDEX)
+11-10 02:19:13.367 13170 13170 I WebViewZygoteInit: Application preload done
+11-10 02:19:13.368 12938 13183 W Codec2Client: query -- param skipped: index = 1342179345.
+--------- beginning of system
+11-10 02:19:13.368 12938 13180 I ActivityManager: Low on memory:
+11-10 02:19:13.369 12938 13180 I ActivityManager:   ntv   ??   71552: zygote64 (pid 12841) native
+11-10 02:19:13.369 12938 13180 I ActivityManager:   ntv   ??   47914: uiautomator (pid 12774) native
+11-10 02:19:13.369 12938 13180 I ActivityManager:   ntv   ??   20142: surfaceflinger (pid 365) native
+11-10 02:19:13.369 12938 13180 I ActivityManager:   ntv   ??   15684: android.hardware.graphics.composer@2.4-service (pid 343) native
+11-10 02:19:13.369 12938 13180 I ActivityManager:   ntv   ??   15156: audioserver (pid 12842) native
+11-10 02:19:13.369 12938 13180 I ActivityManager:   ntv   ??   11713: media.swcodec (pid 416) native
+11-10 02:19:13.369 12938 13180 I ActivityManager:   ntv   ??   11236: cameraserver (pid 12845) native
+11-10 02:19:13.369 12938 13180 I ActivityManager:   ntv   ??   11125: android.hardware.media.c2@1.0-service-goldfish (pid 345) native
+11-10 02:19:13.369 12938 13180 I ActivityManager:   ntv   ??    8553: mediaserver (pid 12846) native
+11-10 02:19:13.369 12938 13180 I ActivityManager:   ntv   ??    6944: android.hardware.audio.service-caremu (pid 12849) native
+11-10 02:19:13.369 12938 13180 I ActivityManager:   ntv   ??    6550: media.extractor (pid 410) native
+11-10 02:19:13.369 12938 13180 I ActivityManager:   ntv   ??    5844: netd (pid 12847) native
+11-10 02:19:13.369 12938 13180 I ActivityManager:   ntv   ??    5660: android.hardware.graphics.allocator@3.0-service (pid 342) native
+11-10 02:19:13.369 12938 13180 I ActivityManager:   ntv   ??    5294: media.metrics (pid 411) native
+11-10 02:19:13.369 12938 13180 I ActivityManager:   ntv   ??    4871: android.hardware.camera.provider@2.7-service-google (pid 334) native
+11-10 02:19:13.369 12938 13180 I ActivityManager:   ntv   ??    4420: logd (pid 141) native
+11-10 02:19:13.369 12938 13180 I ActivityManager:   ntv   ??    4312: apexd (pid 12964) native
+11-10 02:19:13.369 12938 13180 I ActivityManager:   ntv   ??    4113: init (pid 1) native
+11-10 02:19:13.369 12938 13180 I ActivityManager:   ntv   ??    3605: android.hardware.wifi@1.0-service (pid 352) native
+11-10 02:19:13.369 12938 13180 I ActivityManager:   ntv   ??    3397: keystore2 (pid 175) native
+11-10 02:19:13.369 12938 13180 I ActivityManager:   ntv   ??    3229: carwatchdogd (pid 161) native
+11-10 02:19:13.369 12938 13180 I ActivityManager:   ntv   ??    3066: adbd (pid 394) native
+11-10 02:19:13.369 12938 13180 I ActivityManager:   ntv   ??    2845: libgoldfish-rild (pid 415) native
+11-10 02:19:13.369 12938 13180 I ActivityManager:   ntv   ??    2831: android.hardware.camera.provider@2.4-service_64 (pid 333) native
+11-10 02:19:13.369 12938 13180 I ActivityManager:   ntv   ??    2637: vold (pid 165) native
+11-10 02:19:13.369 12938 13180 I ActivityManager:   ntv   ??    2599: statsd (pid 322) native
+11-10 02:19:13.369 12938 13180 I ActivityManager:   ntv   ??    2564: android.hardware.automotive.vehicle@V1-emulator-service (pid 180) native
+11-10 02:19:13.369 12938 13180 I ActivityManager:   ntv   ??    2468: installd (pid 409) native
+11-10 02:19:13.369 12938 13180 I ActivityManager:   ntv   ??    2264: wificond (pid 12848) native
+11-10 02:19:13.369 12938 13180 I ActivityManager:   ntv   ??    2042: init (pid 93) native
+11-10 02:19:13.369 12938 13180 I ActivityManager:   ntv   ??    2010: ueventd (pid 95) native
+11-10 02:19:13.369 12938 13180 I ActivityManager:   ntv   ??    1896: drmserver (pid 400) native
+11-10 02:19:13.369 12938 13180 I ActivityManager:   ntv   ??    1657: android.hardware.neuralnetworks@1.3-service-sample-limited (pid 347) native
+11-10 02:19:13.369 12938 13180 I ActivityManager:   ntv   ??    1655: android.hardware.sensors@2.1-service.multihal (pid 349) native
+11-10 02:19:13.369 12938 13180 I ActivityManager:   ntv   ??    1644: gpuservice (pid 362) native
+11-10 02:19:13.369 12938 13180 I ActivityManager:   ntv   ??    1594: servicemanager (pid 143) native
+11-10 02:19:13.369 12938 13180 I ActivityManager:   ntv   ??    1593: hwservicemanager (pid 144) native
+11-10 02:19:13.369 12938 13180 I ActivityManager:   ntv   ??    1574: android.hardware.neuralnetworks@1.3-service-sample-all (pid 346) native
+11-10 02:19:13.369 12938 13180 I ActivityManager:   ntv   ??    1515: android.hardware.drm-service.widevine (pid 338) native
+11-10 02:19:13.369 12938 13180 I ActivityManager:   ntv   ??    1450: android.system.suspend@1.0-service (pid 173) native
+11-10 02:19:13.369 12938 13180 I ActivityManager:   ntv   ??    1425: storaged (pid 413) native
+11-10 02:19:13.369 12938 13180 I ActivityManager:   ntv   ??    1386: android.hardware.security.keymint-service (pid 177) native
+11-10 02:19:13.369 12938 13180 I ActivityManager:   ntv   ??    1285: credstore (pid 361) native
+11-10 02:19:13.369 12938 13180 I ActivityManager:   ntv   ??    1189: android.hardware.health@2.1-service (pid 344) native
+11-10 02:19:13.369 12938 13180 I ActivityManager:   ntv   ??    1188: android.hardware.drm@1.4-service.clearkey (pid 340) native
+11-10 02:19:13.369 12938 13180 I ActivityManager:   ntv   ??    1172: android.hardware.broadcastradio@2.0-service (pid 332) native
+11-10 02:19:13.369 12938 13180 I ActivityManager:   ntv   ??    1123: prng_seeder (pid 139) native
+11-10 02:19:13.369 12938 13180 I ActivityManager:   ntv   ??    1092: android.hardware.drm@1.0-service (pid 339) native
+11-10 02:19:13.369 12938 13180 I ActivityManager:   ntv   ??    1088: ip6tables-restore (pid 12854) native
+11-10 02:19:13.369 12938 13180 I ActivityManager:   ntv   ??    1085: iptables-restore (pid 12853) native
+11-10 02:19:13.369 12938 13180 I ActivityManager:   ntv   ??    1082: mdnsd (pid 430) native
+11-10 02:19:13.369 12938 13180 I ActivityManager:   ntv   ??    1055: carpowerpolicyd (pid 174) native
+11-10 02:19:13.369 12938 13180 I ActivityManager:   ntv   ??    1052: lmkd (pid 142) native
+11-10 02:19:13.369 12938 13180 I ActivityManager:   ntv   ??    1036: android.hardware.bluetooth@1.1-service.btlinux (pid 331) native
+11-10 02:19:13.369 12938 13180 I ActivityManager:   ntv   ??    1019: android.hardware.cas@1.2-service (pid 335) native
+11-10 02:19:13.369 12938 13180 I ActivityManager:   ntv   ??    1018: gatekeeperd (pid 420) native
+11-10 02:19:13.369 12938 13180 I ActivityManager:   ntv   ??    1013: android.hardware.thermal@2.0-service.mock (pid 350) native
+11-10 02:19:13.369 12938 13180 I ActivityManager:   ntv   ??    1013: incidentd (pid 408) native
+11-10 02:19:13.369 12938 13180 I ActivityManager:   ntv   ??     959: android.hardware.vibrator-service.example (pid 357) native
+11-10 02:19:13.369 12938 13180 I ActivityManager:   ntv   ??     954: sh (pid 12772) native
+11-10 02:19:13.369 12938 13180 I ActivityManager:   ntv   ??     947: android.hardware.usb@1.0-service (pid 351) native
+11-10 02:19:13.369 12938 13180 I ActivityManager:   ntv   ??     917: android.hardware.drm-service.clearkey (pid 337) native
+11-10 02:19:13.369 12938 13180 I ActivityManager:   ntv   ??     908: android.hardware.power.stats@1.0-service.mock (pid 348) native
+11-10 02:19:13.369 12938 13180 I ActivityManager:   ntv   ??     901: logcat (pid 404) native
+11-10 02:19:13.369 12938 13180 I ActivityManager:   ntv   ??     896: android.hardware.identity-service.example (pid 353) native
+11-10 02:19:13.369 12938 13180 I ActivityManager:   ntv   ??     889: abb (pid 1896) native
+11-10 02:19:13.369 12938 13180 I ActivityManager:   ntv   ??     886: android.hardware.biometrics.fingerprint@2.1-service (pid 429) native
+11-10 02:19:13.369 12938 13180 I ActivityManager:   ntv   ??     865: android.hardware.gatekeeper@1.0-service.software (pid 341) native
+11-10 02:19:13.369 12938 13180 I ActivityManager:   ntv   ??     862: android.hardware.power-service.example (pid 355) native
+11-10 02:19:13.369 12938 13180 I ActivityManager:   ntv   ??     846: android.hardware.authsecret@1.0-service (pid 330) native
+11-10 02:19:13.369 12938 13180 I ActivityManager:   ntv   ??     846: android.hardware.lights-service.example (pid 354) native
+11-10 02:19:13.369 12938 13180 I ActivityManager:   ntv   ??     842: android.hardware.atrace@1.0-service (pid 176) native
+11-10 02:19:13.369 12938 13180 I ActivityManager:   ntv   ??     817: com.android.car.procfsinspector (pid 1307) native
+11-10 02:19:13.369 12938 13180 I ActivityManager:   ntv   ??     811: android.hardware.biometrics.face@1.0-service.example (pid 428) native
+11-10 02:19:13.369 12938 13180 I ActivityManager:   ntv   ??     804: android.hardware.contexthub@1.1-service.mock (pid 336) native
+11-10 02:19:13.369 12938 13180 I ActivityManager:   ntv   ??     785: android.hardware.rebootescrow-service.default (pid 356) native
+11-10 02:19:13.369 12938 13180 I ActivityManager:   ntv   ??     779: traced (pid 402) native
+11-10 02:19:13.369 12938 13180 I ActivityManager:   ntv   ??     755: android.hidl.allocator@1.0-service (pid 328) native
+11-10 02:19:13.369 12938 13180 I ActivityManager:   ntv   ??     748: traced_probes (pid 401) native
+11-10 02:19:13.369 12938 13180 I ActivityManager:   ntv   ??     719: tombstoned (pid 228) native
+11-10 02:19:13.369 12938 13180 I ActivityManager:   ntv   ??     708: qemu-props (pid 160) native
+11-10 02:19:13.369 12938 13180 I ActivityManager:   ntv   ??     614: bt_vhci_forwarder (pid 405) native
+11-10 02:19:13.369 12938 13180 I ActivityManager:   ntv   ??     613: dhcpclient (pid 317) native
+11-10 02:19:13.369 12938 13180 I ActivityManager:   sys    PER   152991: system (pid 12938) fixed
+11-10 02:19:13.369 12938 13180 I ActivityManager:             505201: TOTAL
+11-10 02:19:13.369 12938 13180 I ActivityManager:   MemInfo:   154,552K slab,     2,864K shmem,    33,516K vm alloc,    22,376K page tables    11,216K kernel stack
+11-10 02:19:13.369 12938 13180 I ActivityManager:               39,324K buffers,   771,336K cached,   250,344K mapped,   640,400K free
+11-10 02:19:13.369 12938 13180 I ActivityManager:   ZRAM:    26,224K RAM, 1,508,948K swap total, 1,418,068K swap free
+11-10 02:19:13.369 12938 13180 I ActivityManager:   Free RAM: 1,324,340K
+11-10 02:19:13.369 12938 13180 I ActivityManager: DMA-BUF:         0K
+11-10 02:19:13.369 12938 13180 I ActivityManager: DMA-BUF Heap:         0K
+11-10 02:19:13.369 12938 13180 I ActivityManager: DMA-BUF Heaps pool:    49,664K
+11-10 02:19:13.369 12938 13180 I ActivityManager:        GPU:         0K
+11-10 02:19:13.369 12938 13180 I ActivityManager:   Used RAM:   644,321K
+11-10 02:19:13.369 12938 13180 I ActivityManager:   Lost RAM:   105,491K
+11-10 02:19:13.369 12938 13183 W Codec2Client: query -- param skipped: index = 2415921170.
+11-10 02:19:13.369 12938 13183 D CCodecBufferChannel: [c2.android.vorbis.decoder#746] Created input block pool with allocatorID 16 => poolID 22 - OK (0)
+11-10 02:19:13.371 12938 13180 W PackageManager: Default package for ROLE_HOME is not set in RoleManager
+11-10 02:19:13.371 12938 13183 I CCodecBufferChannel: [c2.android.vorbis.decoder#746] Created output block pool with allocatorID 16 => poolID 55 - OK
+11-10 02:19:13.371 12938 13183 D CCodecBufferChannel: [c2.android.vorbis.decoder#746] Configured output block pool ids 55 => OK
+11-10 02:19:13.372 12938 13180 I DropBoxManagerService: add tag=system_server_lowmem isTagEnabled=true flags=0x6
+11-10 02:19:13.375   416 13184 D SimpleC2Component: Using output block pool with poolID 55 => got 55 - 0
+11-10 02:19:13.412 12938 13183 D CCodecBufferChannel: [c2.android.vorbis.decoder#746] MediaCodec discarded an unknown buffer
+11-10 02:19:13.413 12938 13183 D CCodecBufferChannel: [c2.android.vorbis.decoder#746] MediaCodec discarded an unknown buffer
+11-10 02:19:13.413 12938 13183 D CCodecBufferChannel: [c2.android.vorbis.decoder#746] MediaCodec discarded an unknown buffer
+11-10 02:19:13.415 12938 13183 I hw-BpHwBinder: onLastStrongRef automatically unlinking death recipients
+11-10 02:19:13.415   416 12826 I hw-BpHwBinder: onLastStrongRef automatically unlinking death recipients
+11-10 02:19:13.415   416 12826 I hw-BpHwBinder: onLastStrongRef automatically unlinking death recipients
+11-10 02:19:13.416   416 12826 V C2Store : in ~ComponentModule
+11-10 02:19:13.416   416 12826 V C2Store : unloading dll
+11-10 02:19:13.416 12938 13118 D MediaCodec: flushMediametrics
+11-10 02:19:13.575   416   945 D BufferPoolAccessor2.0: evictor expired: 6, evicted: 0
+11-10 02:19:14.922 12938 13055 I WifiClientModeImpl[wlan0]: disconnectedstate enter
+11-10 02:19:14.922 12938 13055 W WifiConnectivityManager: mConnectedSingleSavedNetworkSingleScanScheduleSec is not configured! Using default scan schedule
+11-10 02:19:14.922 12938 13055 W WifiConnectivityManager: mConnectedSingleSavedNetworkSingleScanType is not configured! Using default scan types
+11-10 02:19:15.626   143   143 I servicemanager: Notifying apexservice they have clients: 1
+11-10 02:19:15.626   143   143 I servicemanager: Notifying apexservice they have clients: 0
+11-10 02:19:15.627   143   143 I BpBinder: onLastStrongRef automatically unlinking death recipients: <uncached descriptor>
+--------- beginning of kernel
+11-10 02:19:15.643 12965 12965 I AidlLazyServiceRegistrar: Process has 1 (of 1 available) client(s) in use after notification apexservice has clients: 1
+11-10 02:19:15.643 12965 12965 I AidlLazyServiceRegistrar: Process has 0 (of 1 available) client(s) in use after notification apexservice has clients: 0
+11-10 02:19:15.643 12965 12965 I AidlLazyServiceRegistrar: Trying to shut down the service. No clients in use for any service in process.
+11-10 02:19:15.643 12965 12965 I AidlLazyServiceRegistrar: Unregistered all clients and exiting
+11-10 02:19:15.645     1     1 I init    : Service 'apexd' (pid 12964) exited with status 0 oneshot service took 4.654000 seconds in background
+11-10 02:19:15.645     1     1 I init    : Sending signal 9 to service 'apexd' (pid 12964) process group...
+11-10 02:19:15.645     1     1 I libprocessgroup: Successfully killed process cgroup uid 0 pid 12964 in 0ms
+11-10 02:19:16.005 12938 13071 I AS.AudioDeviceInventory: removePreferredDevicesForStrategySync, strategy: 15
+11-10 02:19:16.005 12938 13071 I AS.AudioDeviceInventory: removePreferredDevicesForStrategySync, strategy: 18
+11-10 02:19:17.662 12774 12774 D AndroidRuntime: Shutting down VM
+--------- beginning of crash
+11-10 02:19:17.664 12774 12774 E AndroidRuntime: FATAL EXCEPTION: main
+11-10 02:19:17.664 12774 12774 E AndroidRuntime: PID: 12774
+11-10 02:19:17.664 12774 12774 E AndroidRuntime: java.lang.RuntimeException: java.util.concurrent.TimeoutException: Timeout while connecting UiAutomation@2ac989c[id=-1, flags=0]
+11-10 02:19:17.664 12774 12774 E AndroidRuntime: 	at android.app.UiAutomation.connect(UiAutomation.java:283)
+11-10 02:19:17.664 12774 12774 E AndroidRuntime: 	at com.android.uiautomator.core.UiAutomationShellWrapper.connect(UiAutomationShellWrapper.java:31)
+11-10 02:19:17.664 12774 12774 E AndroidRuntime: 	at com.android.commands.uiautomator.DumpCommand.run(DumpCommand.java:78)
+11-10 02:19:17.664 12774 12774 E AndroidRuntime: 	at com.android.commands.uiautomator.Launcher.main(Launcher.java:83)
+11-10 02:19:17.664 12774 12774 E AndroidRuntime: 	at com.android.internal.os.RuntimeInit.nativeFinishInit(Native Method)
+11-10 02:19:17.664 12774 12774 E AndroidRuntime: 	at com.android.internal.os.RuntimeInit.main(RuntimeInit.java:355)
+11-10 02:19:17.664 12774 12774 E AndroidRuntime: Caused by: java.util.concurrent.TimeoutException: Timeout while connecting UiAutomation@2ac989c[id=-1, flags=0]
+11-10 02:19:17.664 12774 12774 E AndroidRuntime: 	at android.app.UiAutomation.connectWithTimeout(UiAutomation.java:351)
+11-10 02:19:17.664 12774 12774 E AndroidRuntime: 	at android.app.UiAutomation.connect(UiAutomation.java:281)
+11-10 02:19:17.664 12774 12774 E AndroidRuntime: 	... 5 more
+11-10 02:19:17.668 12774 12774 E AndroidRuntime: Error reporting crash
+11-10 02:19:17.668 12774 12774 E AndroidRuntime: java.lang.RuntimeException: Bad file descriptor
+11-10 02:19:17.668 12774 12774 E AndroidRuntime: 	at android.os.BinderProxy.transactNative(Native Method)
+11-10 02:19:17.668 12774 12774 E AndroidRuntime: 	at android.os.BinderProxy.transact(BinderProxy.java:584)
+11-10 02:19:17.668 12774 12774 E AndroidRuntime: 	at android.os.IServiceManager$Stub$Proxy.checkService(IServiceManager.java:421)
+11-10 02:19:17.668 12774 12774 E AndroidRuntime: 	at android.os.ServiceManagerProxy.getService(ServiceManagerNative.java:63)
+11-10 02:19:17.668 12774 12774 E AndroidRuntime: 	at android.os.ServiceManager.rawGetService(ServiceManager.java:372)
+11-10 02:19:17.668 12774 12774 E AndroidRuntime: 	at android.os.ServiceManager.getService(ServiceManager.java:147)
+11-10 02:19:17.668 12774 12774 E AndroidRuntime: 	at android.app.ActivityManager$1.create(ActivityManager.java:4690)
+11-10 02:19:17.668 12774 12774 E AndroidRuntime: 	at android.app.ActivityManager$1.create(ActivityManager.java:4687)
+11-10 02:19:17.668 12774 12774 E AndroidRuntime: 	at android.util.Singleton.get(Singleton.java:43)
+11-10 02:19:17.668 12774 12774 E AndroidRuntime: 	at android.app.ActivityManager.getService(ActivityManager.java:4678)
+11-10 02:19:17.668 12774 12774 E AndroidRuntime: 	at com.android.internal.os.RuntimeInit$KillApplicationHandler.uncaughtException(RuntimeInit.java:156)
+11-10 02:19:17.668 12774 12774 E AndroidRuntime: 	at java.lang.ThreadGroup.uncaughtException(ThreadGroup.java:1073)
+11-10 02:19:17.668 12774 12774 E AndroidRuntime: 	at java.lang.ThreadGroup.uncaughtException(ThreadGroup.java:1068)
+11-10 02:19:17.668 12774 12774 E AndroidRuntime: 	at java.lang.Thread.dispatchUncaughtException(Thread.java:2306)
+11-10 02:19:17.668 12774 12774 I Process : Sending signal. PID: 12774 SIG: 9
+11-10 02:19:17.720 12938 12956 W WindowManager: Keyguard drawn timeout. Setting mKeyguardDrawComplete
+11-10 02:19:18.149 12938 13127 D BufferPoolAccessor2.0: bufferpool2 0xb40000781926bf38 : 0(0 size) total buffers - 0(0 size) used buffers - 2/7 (recycle/alloc) - 5/24 (fetch/transfer)
+11-10 02:19:18.149 12938 13127 D BufferPoolAccessor2.0: evictor expired: 1, evicted: 1
+11-10 02:19:18.582   416   945 D BufferPoolAccessor2.0: bufferpool2 0xb400006f9c204cb8 : 0(0 size) total buffers - 0(0 size) used buffers - 13/15 (recycle/alloc) - 2/14 (fetch/transfer)
+11-10 02:19:18.582   416   945 D BufferPoolAccessor2.0: bufferpool2 0xb400006f9c20b278 : 0(0 size) total buffers - 0(0 size) used buffers - 14/15 (recycle/alloc) - 1/14 (fetch/transfer)
+11-10 02:19:18.582   416   945 D BufferPoolAccessor2.0: bufferpool2 0xb400006f9c209908 : 0(0 size) total buffers - 0(0 size) used buffers - 8/10 (recycle/alloc) - 2/9 (fetch/transfer)
+11-10 02:19:18.582   416   945 D BufferPoolAccessor2.0: bufferpool2 0xb400006f9c1ffe18 : 0(0 size) total buffers - 0(0 size) used buffers - 8/10 (recycle/alloc) - 2/9 (fetch/transfer)
+11-10 02:19:18.582   416   945 D BufferPoolAccessor2.0: bufferpool2 0xb400006f9c2019d8 : 0(0 size) total buffers - 0(0 size) used buffers - 4/7 (recycle/alloc) - 3/6 (fetch/transfer)
+11-10 02:19:18.582   416   945 D BufferPoolAccessor2.0: bufferpool2 0xb400006f9c1ff038 : 0(0 size) total buffers - 0(0 size) used buffers - 7/11 (recycle/alloc) - 4/10 (fetch/transfer)
+11-10 02:19:18.582   416   945 D BufferPoolAccessor2.0: evictor expired: 6, evicted: 6
+11-10 02:19:19.150 12938 13127 D BufferPoolAccessor2.0: bufferpool2 0xb400007819267098 : 0(0 size) total buffers - 0(0 size) used buffers - 2/7 (recycle/alloc) - 5/26 (fetch/transfer)
+11-10 02:19:19.150 12938 13127 D BufferPoolAccessor2.0: bufferpool2 0xb40000781927e298 : 0(0 size) total buffers - 0(0 size) used buffers - 2/7 (recycle/alloc) - 5/24 (fetch/transfer)
+11-10 02:19:19.150 12938 13127 D BufferPoolAccessor2.0: bufferpool2 0xb400007819285888 : 0(0 size) total buffers - 0(0 size) used buffers - 2/7 (recycle/alloc) - 5/18 (fetch/transfer)
+11-10 02:19:19.150 12938 13127 D BufferPoolAccessor2.0: bufferpool2 0xb40000781926c3d8 : 0(0 size) total buffers - 0(0 size) used buffers - 2/7 (recycle/alloc) - 6/34 (fetch/transfer)
+11-10 02:19:19.150 12938 13127 D BufferPoolAccessor2.0: bufferpool2 0xb40000781926a818 : 0(0 size) total buffers - 0(0 size) used buffers - 2/7 (recycle/alloc) - 5/34 (fetch/transfer)
+11-10 02:19:19.150 12938 13127 D BufferPoolAccessor2.0: evictor expired: 5, evicted: 5
+11-10 02:19:19.755 13188 13188 W ProcessState: Extra binder thread started, but 0 threads requested. Do not use *startThreadPool when zero threads are requested.
+11-10 02:19:19.761   144   144 I hwservicemanager: getTransport: Cannot find entry android.hardware.graphics.mapper@4.0::IMapper/default in either framework or device VINTF manifest.
+11-10 02:19:19.761 13188 13189 I Gralloc4: mapper 4.x is not supported
+11-10 02:19:19.769 13188 13189 D HostConnection: HostComposition ext ANDROID_EMU_CHECKSUM_HELPER_v1 ANDROID_EMU_native_sync_v2 ANDROID_EMU_dma_v1 ANDROID_EMU_direct_mem ANDROID_EMU_host_composition_v1 ANDROID_EMU_host_composition_v2 ANDROID_EMU_vulkan ANDROID_EMU_deferred_vulkan_commands ANDROID_EMU_vulkan_null_optional_strings ANDROID_EMU_vulkan_create_resources_with_requirements ANDROID_EMU_YUV_Cache ANDROID_EMU_vulkan_ignored_handles ANDROID_EMU_has_shared_slots_host_memory_allocator ANDROID_EMU_vulkan_free_memory_sync ANDROID_EMU_vulkan_shader_float16_int8 ANDROID_EMU_vulkan_async_queue_submit ANDROID_EMU_vulkan_queue_submit_with_commands ANDROID_EMU_sync_buffer_data ANDROID_EMU_vulkan_async_qsri ANDROID_EMU_read_color_buffer_dma ANDROID_EMU_hwc_multi_configs ANDROID_EMU_hwc_color_transform GL_OES_EGL_image_external_essl3 GL_OES_vertex_array_object ANDROID_EMU_host_side_tracing ANDROID_EMU_gles_max_version_3_1 
+11-10 02:19:19.849 13193 13193 D AndroidRuntime: >>>>>> START com.android.internal.os.RuntimeInit uid 2000 <<<<<<
+11-10 02:19:19.852 13193 13193 I AndroidRuntime: Using default boot image
+11-10 02:19:19.852 13193 13193 I AndroidRuntime: Leaving lock profiling enabled
+11-10 02:19:19.854 13193 13193 I app_process: Core platform API reporting enabled, enforcing=false
+11-10 02:19:19.855 13193 13193 E app_process: Error reading named image component header for /system/framework/boot.art, error: Unexpected component count in /system/framework/arm64/boot-framework.art, received 0, expected non-zero and <= 26
+11-10 02:19:19.855 13193 13193 E app_process: Error compiling boot image extension for /system/framework/framework.jar, error: Cannot compile extension because of missing dependencies.

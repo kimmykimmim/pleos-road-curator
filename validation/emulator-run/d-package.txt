@@ -1,0 +1,172 @@
+Activity Resolver Table:
+  Non-Data Actions:
+      android.intent.action.MAIN:
+        6a34206 dev.changbak.explorer/.MainActivity filter 84520c7
+          Action: "android.intent.action.MAIN"
+          Category: "android.intent.category.LAUNCHER"
+
+Receiver Resolver Table:
+  Non-Data Actions:
+      androidx.profileinstaller.action.SAVE_PROFILE:
+        655c6f4 dev.changbak.explorer/androidx.profileinstaller.ProfileInstallReceiver filter 4e90263
+          Action: "androidx.profileinstaller.action.SAVE_PROFILE"
+      androidx.profileinstaller.action.INSTALL_PROFILE:
+        655c6f4 dev.changbak.explorer/androidx.profileinstaller.ProfileInstallReceiver filter 9dc3e1d
+          Action: "androidx.profileinstaller.action.INSTALL_PROFILE"
+      androidx.profileinstaller.action.SKIP_FILE:
+        655c6f4 dev.changbak.explorer/androidx.profileinstaller.ProfileInstallReceiver filter 5217892
+          Action: "androidx.profileinstaller.action.SKIP_FILE"
+      androidx.profileinstaller.action.BENCHMARK_OPERATION:
+        655c6f4 dev.changbak.explorer/androidx.profileinstaller.ProfileInstallReceiver filter 1825e60
+          Action: "androidx.profileinstaller.action.BENCHMARK_OPERATION"
+
+Domain verification status:
+
+Permissions:
+  Permission [dev.changbak.explorer.DYNAMIC_RECEIVER_NOT_EXPORTED_PERMISSION] (efc93bc):
+    sourcePackage=dev.changbak.explorer
+    uid=10204 gids=[] type=0 prot=signature
+    perm=PermissionInfo{5f65f45 dev.changbak.explorer.DYNAMIC_RECEIVER_NOT_EXPORTED_PERMISSION}
+
+Registered ContentProviders:
+  dev.changbak.explorer/androidx.startup.InitializationProvider:
+    Provider{f4bc69a dev.changbak.explorer/androidx.startup.InitializationProvider}
+
+ContentProvider Authorities:
+  [dev.changbak.explorer.androidx-startup]:
+    Provider{f4bc69a dev.changbak.explorer/androidx.startup.InitializationProvider}
+      applicationInfo=ApplicationInfo{ee2abcb dev.changbak.explorer}
+
+Key Set Manager:
+  [dev.changbak.explorer]
+      Signing KeySets: 33
+
+Packages:
+  Package [dev.changbak.explorer] (dd2fa8):
+    userId=10204
+    pkg=Package{6a2aac1 dev.changbak.explorer}
+    codePath=/data/app/~~7WlnM5oWzy-j_3ZKI3F5SQ==/dev.changbak.explorer-T51xL3Dcp8k_zn6M5fzYDg==
+    resourcePath=/data/app/~~7WlnM5oWzy-j_3ZKI3F5SQ==/dev.changbak.explorer-T51xL3Dcp8k_zn6M5fzYDg==
+    legacyNativeLibraryDir=/data/app/~~7WlnM5oWzy-j_3ZKI3F5SQ==/dev.changbak.explorer-T51xL3Dcp8k_zn6M5fzYDg==/lib
+    extractNativeLibs=false
+    primaryCpuAbi=arm64-v8a
+    secondaryCpuAbi=null
+    cpuAbiOverride=null
+    versionCode=13 minSdk=28 targetSdk=34
+    minExtensionVersions=[]
+    versionName=0.13.0
+    usesNonSdkApi=false
+    splits=[base]
+    apkSigningVersion=2
+    flags=[ HAS_CODE ALLOW_CLEAR_USER_DATA ]
+    privateFlags=[ PRIVATE_FLAG_ACTIVITIES_RESIZE_MODE_RESIZEABLE_VIA_SDK_VERSION ALLOW_AUDIO_PLAYBACK_CAPTURE PRIVATE_FLAG_ALLOW_NATIVE_HEAP_POINTER_TAGGING ]
+    forceQueryable=false
+    queriesIntents=[Intent { act=android.intent.action.TTS_SERVICE }, Intent { act=ai.pleos.playground.intent.action.NAVI_START }, Intent { act=ai.pleos.playground.caas.intent.action.SPEECH_START }]
+    dataDir=/data/user/0/dev.changbak.explorer
+    supportsScreens=[small, medium, large, xlarge, resizeable, anyDensity]
+    usesOptionalLibraries:
+      android.car
+    timeStamp=2026-11-10 02:19:31
+    lastUpdateTime=2026-11-10 02:19:31
+    packageSource=0
+    signatures=PackageSignatures{58fb266 version:2, signatures:[9a3daf88], past signatures:[]}
+    installPermissionsFixed=true
+    pkgFlags=[ HAS_CODE ALLOW_CLEAR_USER_DATA ]
+    declared permissions:
+      dev.changbak.explorer.DYNAMIC_RECEIVER_NOT_EXPORTED_PERMISSION: prot=signature, INSTALLED
+    requested permissions:
+      pleos.car.permission.TTS_SERVICE
+      pleos.car.permission.STT_SERVICE
+      android.permission.INTERNET
+      pleos.car.permission.NAVI_ROUTE
+      android.permission.FOREGROUND_SERVICE
+      android.permission.FOREGROUND_SERVICE_MEDIA_PLAYBACK
+      android.permission.FOREGROUND_SERVICE_LOCATION
+      android.permission.ACCESS_COARSE_LOCATION
+      android.permission.ACCESS_FINE_LOCATION
+      dev.changbak.explorer.DYNAMIC_RECEIVER_NOT_EXPORTED_PERMISSION
+    install permissions:
+      android.permission.FOREGROUND_SERVICE: granted=true
+      android.permission.INTERNET: granted=true
+      dev.changbak.explorer.DYNAMIC_RECEIVER_NOT_EXPORTED_PERMISSION: granted=true
+    User 0: ceDataInode=123391 installed=true hidden=false suspended=false distractionFlags=0 stopped=true notLaunched=true enabled=0 instant=false virtual=false
+      installReason=0
+      firstInstallTime=2026-11-10 01:12:25
+      uninstallReason=0
+      overlay paths:
+        /data/resource-cache/com.android.systemui-neutral-9Zxy.frro
+        /data/resource-cache/com.android.systemui-accent-qK85.frro
+      gids=[3003]
+      runtime permissions:
+        android.permission.ACCESS_FINE_LOCATION: granted=false, flags=[ USER_SENSITIVE_WHEN_GRANTED|USER_SENSITIVE_WHEN_DENIED]
+        android.permission.ACCESS_COARSE_LOCATION: granted=false, flags=[ USER_SENSITIVE_WHEN_GRANTED|USER_SENSITIVE_WHEN_DENIED]
+    User 10: ceDataInode=492097 installed=true hidden=false suspended=false distractionFlags=0 stopped=false notLaunched=false enabled=0 instant=false virtual=false
+      installReason=0
+      firstInstallTime=2026-11-10 01:12:25
+      uninstallReason=0
+      overlay paths:
+        /data/resource-cache/com.android.systemui-neutral-9Zxy.frro
+        /data/resource-cache/com.android.systemui-accent-qK85.frro
+      gids=[3003]
+      runtime permissions:
+        android.permission.ACCESS_FINE_LOCATION: granted=true, flags=[ USER_SET|USER_SENSITIVE_WHEN_GRANTED|USER_SENSITIVE_WHEN_DENIED]
+        android.permission.ACCESS_COARSE_LOCATION: granted=true, flags=[ USER_SET|USER_SENSITIVE_WHEN_GRANTED|USER_SENSITIVE_WHEN_DENIED]
+    User 11: ceDataInode=0 installed=false hidden=false suspended=false distractionFlags=0 stopped=true notLaunched=true enabled=0 instant=false virtual=false
+      installReason=0
+      firstInstallTime=2026-11-10 01:12:25
+      uninstallReason=0
+      gids=[3003]
+      runtime permissions:
+        android.permission.ACCESS_FINE_LOCATION: granted=true
+        android.permission.ACCESS_COARSE_LOCATION: granted=true
+    User 12: ceDataInode=0 installed=false hidden=false suspended=false distractionFlags=0 stopped=true notLaunched=true enabled=0 instant=false virtual=false
+      installReason=0
+      firstInstallTime=2026-11-10 01:12:25
+      uninstallReason=0
+      gids=[3003]
+      runtime permissions:
+        android.permission.ACCESS_FINE_LOCATION: granted=true
+        android.permission.ACCESS_COARSE_LOCATION: granted=true
+
+Queries:
+  system apps queryable: false
+  queries via forceQueryable:
+  queries via package name:
+  queries via component:
+    com.android.settings.intelligence:
+      dev.changbak.explorer
+  queryable via interaction:
+    User 0:
+    User 10:
+      [com.android.car,com.android.car.developeroptions,com.android.localtransport,com.android.providers.settings,com.android.location.fused,com.android.car.cluster.osdouble,com.android.keychain,android,com.android.server.telecom]:
+        dev.changbak.explorer
+      [com.google.android.gsf,com.google.android.gms]:
+        dev.changbak.explorer
+      com.google.android.apps.automotive.inputmethod:
+        dev.changbak.explorer
+      com.google.android.providers.media.module:
+        dev.changbak.explorer
+  queryable via uses-library:
+
+Dexopt state:
+  [dev.changbak.explorer]
+    path: /data/app/~~7WlnM5oWzy-j_3ZKI3F5SQ==/dev.changbak.explorer-T51xL3Dcp8k_zn6M5fzYDg==/base.apk
+      arm64: [status=verify] [reason=install]
+  BgDexopt state:
+    enabled:true
+    mDexOptThread:null
+    mDexOptCancellingThread:null
+    mFinishedPostBootUpdate:false
+    mLastExecutionStatus:0
+    mLastExecutionStartTimeMs:0
+    mLastExecutionDurationIncludingSleepMs:0
+    mLastExecutionStartUptimeMs:0
+    mLastExecutionDurationMs:0
+    now:119995
+    mLastCancelledPackages:
+    mFailedPackageNamesPrimary:
+    mFailedPackageNamesSecondary:
+
+Compiler stats:
+  [dev.changbak.explorer]
+    (No recorded stats)

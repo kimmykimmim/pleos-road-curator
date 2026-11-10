@@ -29,7 +29,7 @@
 
 - 프로젝트: `native-app`
 - 패키지: `dev.changbak.explorer`
-- 버전: `0.13.0`, versionCode `13`
+- 버전: `0.13.1`, versionCode `14`
 - 저장소: 비공개 깃허브 `kimmykimmim/pleos-road-curator`. 작업 사본은 Drive 밖 로컬에 둡니다.
 - API 34, minSdk 28, Kotlin, Android 기본 View 및 Canvas
 - SDK: NaviHelper 3.0.5, TextToSpeech 3.3.1, SpeechToText 3.3.1

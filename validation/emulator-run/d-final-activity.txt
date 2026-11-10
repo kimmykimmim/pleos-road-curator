@@ -1,0 +1,751 @@
+ACTIVITY MANAGER ACTIVITIES (dumpsys activity activities)
+Display #0 (activities from top to bottom):
+  * Task{3a2c033 #1000029 type=standard A=1010204:dev.changbak.explorer U=10 visible=true visibleRequested=true mode=fullscreen translucent=false sz=1}
+    mLastNonFullscreenBounds=Rect(305, 190 - 776, 395)
+    isSleeping=false
+    topResumedActivity=ActivityRecord{7227fee u10 dev.changbak.explorer/.MainActivity} t1000029}
+    * Hist  #0: ActivityRecord{7227fee u10 dev.changbak.explorer/.MainActivity} t1000029}
+      packageName=dev.changbak.explorer processName=dev.changbak.explorer
+      launchedFromUid=2000 launchedFromPackage=com.android.shell launchedFromFeature=null userId=10
+      app=ProcessRecord{6078fe4 3251:dev.changbak.explorer/u10a204}
+      Intent { flg=0x10000000 cmp=dev.changbak.explorer/.MainActivity }
+      rootOfTask=true task=Task{3a2c033 #1000029 type=standard A=1010204:dev.changbak.explorer}
+      taskAffinity=1010204:dev.changbak.explorer
+      mActivityComponent=dev.changbak.explorer/.MainActivity
+      baseDir=/data/app/~~7WlnM5oWzy-j_3ZKI3F5SQ==/dev.changbak.explorer-T51xL3Dcp8k_zn6M5fzYDg==/base.apk
+      dataDir=/data/user/10/dev.changbak.explorer
+      stateNotNeeded=false componentSpecified=false mActivityType=standard
+      compat={120dpi always-compat} labelRes=0x0 icon=0x7f07008f theme=0x7f10000b
+      mLastReportedConfigurations:
+        mGlobalConfig={1.0 310mcc260mnc [en_US] ldltr sw800dp w1440dp h628dp 120dpi lrg long land car finger -keyb/v/h -nav/h winConfig={ mBounds=Rect(0, 0 - 1080, 600) mAppBounds=Rect(0, 0 - 1080, 528) mMaxBounds=Rect(0, 0 - 1080, 600) mDisplayRotation=ROTATION_0 mWindowingMode=fullscreen mDisplayWindowingMode=fullscreen mActivityType=undefined mAlwaysOnTop=undefined mRotation=ROTATION_0} as.2 s.132 fontWeightAdjustment=0}
+        mOverrideConfig={1.0 310mcc260mnc [en_US] ldltr sw800dp w1440dp h628dp 120dpi lrg long land car finger -keyb/v/h -nav/h winConfig={ mBounds=Rect(0, 0 - 1080, 600) mAppBounds=Rect(0, 0 - 1080, 528) mMaxBounds=Rect(0, 0 - 1080, 600) mDisplayRotation=ROTATION_0 mWindowingMode=fullscreen mDisplayWindowingMode=fullscreen mActivityType=standard mAlwaysOnTop=undefined mRotation=ROTATION_0} as.2 s.2 fontWeightAdjustment=0}
+      CurrentConfiguration={1.0 310mcc260mnc [en_US] ldltr sw800dp w1440dp h628dp 120dpi lrg long land car finger -keyb/v/h -nav/h winConfig={ mBounds=Rect(0, 0 - 1080, 600) mAppBounds=Rect(0, 0 - 1080, 528) mMaxBounds=Rect(0, 0 - 1080, 600) mDisplayRotation=ROTATION_0 mWindowingMode=fullscreen mDisplayWindowingMode=fullscreen mActivityType=standard mAlwaysOnTop=undefined mRotation=ROTATION_0} as.2 s.2 fontWeightAdjustment=0}
+      taskDescription: label="null" icon=null iconResource=/0 iconFilename=null primaryColor=fff5f5f5
+        backgroundColor=fffafafa statusBarColor=fff6f8fc navigationBarColor=fff6f8fc
+       backgroundColorFloating=ffffffff
+      launchFailed=false launchCount=1 lastLaunchTime=-2m37s276ms
+      mHaveState=false mIcicle=null
+      state=RESUMED stopped=false delayedResume=false finishing=false
+      keysPaused=false inHistory=true idle=true
+      occludesParent=true noDisplay=false immersive=false launchMode=0
+      frozenBeforeDestroy=false forceNewConfig=false
+      mActivityType=standard
+      mImeInsetsFrozenUntilStartInput=false
+      windows=[Window{6c8c8fc u10 dev.changbak.explorer/dev.changbak.explorer.MainActivity}, Window{b4fce53 u10 dev.changbak.explorer/dev.changbak.explorer.MainActivity}]
+      windowType=2
+      mOccludesParent=true
+      overrideOrientation=SCREEN_ORIENTATION_LANDSCAPE
+      requestedOrientation=SCREEN_ORIENTATION_LANDSCAPE
+      mVisibleRequested=true mVisible=true mClientVisible=true reportedDrawn=true reportedVisible=true
+      mNumInterestingWindows=2 mNumDrawnWindows=2 allDrawn=true lastAllDrawn=true)
+      startingData=null firstWindowDrawn=true mIsExiting=false
+      nowVisible=true lastVisibleTime=-2m36s139ms
+      connections={ConnectionRecord{7dd0393 u10 dev.changbak.explorer/.CuratorDriveService:@82d0082}, ConnectionRecord{fa22fcd u10 CR com.android.car/.CarService:@a7ab164}}
+      resizeMode=RESIZE_MODE_RESIZEABLE
+      mLastReportedMultiWindowMode=false mLastReportedPictureInPictureMode=false
+      supportsSizeChanges=SIZE_CHANGES_UNSUPPORTED_METADATA
+      configChanges=0x3
+      neverSandboxDisplayApis=false
+      alwaysSandboxDisplayApis=false
+      areBoundsLetterboxed=false
+      mCameraCompatControlState=hidden
+      mCameraCompatControlEnabled=false
+
+  * Task{8100bba #1000028 type=standard A=1010141:com.android.car.mapsplaceholder U=10 visible=false visibleRequested=false mode=multi-window translucent=true sz=1}
+    mBounds=Rect(303, 57 - 1080, 528)
+    mLastPausedActivity: ActivityRecord{ac3b247 u10 com.android.car.mapsplaceholder/.MapsPlaceholderActivity} t1000028}
+    isSleeping=false
+    * Hist  #0: ActivityRecord{ac3b247 u10 com.android.car.mapsplaceholder/.MapsPlaceholderActivity} t1000028}
+      packageName=com.android.car.mapsplaceholder processName=com.android.car.mapsplaceholder
+      launchedFromUid=1010116 launchedFromPackage=com.android.car.carlauncher launchedFromFeature=null userId=10
+      app=ProcessRecord{8eea33f 2157:com.android.car.mapsplaceholder/u10a141}
+      Intent { act=android.intent.action.MAIN cat=[android.intent.category.LAUNCHER] flg=0x10800000 cmp=com.android.car.mapsplaceholder/.MapsPlaceholderActivity sel=act=android.intent.action.MAIN cat=[android.intent.category.APP_MAPS]} }
+      rootOfTask=true task=Task{8100bba #1000028 type=standard A=1010141:com.android.car.mapsplaceholder}
+      taskAffinity=1010141:com.android.car.mapsplaceholder
+      mActivityComponent=com.android.car.mapsplaceholder/.MapsPlaceholderActivity
+      baseDir=/system/app/CarMapsPlaceholder/CarMapsPlaceholder.apk
+      dataDir=/data/user/10/com.android.car.mapsplaceholder
+      stateNotNeeded=false componentSpecified=false mActivityType=standard
+      compat={120dpi always-compat} labelRes=0x7f040000 icon=0x7f020000 theme=0x7f050000
+      mLastReportedConfigurations:
+        mGlobalConfig={1.0 310mcc260mnc [en_US] ldltr sw800dp w1036dp h628dp 120dpi lrg land car finger -keyb/v/h -nav/h winConfig={ mBounds=Rect(303, 57 - 1080, 528) mAppBounds=Rect(303, 57 - 1080, 528) mMaxBounds=Rect(0, 0 - 1080, 600) mDisplayRotation=ROTATION_0 mWindowingMode=multi-window mDisplayWindowingMode=fullscreen mActivityType=undefined mAlwaysOnTop=undefined mRotation=ROTATION_0} as.2 s.155 fontWeightAdjustment=0}
+        mOverrideConfig={1.0 310mcc260mnc [en_US] ldltr sw800dp w1036dp h628dp 120dpi lrg land car finger -keyb/v/h -nav/h winConfig={ mBounds=Rect(303, 57 - 1080, 528) mAppBounds=Rect(303, 57 - 1080, 528) mMaxBounds=Rect(0, 0 - 1080, 600) mDisplayRotation=ROTATION_0 mWindowingMode=multi-window mDisplayWindowingMode=fullscreen mActivityType=standard mAlwaysOnTop=undefined mRotation=ROTATION_0} as.2 s.2 fontWeightAdjustment=0}
+      CurrentConfiguration={1.0 310mcc260mnc [en_US] ldltr sw800dp w1036dp h628dp 120dpi lrg land car finger -keyb/v/h -nav/h winConfig={ mBounds=Rect(303, 57 - 1080, 528) mAppBounds=Rect(303, 57 - 1080, 528) mMaxBounds=Rect(0, 0 - 1080, 600) mDisplayRotation=ROTATION_0 mWindowingMode=multi-window mDisplayWindowingMode=fullscreen mActivityType=standard mAlwaysOnTop=undefined mRotation=ROTATION_0} as.2 s.3 fontWeightAdjustment=0}
+      taskDescription: label="null" icon=null iconResource=/0 iconFilename=null primaryColor=fff5f5f5
+        backgroundColor=fffafafa statusBarColor=ff218c48 navigationBarColor=ff000000
+       backgroundColorFloating=ffffffff
+      launchFailed=false launchCount=0 lastLaunchTime=-2m44s456ms
+      launchCookie=android.os.BinderProxy@29e8fb9
+      mHaveState=true mIcicle=Bundle[mParcelledData.dataSize=264]
+      state=STOPPED stopped=true delayedResume=false finishing=false
+      keysPaused=false inHistory=true idle=true
+      occludesParent=true noDisplay=false immersive=false launchMode=2
+      frozenBeforeDestroy=false forceNewConfig=false
+      mActivityType=standard
+      mImeInsetsFrozenUntilStartInput=true
+      windows=[Window{6ae8d62 u10 com.android.car.mapsplaceholder/com.android.car.mapsplaceholder.MapsPlaceholderActivity}]
+      windowType=2
+      mOccludesParent=true
+      overrideOrientation=SCREEN_ORIENTATION_UNSPECIFIED
+      requestedOrientation=SCREEN_ORIENTATION_UNSPECIFIED
+      mVisibleRequested=false mVisible=false mClientVisible=false reportedDrawn=false reportedVisible=false
+      mAppStopped=true
+      mNumInterestingWindows=1 mNumDrawnWindows=1 allDrawn=true lastAllDrawn=true)
+      nowVisible=false lastVisibleTime=-2m44s4ms
+      resizeMode=RESIZE_MODE_RESIZEABLE
+      mLastReportedMultiWindowMode=true mLastReportedPictureInPictureMode=false
+      supportsSizeChanges=SIZE_CHANGES_UNSUPPORTED_METADATA
+      configChanges=0x3
+      neverSandboxDisplayApis=false
+      alwaysSandboxDisplayApis=false
+      areBoundsLetterboxed=false
+      mCameraCompatControlState=hidden
+      mCameraCompatControlEnabled=false
+
+  * Task{6f65ef3 #1 type=home U=0 visible=false visibleRequested=false mode=fullscreen translucent=true sz=1}
+    * Task{65e8ed0 #1000004 type=home A=1010116:com.android.car.carlauncher U=10 rootTaskId=1 visible=false visibleRequested=false mode=fullscreen translucent=true sz=1}
+      mLastPausedActivity: ActivityRecord{22dc9ce u10 com.android.car.carlauncher/.CarLauncher} t1000004}
+      mLastNonFullscreenBounds=Rect(414, 77 - 666, 580)
+      isSleeping=false
+      * Hist  #0: ActivityRecord{22dc9ce u10 com.android.car.carlauncher/.CarLauncher} t1000004}
+        packageName=com.android.car.carlauncher processName=com.android.car.carlauncher
+        launchedFromUid=0 launchedFromPackage=null launchedFromFeature=null userId=10
+        app=ProcessRecord{4f18971 1752:com.android.car.carlauncher/u10a116}
+        Intent { act=android.intent.action.MAIN cat=[android.intent.category.HOME] flg=0x10000100 cmp=com.android.car.carlauncher/.CarLauncher (has extras) }
+        rootOfTask=true task=Task{65e8ed0 #1000004 type=home A=1010116:com.android.car.carlauncher}
+        taskAffinity=1010116:com.android.car.carlauncher
+        mActivityComponent=com.android.car.carlauncher/.CarLauncher
+        baseDir=/system/priv-app/GASCarLauncher/GASCarLauncher.apk
+        dataDir=/data/user/10/com.android.car.carlauncher
+        stateNotNeeded=true componentSpecified=false mActivityType=home
+        compat={120dpi always-compat} labelRes=0x7f0f003c icon=0x7f0800fa theme=0x7f100193
+        mLastReportedConfigurations:
+          mGlobalConfig={1.0 310mcc260mnc [en_US] ldltr sw800dp w1440dp h628dp 120dpi lrg long land car finger -keyb/v/h -nav/h winConfig={ mBounds=Rect(0, 0 - 1080, 600) mAppBounds=Rect(0, 0 - 1080, 528) mMaxBounds=Rect(0, 0 - 1080, 600) mDisplayRotation=ROTATION_0 mWindowingMode=fullscreen mDisplayWindowingMode=fullscreen mActivityType=undefined mAlwaysOnTop=undefined mRotation=ROTATION_0} as.2 s.132 fontWeightAdjustment=0}
+          mOverrideConfig={1.0 310mcc260mnc [en_US] ldltr sw800dp w1440dp h628dp 120dpi lrg long land car finger -keyb/v/h -nav/h winConfig={ mBounds=Rect(0, 0 - 1080, 600) mAppBounds=Rect(0, 0 - 1080, 528) mMaxBounds=Rect(0, 0 - 1080, 600) mDisplayRotation=ROTATION_0 mWindowingMode=fullscreen mDisplayWindowingMode=fullscreen mActivityType=home mAlwaysOnTop=undefined mRotation=ROTATION_0} as.2 s.3 fontWeightAdjustment=0}
+        CurrentConfiguration={1.0 310mcc260mnc [en_US] ldltr sw800dp w1440dp h628dp 120dpi lrg long land car finger -keyb/v/h -nav/h winConfig={ mBounds=Rect(0, 0 - 1080, 600) mAppBounds=Rect(0, 0 - 1080, 528) mMaxBounds=Rect(0, 0 - 1080, 600) mDisplayRotation=ROTATION_0 mWindowingMode=fullscreen mDisplayWindowingMode=fullscreen mActivityType=home mAlwaysOnTop=undefined mRotation=ROTATION_0} as.2 s.3 fontWeightAdjustment=0}
+        RequestedOverrideConfiguration={0.0 ?mcc?mnc ?localeList ?layoutDir ?swdp ?wdp ?hdp ?density ?lsize ?long ?ldr ?wideColorGamut ?orien ?uimode ?night ?touch ?keyb/?/? ?nav/? winConfig={ mBounds=Rect(0, 0 - 0, 0) mAppBounds=null mMaxBounds=Rect(0, 0 - 0, 0) mDisplayRotation=undefined mWindowingMode=undefined mDisplayWindowingMode=undefined mActivityType=home mAlwaysOnTop=undefined mRotation=undefined} ?fontWeightAdjustment}
+        taskDescription: label="null" icon=null iconResource=/0 iconFilename=null primaryColor=ff282a2d
+          backgroundColor=ff000000 statusBarColor=ff000000 navigationBarColor=ff000000
+         backgroundColorFloating=ff282a2d
+        launchFailed=false launchCount=0 lastLaunchTime=-2m46s852ms
+        mHaveState=true mIcicle=Bundle[mParcelledData.dataSize=10244]
+        state=STOPPED stopped=true delayedResume=false finishing=false
+        keysPaused=false inHistory=true idle=true
+        occludesParent=true noDisplay=false immersive=false launchMode=2
+        frozenBeforeDestroy=false forceNewConfig=false
+        mActivityType=home
+        mImeInsetsFrozenUntilStartInput=true
+        windows=[Window{76646c6 u10 com.android.car.carlauncher/com.android.car.carlauncher.CarLauncher}]
+        windowType=2
+        mOccludesParent=true
+        overrideOrientation=SCREEN_ORIENTATION_UNSPECIFIED
+        requestedOrientation=SCREEN_ORIENTATION_UNSPECIFIED
+        mVisibleRequested=false mVisible=false mClientVisible=false reportedDrawn=false reportedVisible=false
+        mAppStopped=true
+        mNumInterestingWindows=1 mNumDrawnWindows=1 allDrawn=true lastAllDrawn=true)
+        nowVisible=false lastVisibleTime=-2m45s143ms
+        connections={ConnectionRecord{d2af49b u10 CR CAPS com.android.car.media.localmediaplayer/.LocalMediaBrowserService:@af770aa}}
+        resizeMode=RESIZE_MODE_UNRESIZEABLE
+        mLastReportedMultiWindowMode=false mLastReportedPictureInPictureMode=false
+        supportsSizeChanges=SIZE_CHANGES_UNSUPPORTED_METADATA
+        configChanges=0x203
+        neverSandboxDisplayApis=false
+        alwaysSandboxDisplayApis=false
+        areBoundsLetterboxed=false
+        mCameraCompatControlState=hidden
+        mCameraCompatControlEnabled=false
+
+  Resumed activities in task display areas (from top to bottom):
+    Resumed: ActivityRecord{7227fee u10 dev.changbak.explorer/.MainActivity} t1000029}
+
+Display #2 (activities from top to bottom):
+
+  * Task{b13a06a #2 type=standard A=1000:com.android.car.cluster.osdouble U=0 visible=true visibleRequested=true mode=fullscreen translucent=false sz=1}
+    mLastPausedActivity: ActivityRecord{47ca5f8 u0 com.android.car.cluster.osdouble/.ClusterOsDoubleActivity} t2}
+    mLastNonFullscreenBounds=Rect(67, 100 - 333, 500)
+    isSleeping=false
+    topResumedActivity=ActivityRecord{47ca5f8 u0 com.android.car.cluster.osdouble/.ClusterOsDoubleActivity} t2}
+    * Hist  #0: ActivityRecord{47ca5f8 u0 com.android.car.cluster.osdouble/.ClusterOsDoubleActivity} t2}
+      packageName=com.android.car.cluster.osdouble processName=com.android.car.cluster.osdouble
+      launchedFromUid=1000 launchedFromPackage=com.android.car.cluster.osdouble launchedFromFeature=null userId=0
+      app=ProcessRecord{fcb616d 890:com.android.car.cluster.osdouble/1000}
+      Intent { act=android.intent.action.MAIN cat=[android.intent.category.LAUNCHER] flg=0x10800000 cmp=com.android.car.cluster.osdouble/.ClusterOsDoubleActivity }
+      rootOfTask=true task=Task{b13a06a #2 type=standard A=1000:com.android.car.cluster.osdouble}
+      taskAffinity=1000:com.android.car.cluster.osdouble
+      mActivityComponent=com.android.car.cluster.osdouble/.ClusterOsDoubleActivity
+      baseDir=/system/app/ClusterOsDouble/ClusterOsDouble.apk
+      dataDir=/data/user/0/com.android.car.cluster.osdouble
+      stateNotNeeded=false componentSpecified=false mActivityType=standard
+      compat={120dpi always-compat} labelRes=0x0 icon=0x0 theme=0x103000a
+      mLastReportedConfigurations:
+        mGlobalConfig={1.0 310mcc260mnc [en_US] ldltr sw800dp w1440dp h628dp 120dpi lrg long land car finger -keyb/v/h -nav/h winConfig={ mBounds=Rect(0, 0 - 1080, 600) mAppBounds=Rect(0, 0 - 1080, 528) mMaxBounds=Rect(0, 0 - 1080, 600) mDisplayRotation=ROTATION_0 mWindowingMode=fullscreen mDisplayWindowingMode=fullscreen mActivityType=undefined mAlwaysOnTop=undefined mRotation=ROTATION_0} as.2 s.65 fontWeightAdjustment=0}
+        mOverrideConfig={0.0 ?mcc?mnc ?localeList ?layoutDir sw533dp w533dp h800dp 120dpi lrg port ?uimode ?night finger -keyb/v/h -nav/h winConfig={ mBounds=Rect(0, 0 - 400, 600) mAppBounds=Rect(0, 0 - 400, 600) mMaxBounds=Rect(0, 0 - 400, 600) mDisplayRotation=ROTATION_0 mWindowingMode=fullscreen mDisplayWindowingMode=fullscreen mActivityType=standard mAlwaysOnTop=undefined mRotation=ROTATION_0} s.8 ?fontWeightAdjustment}
+      CurrentConfiguration={1.0 310mcc260mnc [en_US] ldltr sw533dp w533dp h800dp 120dpi lrg port car finger -keyb/v/h -nav/h winConfig={ mBounds=Rect(0, 0 - 400, 600) mAppBounds=Rect(0, 0 - 400, 600) mMaxBounds=Rect(0, 0 - 400, 600) mDisplayRotation=ROTATION_0 mWindowingMode=fullscreen mDisplayWindowingMode=fullscreen mActivityType=standard mAlwaysOnTop=undefined mRotation=ROTATION_0} as.2 s.14 fontWeightAdjustment=0}
+      taskDescription: label="null" icon=null iconResource=/0 iconFilename=null primaryColor=ff222222
+        backgroundColor=ff000000 statusBarColor=ff000000 navigationBarColor=ff000000
+       backgroundColorFloating=ff000000
+      launchFailed=false launchCount=0 lastLaunchTime=-2m50s761ms
+      mHaveState=false mIcicle=null
+      state=RESUMED stopped=false delayedResume=false finishing=false
+      keysPaused=false inHistory=true idle=true
+      occludesParent=true noDisplay=false immersive=false launchMode=0
+      frozenBeforeDestroy=false forceNewConfig=false
+      mActivityType=standard
+      mImeInsetsFrozenUntilStartInput=true
+      windows=[Window{b871e7 u0 com.android.car.cluster.osdouble/com.android.car.cluster.osdouble.ClusterOsDoubleActivity}]
+      windowType=2
+      mOccludesParent=true
+      overrideOrientation=SCREEN_ORIENTATION_NOSENSOR
+      requestedOrientation=SCREEN_ORIENTATION_NOSENSOR
+      mVisibleRequested=true mVisible=true mClientVisible=true reportedDrawn=true reportedVisible=true
+      mNumInterestingWindows=1 mNumDrawnWindows=1 allDrawn=true lastAllDrawn=true)
+      startingData=null firstWindowDrawn=true mIsExiting=false
+      nowVisible=true lastVisibleTime=-2m48s705ms
+      resizeMode=RESIZE_MODE_RESIZEABLE_VIA_SDK_VERSION
+      mLastReportedMultiWindowMode=false mLastReportedPictureInPictureMode=false
+      supportsSizeChanges=SIZE_CHANGES_UNSUPPORTED_METADATA
+      configChanges=0x203
+      neverSandboxDisplayApis=false
+      alwaysSandboxDisplayApis=false
+      areBoundsLetterboxed=false
+      mCameraCompatControlState=hidden
+      mCameraCompatControlEnabled=false
+
+  Resumed activities in task display areas (from top to bottom):
+    Resumed: ActivityRecord{47ca5f8 u0 com.android.car.cluster.osdouble/.ClusterOsDoubleActivity} t2}
+
+Display #3 (activities from top to bottom):
+
+  * Task{1bfe4e7 #3 type=standard A=10123:com.android.car.cluster.home U=0 visible=true visibleRequested=true mode=fullscreen translucent=false sz=1}
+    mLastNonFullscreenBounds=Rect(48, 62 - 352, 462)
+    isSleeping=false
+    topResumedActivity=ActivityRecord{371ef3d u0 com.android.car.cluster.home/.ClusterHomeActivity} t3}
+    * Hist  #0: ActivityRecord{371ef3d u0 com.android.car.cluster.home/.ClusterHomeActivity} t3}
+      packageName=com.android.car.cluster.home processName=com.android.car.cluster.home
+      launchedFromUid=1000 launchedFromPackage=com.android.car launchedFromFeature=null userId=0
+      app=ProcessRecord{5479f97 867:com.android.car.cluster.home/u0a123}
+      Intent { act=android.intent.action.MAIN flg=0x10800000 cmp=com.android.car.cluster.home/.ClusterHomeActivity }
+      rootOfTask=true task=Task{1bfe4e7 #3 type=standard A=10123:com.android.car.cluster.home}
+      taskAffinity=10123:com.android.car.cluster.home
+      mActivityComponent=com.android.car.cluster.home/.ClusterHomeActivity
+      baseDir=/system/priv-app/ClusterHomeSample/ClusterHomeSample.apk
+      dataDir=/data/user/0/com.android.car.cluster.home
+      stateNotNeeded=false componentSpecified=false mActivityType=standard
+      compat={120dpi always-compat} labelRes=0x0 icon=0x0 theme=0x103000a
+      mLastReportedConfigurations:
+        mGlobalConfig={1.0 310mcc260mnc [en_US] ldltr sw400dp w400dp h525dp 160dpi nrml port car finger -keyb/v/h -nav/h winConfig={ mBounds=Rect(0, 0 - 400, 525) mAppBounds=Rect(0, 0 - 400, 525) mMaxBounds=Rect(0, 0 - 400, 525) mDisplayRotation=ROTATION_0 mWindowingMode=fullscreen mDisplayWindowingMode=fullscreen mActivityType=undefined mAlwaysOnTop=undefined mRotation=ROTATION_0} as.2 s.57 fontWeightAdjustment=0}
+        mOverrideConfig={0.0 ?mcc?mnc ?localeList ?layoutDir sw400dp w400dp h525dp 160dpi nrml port ?uimode ?night finger -keyb/v/h -nav/h winConfig={ mBounds=Rect(0, 0 - 400, 525) mAppBounds=Rect(0, 0 - 400, 525) mMaxBounds=Rect(0, 0 - 400, 525) mDisplayRotation=ROTATION_0 mWindowingMode=fullscreen mDisplayWindowingMode=fullscreen mActivityType=standard mAlwaysOnTop=undefined mRotation=ROTATION_0} s.6 ?fontWeightAdjustment}
+      CurrentConfiguration={1.0 310mcc260mnc [en_US] ldltr sw400dp w400dp h525dp 160dpi nrml port car finger -keyb/v/h -nav/h winConfig={ mBounds=Rect(0, 0 - 400, 525) mAppBounds=Rect(0, 0 - 400, 525) mMaxBounds=Rect(0, 0 - 400, 525) mDisplayRotation=ROTATION_0 mWindowingMode=fullscreen mDisplayWindowingMode=fullscreen mActivityType=standard mAlwaysOnTop=undefined mRotation=ROTATION_0} as.2 s.11 fontWeightAdjustment=0}
+      taskDescription: label="null" icon=null iconResource=/0 iconFilename=null primaryColor=ff222222
+        backgroundColor=ff000000 statusBarColor=ff000000 navigationBarColor=ff000000
+       backgroundColorFloating=ff000000
+      launchFailed=false launchCount=0 lastLaunchTime=-2m50s168ms
+      mHaveState=false mIcicle=null
+      state=RESUMED stopped=false delayedResume=false finishing=false
+      keysPaused=false inHistory=true idle=true
+      occludesParent=true noDisplay=false immersive=false launchMode=2
+      frozenBeforeDestroy=false forceNewConfig=false
+      mActivityType=standard
+      mImeInsetsFrozenUntilStartInput=true
+      windows=[Window{9f6ceaa u0 com.android.car.cluster.home/com.android.car.cluster.home.ClusterHomeActivity}]
+      windowType=2
+      mOccludesParent=true
+      overrideOrientation=SCREEN_ORIENTATION_NOSENSOR
+      requestedOrientation=SCREEN_ORIENTATION_NOSENSOR
+      mVisibleRequested=true mVisible=true mClientVisible=true reportedDrawn=true reportedVisible=true
+      mNumInterestingWindows=1 mNumDrawnWindows=1 allDrawn=true lastAllDrawn=true)
+      startingData=null firstWindowDrawn=true mIsExiting=false
+      nowVisible=true lastVisibleTime=-2m48s621ms
+      resizeMode=RESIZE_MODE_RESIZEABLE_VIA_SDK_VERSION
+      mLastReportedMultiWindowMode=false mLastReportedPictureInPictureMode=false
+      supportsSizeChanges=SIZE_CHANGES_UNSUPPORTED_METADATA
+      configChanges=0x203
+      neverSandboxDisplayApis=false
+      alwaysSandboxDisplayApis=false
+      areBoundsLetterboxed=false
+      mCameraCompatControlState=hidden
+      mCameraCompatControlEnabled=false
+
+  Resumed activities in task display areas (from top to bottom):
+    Resumed: ActivityRecord{371ef3d u0 com.android.car.cluster.home/.ClusterHomeActivity} t3}
+
+  ResumedActivity: ActivityRecord{7227fee u10 dev.changbak.explorer/.MainActivity} t1000029}
+
+ActivityTaskSupervisor state:
+  topDisplayFocusedRootTask=Task{3a2c033 #1000029 type=standard A=1010204:dev.changbak.explorer}
+  Display: mDisplayId=0 (organized)
+    init=1080x600 120dpi mMinSizeOfResizeableTaskDp=220 cur=1080x600 app=1080x528 rng=600x471-1080x951
+    deferred=false mLayoutNeeded=false mTouchExcludeRegion=SkRegion((0,0,1080,600))
+
+  overrideConfig={1.0 310mcc260mnc [en_US] ldltr sw800dp w1440dp h628dp 120dpi lrg long land car finger -keyb/v/h -nav/h winConfig={ mBounds=Rect(0, 0 - 1080, 600) mAppBounds=Rect(0, 0 - 1080, 528) mMaxBounds=Rect(0, 0 - 1080, 600) mDisplayRotation=ROTATION_0 mWindowingMode=fullscreen mDisplayWindowingMode=fullscreen mActivityType=undefined mAlwaysOnTop=undefined mRotation=ROTATION_0} as.2 s.132 fontWeightAdjustment=0}
+  mLayoutSeq=151
+  mCurrentFocus=Window{b4fce53 u10 dev.changbak.explorer/dev.changbak.explorer.MainActivity}
+  mFocusedApp=ActivityRecord{7227fee u10 dev.changbak.explorer/.MainActivity} t1000029}
+
+  mHoldScreenWindow=null
+  mObscuringWindow=null
+  mLastWakeLockHoldingWindow=null
+  mLastWakeLockObscuringWindow=null
+
+  displayId=0
+  mWallpaperTarget=null
+  mLastWallpaperX=-1.0 mLastWallpaperY=-1.0
+
+  Display areas in top down Z order:
+    * Leaf:36:36
+    * HideDisplayCutout:32:35
+      * OneHanded:34:35
+        * FullscreenMagnification:34:35
+          * Leaf:34:35
+      * FullscreenMagnification:33:33
+        * Leaf:33:33
+      * OneHanded:32:32
+        * Leaf:32:32
+    * WindowedMagnification:0:31
+      * HideDisplayCutout:26:31
+        * OneHanded:26:31
+          * FullscreenMagnification:29:31
+            * Leaf:29:31
+          * Leaf:28:28
+          * FullscreenMagnification:26:27
+            * Leaf:26:27
+      * Leaf:24:25
+      * HideDisplayCutout:18:23
+        * OneHanded:18:23
+          * FullscreenMagnification:18:23
+            * Leaf:18:23
+      * OneHanded:17:17
+        * FullscreenMagnification:17:17
+          * Leaf:17:17
+      * HideDisplayCutout:16:16
+        * OneHanded:16:16
+          * FullscreenMagnification:16:16
+            * Leaf:16:16
+      * OneHanded:15:15
+        * FullscreenMagnification:15:15
+          * Leaf:15:15
+      * HideDisplayCutout:0:14
+        * OneHanded:0:14
+          * ImePlaceholder:13:14
+            * ImeContainer
+          * FullscreenMagnification:0:12
+            * Leaf:3:12
+            * DefaultTaskDisplayArea (organized)
+            * Leaf:0:1
+
+  Task display areas in top down Z order:
+    TaskDisplayArea DefaultTaskDisplayArea
+      overrideConfig={0.0 ?mcc?mnc ?localeList ?layoutDir ?swdp ?wdp ?hdp ?density ?lsize ?long ?ldr ?wideColorGamut ?orien ?uimode ?night ?touch ?keyb/?/? ?nav/? winConfig={ mBounds=Rect(0, 0 - 0, 0) mAppBounds=null mMaxBounds=Rect(0, 0 - 0, 0) mDisplayRotation=undefined mWindowingMode=fullscreen mDisplayWindowingMode=fullscreen mActivityType=undefined mAlwaysOnTop=undefined mRotation=undefined} ?fontWeightAdjustment}
+      mPreferredTopFocusableRootTask=Task{3a2c033 #1000029 type=standard A=1010204:dev.changbak.explorer}
+      mLastFocusedRootTask=Task{3a2c033 #1000029 type=standard A=1010204:dev.changbak.explorer}
+      Application tokens in top down Z order:
+      * Task{3a2c033 #1000029 type=standard A=1010204:dev.changbak.explorer U=10 visible=true visibleRequested=true mode=fullscreen translucent=false sz=1}
+        bounds=[0,0][1080,600]
+        * ActivityRecord{7227fee u10 dev.changbak.explorer/.MainActivity} t1000029}
+      * Task{8100bba #1000028 type=standard A=1010141:com.android.car.mapsplaceholder U=10 visible=false visibleRequested=false mode=multi-window translucent=true sz=1}
+        bounds=[303,57][1080,528]
+        * ActivityRecord{ac3b247 u10 com.android.car.mapsplaceholder/.MapsPlaceholderActivity} t1000028}
+      * Task{6f65ef3 #1 type=home U=0 visible=false visibleRequested=false mode=fullscreen translucent=true sz=1}
+        bounds=[0,0][1080,600]
+        * Task{65e8ed0 #1000004 type=home A=1010116:com.android.car.carlauncher U=10 rootTaskId=1 visible=false visibleRequested=false mode=fullscreen translucent=true sz=1}
+          bounds=[0,0][1080,600]
+          * ActivityRecord{22dc9ce u10 com.android.car.carlauncher/.CarLauncher} t1000004}
+
+  no ScreenRotationAnimation 
+
+  rootHomeTask=Task=1
+
+  PinnedTaskController
+    mIsImeShowing=false
+    mImeHeight=0
+    mMinAspectRatio=0.41841003
+    mMaxAspectRatio=2.39
+
+  DisplayFrames w=1080 h=600 r=0
+
+  DisplayPolicy
+    mCarDockEnablesAccelerometer=true mDeskDockEnablesAccelerometer=true
+ mDeskDockRespectsNoSensorAndLockedWithoutAccelerometer=false
+    mDockMode=EXTRA_DOCK_STATE_UNDOCKED mLidState=LID_OPEN
+    mAwake=true mScreenOnEarly=true mScreenOnFully=true
+    mKeyguardDrawComplete=true mWindowManagerDrawComplete=true
+    mHdmiPlugged=false
+    mLastAppearance=LIGHT_STATUS_BARS
+    mLastBehavior=DEFAULT
+    mShowingDream=false mDreamingLockscreen=false
+    mStatusBarAlt=Window{c405e0b u0 TopCarSystemBar}
+    mStatusBarAltPosition=8
+    mExpandedPanel=Window{24921c3 u0 SystemUIOverlayWindow}
+    isKeyguardShowing=false
+    mNavigationBarAlt=Window{84fc3fa u0 BottomCarSystemBar}
+    mNavigationBarAltPosition=4
+    mFocusedWindow=Window{b4fce53 u10 dev.changbak.explorer/dev.changbak.explorer.MainActivity}
+    mTopFullscreenOpaqueWindowState=Window{6c8c8fc u10 dev.changbak.explorer/dev.changbak.explorer.MainActivity}
+    mNavBarColorWindowCandidate=Window{b4fce53 u10 dev.changbak.explorer/dev.changbak.explorer.MainActivity}
+    mNavBarBackgroundWindow=Window{6c8c8fc u10 dev.changbak.explorer/dev.changbak.explorer.MainActivity}
+    mLastStatusBarAppearanceRegions=
+    mLastLetterboxDetails=
+    mTopIsFullscreen=false
+    mForceShowNavigationBarEnabled=false mAllowLockscreenWhenOn=false
+    mRemoteInsetsControllerControlsSystemBars=false
+    mDecorInsetsInfo:
+      ROTATION_0={nonDecorInsets=Rect(0, 0 - 0, 72), configInsets=Rect(0, 57 - 0, 72), nonDecorFrame=Rect(0, 0 - 1080, 528), configFrame=Rect(0, 57 - 1080, 528)}
+      ROTATION_90={nonDecorInsets=Rect(0, 0 - 0, 72), configInsets=Rect(0, 57 - 0, 72), nonDecorFrame=Rect(0, 0 - 600, 1008), configFrame=Rect(0, 57 - 600, 1008)}
+      ROTATION_180={nonDecorInsets=Rect(0, 0 - 0, 72), configInsets=Rect(0, 57 - 0, 72), nonDecorFrame=Rect(0, 0 - 1080, 528), configFrame=Rect(0, 57 - 1080, 528)}
+      ROTATION_270={nonDecorInsets=Rect(0, 0 - 0, 72), configInsets=Rect(0, 57 - 0, 72), nonDecorFrame=Rect(0, 0 - 600, 1008), configFrame=Rect(0, 57 - 600, 1008)}
+    SystemGestures:
+      mDisplayCutoutTouchableRegionSize=0
+      mSwipeStartThreshold=Rect(18, 18 - 18, 18)
+      mSwipeDistanceThreshold=18
+    Looper state:
+      Looper (android.ui, tid 21) {9c7fe67}
+        (Total messages: 0, polling=true, quitting=false)
+
+  DisplayRotation
+    mCurrentAppOrientation=SCREEN_ORIENTATION_UNSPECIFIED
+    mLastOrientation=-1
+    mRotation=0 mDeferredRotationPauseCount=0
+    mLandscapeRotation=ROTATION_0 mSeascapeRotation=ROTATION_180
+    mPortraitRotation=ROTATION_270 mUpsideDownRotation=ROTATION_90
+    mSupportAutoRotation=true
+    WindowOrientationListener
+      mEnabled=false
+      mCurrentRotation=ROTATION_0
+      mSensorType=null
+      mSensor={Sensor name="Goldfish 3-axis Accelerometer", vendor="The Android Open Source Project", version=1, type=1, maxRange=39.300102, resolution=2.480159E-4, power=3.0, minDelay=10000}
+      mRate=2
+      AccelSensorJudge
+        mProposedRotation=0
+        mPredictedRotation=0
+        mLastFilteredX=0.0
+        mLastFilteredY=0.0
+        mLastFilteredZ=0.0
+        mLastFilteredTimestampNanos=0 (186188.89ms ago)
+        mTiltHistory={last: 0.0}
+        mFlat=false
+        mSwinging=false
+        mAccelerating=false
+        mOverhead=false
+        mTouched=false
+        mTiltToleranceConfig=[[-25, 70], [-25, 65], [-25, 60], [-25, 65]]
+
+    mCarDockRotation=-1 mDeskDockRotation=-1
+    mUserRotationMode=USER_ROTATION_LOCKED mUserRotation=ROTATION_0 mCameraRotationMode=0 mAllowAllRotations=unknown
+    mDemoHdmiRotation=ROTATION_0 mDemoHdmiRotationLock=false mUndockedHdmiRotation=-1
+    mLidOpenRotation=-1
+    mFixedToUserRotation=true
+
+
+  WindowInsetsStateController
+    InsetsState
+      mDisplayFrame=Rect(0, 0 - 1080, 600)
+      mDisplayCutout=DisplayCutout{insets=Rect(0, 0 - 0, 0) waterfall=Insets{left=0, top=0, right=0, bottom=0} boundingRect={Bounds=[Rect(0, 0 - 0, 0), Rect(0, 0 - 0, 0), Rect(0, 0 - 0, 0), Rect(0, 0 - 0, 0)]} cutoutPathParserInfo={CutoutPathParserInfo{displayWidth=0 displayHeight=0 physicalDisplayWidth=0 physicalDisplayHeight=0 density={0.0} cutoutSpec={} rotation={0} scale={0.0} physicalPixelDisplaySizeRatio={0.0}}}}
+      mRoundedCorners=RoundedCorners{[RoundedCorner{position=TopLeft, radius=0, center=Point(0, 0)}, RoundedCorner{position=TopRight, radius=0, center=Point(0, 0)}, RoundedCorner{position=BottomRight, radius=0, center=Point(0, 0)}, RoundedCorner{position=BottomLeft, radius=0, center=Point(0, 0)}]}
+      mRoundedCornerFrame=Rect(0, 0 - 0, 0)
+      mPrivacyIndicatorBounds=PrivacyIndicatorBounds {static bounds=null rotation=0}
+        InsetsSource type=ITYPE_STATUS_BAR frame=[0,0][1080,57] visible=true insetsRoundedCornerFrame=false
+        InsetsSource type=ITYPE_NAVIGATION_BAR frame=[0,528][1080,600] visible=true insetsRoundedCornerFrame=false
+        InsetsSource type=ITYPE_TOP_MANDATORY_GESTURES frame=[0,0][1080,57] visible=true insetsRoundedCornerFrame=false
+        InsetsSource type=ITYPE_BOTTOM_MANDATORY_GESTURES frame=[0,528][1080,600] visible=true insetsRoundedCornerFrame=false
+        InsetsSource type=ITYPE_IME frame=[0,0][0,0] visible=false insetsRoundedCornerFrame=false
+    Control map:
+      ITYPE_IME -> Window{6c8c8fc u10 dev.changbak.explorer/dev.changbak.explorer.MainActivity}
+      ITYPE_NAVIGATION_BAR -> Window{b4fce53 u10 dev.changbak.explorer/dev.changbak.explorer.MainActivity}
+      ITYPE_STATUS_BAR -> Window{b4fce53 u10 dev.changbak.explorer/dev.changbak.explorer.MainActivity}
+    InsetsSourceProviders:
+      ImeInsetsSourceProvider
+        mSource=InsetsSource type=ITYPE_IME frame=[0,0][0,0] visible=false insetsRoundedCornerFrame=false
+        mSourceFrame=Rect(540, 600 - 540, 600)
+        mControl=InsetsSourceControl type=ITYPE_IME mLeash=Surface(name=Surface(name=2d675ad InputMethod)/@0x311bfa9 - animation-leash of insets_animation)/@0xb87c977 mInitiallyVisible=false mSurfacePosition=Point(540, 600) mInsetsHint=Insets{left=0, top=0, right=0, bottom=0} mSkipAnimationOnce=false
+        mIsLeashReadyForDispatching=true
+        mWindowContainer=Window{2d675ad u10 InputMethod}
+        mAdapter=ControlAdapter mCapturedLeash=Surface(name=Surface(name=2d675ad InputMethod)/@0x311bfa9 - animation-leash of insets_animation)/@0xb87c977
+        mControlTarget=Window{6c8c8fc u10 dev.changbak.explorer/dev.changbak.explorer.MainActivity}
+        mImeShowing=false
+      WindowContainerInsetsSourceProvider
+        mSource=InsetsSource type=ITYPE_BOTTOM_MANDATORY_GESTURES frame=[0,528][1080,600] visible=true insetsRoundedCornerFrame=false
+        mSourceFrame=Rect(0, 528 - 1080, 600)
+        mIsLeashReadyForDispatching=true
+        mWindowContainer=Window{84fc3fa u0 BottomCarSystemBar}
+      WindowContainerInsetsSourceProvider
+        mSource=InsetsSource type=ITYPE_TOP_MANDATORY_GESTURES frame=[0,0][1080,57] visible=true insetsRoundedCornerFrame=false
+        mSourceFrame=Rect(0, 0 - 1080, 57)
+        mIsLeashReadyForDispatching=true
+        mWindowContainer=Window{c405e0b u0 TopCarSystemBar}
+      WindowContainerInsetsSourceProvider
+        mSource=InsetsSource type=ITYPE_NAVIGATION_BAR frame=[0,528][1080,600] visible=true insetsRoundedCornerFrame=false
+        mSourceFrame=Rect(0, 528 - 1080, 600)
+        mControl=InsetsSourceControl type=ITYPE_NAVIGATION_BAR mLeash=Surface(name=Surface(name=84fc3fa BottomCarSystemBar)/@0xabdc08 - animation-leash of insets_animation)/@0x898cea1 mInitiallyVisible=true mSurfacePosition=Point(0, 528) mInsetsHint=Insets{left=0, top=0, right=0, bottom=72} mSkipAnimationOnce=false
+        mIsLeashReadyForDispatching=true
+        mWindowContainer=Window{84fc3fa u0 BottomCarSystemBar}
+        mAdapter=ControlAdapter mCapturedLeash=Surface(name=Surface(name=84fc3fa BottomCarSystemBar)/@0xabdc08 - animation-leash of insets_animation)/@0x898cea1
+        mControlTarget=Window{b4fce53 u10 dev.changbak.explorer/dev.changbak.explorer.MainActivity}
+      WindowContainerInsetsSourceProvider
+        mSource=InsetsSource type=ITYPE_STATUS_BAR frame=[0,0][1080,57] visible=true insetsRoundedCornerFrame=false
+        mSourceFrame=Rect(0, 0 - 1080, 57)
+        mControl=InsetsSourceControl type=ITYPE_STATUS_BAR mLeash=Surface(name=Surface(name=c405e0b TopCarSystemBar)/@0xbcb4701 - animation-leash of insets_animation)/@0xb729a9e mInitiallyVisible=true mSurfacePosition=Point(0, 0) mInsetsHint=Insets{left=0, top=57, right=0, bottom=0} mSkipAnimationOnce=false
+        mIsLeashReadyForDispatching=true
+        mWindowContainer=Window{c405e0b u0 TopCarSystemBar}
+        mAdapter=ControlAdapter mCapturedLeash=Surface(name=Surface(name=c405e0b TopCarSystemBar)/@0xbcb4701 - animation-leash of insets_animation)/@0xb729a9e
+        mControlTarget=Window{b4fce53 u10 dev.changbak.explorer/dev.changbak.explorer.MainActivity}
+
+  Display: mDisplayId=2 (organized)
+    init=400x600 120dpi mMinSizeOfResizeableTaskDp=220 cur=400x600 app=400x600 rng=400x400-600x600
+    deferred=false mLayoutNeeded=false mTouchExcludeRegion=SkRegion((0,0,400,600))
+
+  overrideConfig={0.0 ?mcc?mnc ?localeList ?layoutDir sw533dp w533dp h800dp 120dpi lrg port ?uimode ?night finger -keyb/v/h -nav/h winConfig={ mBounds=Rect(0, 0 - 400, 600) mAppBounds=Rect(0, 0 - 400, 600) mMaxBounds=Rect(0, 0 - 400, 600) mDisplayRotation=ROTATION_0 mWindowingMode=fullscreen mDisplayWindowingMode=fullscreen mActivityType=undefined mAlwaysOnTop=undefined mRotation=ROTATION_0} ?fontWeightAdjustment}
+  mLayoutSeq=22
+  mCurrentFocus=Window{b871e7 u0 com.android.car.cluster.osdouble/com.android.car.cluster.osdouble.ClusterOsDoubleActivity}
+  mFocusedApp=ActivityRecord{47ca5f8 u0 com.android.car.cluster.osdouble/.ClusterOsDoubleActivity} t2}
+
+  mHoldScreenWindow=null
+  mObscuringWindow=null
+  mLastWakeLockHoldingWindow=null
+  mLastWakeLockObscuringWindow=null
+
+  displayId=2
+  mWallpaperTarget=null
+  mLastWallpaperX=-1.0 mLastWallpaperY=-1.0
+
+  Display areas in top down Z order:
+    * Leaf:36:36
+    * FullscreenMagnification:33:35
+      * Leaf:33:35
+    * Leaf:32:32
+    * WindowedMagnification:0:31
+      * FullscreenMagnification:29:31
+        * Leaf:29:31
+      * Leaf:28:28
+      * FullscreenMagnification:26:27
+        * Leaf:26:27
+      * Leaf:24:25
+      * FullscreenMagnification:15:23
+        * Leaf:15:23
+      * ImePlaceholder:13:14
+        * ImeContainer
+      * FullscreenMagnification:0:12
+        * Leaf:3:12
+        * DefaultTaskDisplayArea (organized)
+        * Leaf:0:1
+
+  Task display areas in top down Z order:
+    TaskDisplayArea DefaultTaskDisplayArea
+      overrideConfig={0.0 ?mcc?mnc ?localeList ?layoutDir ?swdp ?wdp ?hdp ?density ?lsize ?long ?ldr ?wideColorGamut ?orien ?uimode ?night ?touch ?keyb/?/? ?nav/? winConfig={ mBounds=Rect(0, 0 - 0, 0) mAppBounds=null mMaxBounds=Rect(0, 0 - 0, 0) mDisplayRotation=undefined mWindowingMode=fullscreen mDisplayWindowingMode=fullscreen mActivityType=undefined mAlwaysOnTop=undefined mRotation=undefined} ?fontWeightAdjustment}
+      mPreferredTopFocusableRootTask=Task{b13a06a #2 type=standard A=1000:com.android.car.cluster.osdouble}
+      mLastFocusedRootTask=Task{b13a06a #2 type=standard A=1000:com.android.car.cluster.osdouble}
+      Application tokens in top down Z order:
+      * Task{b13a06a #2 type=standard A=1000:com.android.car.cluster.osdouble U=0 visible=true visibleRequested=true mode=fullscreen translucent=false sz=1}
+        bounds=[0,0][400,600]
+        * ActivityRecord{47ca5f8 u0 com.android.car.cluster.osdouble/.ClusterOsDoubleActivity} t2}
+
+  no ScreenRotationAnimation 
+
+
+  PinnedTaskController
+    mIsImeShowing=false
+    mImeHeight=0
+    mMinAspectRatio=0.41841003
+    mMaxAspectRatio=2.39
+
+  DisplayFrames w=400 h=600 r=0
+
+  DisplayPolicy
+    mCarDockEnablesAccelerometer=true mDeskDockEnablesAccelerometer=true
+ mDeskDockRespectsNoSensorAndLockedWithoutAccelerometer=false
+    mDockMode=EXTRA_DOCK_STATE_UNDOCKED mLidState=LID_ABSENT
+    mAwake=true mScreenOnEarly=true mScreenOnFully=true
+    mKeyguardDrawComplete=false mWindowManagerDrawComplete=false
+    mHdmiPlugged=false
+    mLastBehavior=SHOW_TRANSIENT_BARS_BY_SWIPE
+    mShowingDream=false mDreamingLockscreen=false
+    isKeyguardShowing=false
+    mFocusedWindow=Window{b871e7 u0 com.android.car.cluster.osdouble/com.android.car.cluster.osdouble.ClusterOsDoubleActivity}
+    mTopFullscreenOpaqueWindowState=Window{b871e7 u0 com.android.car.cluster.osdouble/com.android.car.cluster.osdouble.ClusterOsDoubleActivity}
+    mLastStatusBarAppearanceRegions=
+    mLastLetterboxDetails=
+    mTopIsFullscreen=true
+    mForceShowNavigationBarEnabled=false mAllowLockscreenWhenOn=false
+    mRemoteInsetsControllerControlsSystemBars=false
+    mDecorInsetsInfo:
+      ROTATION_0={nonDecorInsets=Rect(0, 0 - 0, 0), configInsets=Rect(0, 0 - 0, 0), nonDecorFrame=Rect(0, 0 - 400, 600), configFrame=Rect(0, 0 - 400, 600)}
+      ROTATION_90={nonDecorInsets=Rect(0, 0 - 0, 0), configInsets=Rect(0, 0 - 0, 0), nonDecorFrame=Rect(0, 0 - 600, 400), configFrame=Rect(0, 0 - 600, 400)}
+      ROTATION_180={nonDecorInsets=Rect(0, 0 - 0, 0), configInsets=Rect(0, 0 - 0, 0), nonDecorFrame=Rect(0, 0 - 400, 600), configFrame=Rect(0, 0 - 400, 600)}
+      ROTATION_270={nonDecorInsets=Rect(0, 0 - 0, 0), configInsets=Rect(0, 0 - 0, 0), nonDecorFrame=Rect(0, 0 - 600, 400), configFrame=Rect(0, 0 - 600, 400)}
+    SystemGestures:
+      mDisplayCutoutTouchableRegionSize=0
+      mSwipeStartThreshold=Rect(18, 18 - 18, 18)
+      mSwipeDistanceThreshold=18
+    Looper state:
+      Looper (android.ui, tid 21) {9c7fe67}
+        (Total messages: 0, polling=true, quitting=false)
+
+  DisplayRotation
+    mCurrentAppOrientation=SCREEN_ORIENTATION_UNSPECIFIED
+    mLastOrientation=-1
+    mRotation=0 mDeferredRotationPauseCount=0
+    mLandscapeRotation=ROTATION_90 mSeascapeRotation=ROTATION_270
+    mPortraitRotation=ROTATION_0 mUpsideDownRotation=ROTATION_180
+    mSupportAutoRotation=true
+
+    mCarDockRotation=-1 mDeskDockRotation=-1
+    mUserRotationMode=USER_ROTATION_FREE mUserRotation=ROTATION_0 mCameraRotationMode=0 mAllowAllRotations=unknown
+    mDemoHdmiRotation=ROTATION_90 mDemoHdmiRotationLock=false mUndockedHdmiRotation=-1
+    mLidOpenRotation=-1
+    mFixedToUserRotation=true
+
+
+  WindowInsetsStateController
+    InsetsState
+      mDisplayFrame=Rect(0, 0 - 400, 600)
+      mDisplayCutout=DisplayCutout{insets=Rect(0, 0 - 0, 0) waterfall=Insets{left=0, top=0, right=0, bottom=0} boundingRect={Bounds=[Rect(0, 0 - 0, 0), Rect(0, 0 - 0, 0), Rect(0, 0 - 0, 0), Rect(0, 0 - 0, 0)]} cutoutPathParserInfo={CutoutPathParserInfo{displayWidth=0 displayHeight=0 physicalDisplayWidth=0 physicalDisplayHeight=0 density={0.0} cutoutSpec={} rotation={0} scale={0.0} physicalPixelDisplaySizeRatio={0.0}}}}
+      mRoundedCorners=RoundedCorners{[RoundedCorner{position=TopLeft, radius=0, center=Point(0, 0)}, RoundedCorner{position=TopRight, radius=0, center=Point(0, 0)}, RoundedCorner{position=BottomRight, radius=0, center=Point(0, 0)}, RoundedCorner{position=BottomLeft, radius=0, center=Point(0, 0)}]}
+      mRoundedCornerFrame=Rect(0, 0 - 0, 0)
+      mPrivacyIndicatorBounds=PrivacyIndicatorBounds {static bounds=null rotation=0}
+        InsetsSource type=ITYPE_IME frame=[0,0][0,0] visible=false insetsRoundedCornerFrame=false
+    Control map:
+    InsetsSourceProviders:
+      ImeInsetsSourceProvider
+        mSource=InsetsSource type=ITYPE_IME frame=[0,0][0,0] visible=false insetsRoundedCornerFrame=false
+        mSourceFrame=Rect(0, 0 - 0, 0)
+        mIsLeashReadyForDispatching=false
+        mImeShowing=false
+
+  Display: mDisplayId=3
+    init=400x525 160dpi mMinSizeOfResizeableTaskDp=220 cur=400x525 app=400x525 rng=400x400-525x525
+    deferred=false mLayoutNeeded=false mTouchExcludeRegion=SkRegion()
+
+  overrideConfig={0.0 ?mcc?mnc ?localeList ?layoutDir sw400dp w400dp h525dp 160dpi nrml port ?uimode ?night finger -keyb/v/h -nav/h winConfig={ mBounds=Rect(0, 0 - 400, 525) mAppBounds=Rect(0, 0 - 400, 525) mMaxBounds=Rect(0, 0 - 400, 525) mDisplayRotation=ROTATION_0 mWindowingMode=fullscreen mDisplayWindowingMode=fullscreen mActivityType=undefined mAlwaysOnTop=undefined mRotation=ROTATION_0} ?fontWeightAdjustment}
+  mLayoutSeq=22
+  mCurrentFocus=null
+  mFocusedApp=null
+
+  mHoldScreenWindow=null
+  mObscuringWindow=Window{9f6ceaa u0 com.android.car.cluster.home/com.android.car.cluster.home.ClusterHomeActivity}
+  mLastWakeLockHoldingWindow=null
+  mLastWakeLockObscuringWindow=null
+
+  displayId=3
+  mWallpaperTarget=null
+  mLastWallpaperX=-1.0 mLastWallpaperY=-1.0
+
+  Display areas in top down Z order:
+    * Leaf:15:36
+    * ImeContainer
+    * Leaf:3:12
+    * DefaultTaskDisplayArea
+    * Leaf:0:1
+
+  Task display areas in top down Z order:
+    TaskDisplayArea DefaultTaskDisplayArea
+      overrideConfig={0.0 ?mcc?mnc ?localeList ?layoutDir ?swdp ?wdp ?hdp ?density ?lsize ?long ?ldr ?wideColorGamut ?orien ?uimode ?night ?touch ?keyb/?/? ?nav/? winConfig={ mBounds=Rect(0, 0 - 0, 0) mAppBounds=null mMaxBounds=Rect(0, 0 - 0, 0) mDisplayRotation=undefined mWindowingMode=fullscreen mDisplayWindowingMode=fullscreen mActivityType=undefined mAlwaysOnTop=undefined mRotation=undefined} ?fontWeightAdjustment}
+      mPreferredTopFocusableRootTask=Task{1bfe4e7 #3 type=standard A=10123:com.android.car.cluster.home}
+      mLastFocusedRootTask=Task{1bfe4e7 #3 type=standard A=10123:com.android.car.cluster.home}
+      Application tokens in top down Z order:
+      * Task{1bfe4e7 #3 type=standard A=10123:com.android.car.cluster.home U=0 visible=true visibleRequested=true mode=fullscreen translucent=false sz=1}
+        bounds=[0,0][400,525]
+        * ActivityRecord{371ef3d u0 com.android.car.cluster.home/.ClusterHomeActivity} t3}
+
+  no ScreenRotationAnimation 
+
+
+  PinnedTaskController
+    mIsImeShowing=false
+    mImeHeight=0
+    mMinAspectRatio=0.41841003
+    mMaxAspectRatio=2.39
+
+  DisplayFrames w=400 h=525 r=0
+
+  DisplayPolicy
+    mCarDockEnablesAccelerometer=true mDeskDockEnablesAccelerometer=true
+ mDeskDockRespectsNoSensorAndLockedWithoutAccelerometer=false
+    mDockMode=EXTRA_DOCK_STATE_UNDOCKED mLidState=LID_ABSENT
+    mAwake=true mScreenOnEarly=true mScreenOnFully=true
+    mKeyguardDrawComplete=false mWindowManagerDrawComplete=false
+    mHdmiPlugged=false
+    mLastBehavior=SHOW_TRANSIENT_BARS_BY_SWIPE
+    mShowingDream=false mDreamingLockscreen=false
+    isKeyguardShowing=false
+    mTopFullscreenOpaqueWindowState=Window{9f6ceaa u0 com.android.car.cluster.home/com.android.car.cluster.home.ClusterHomeActivity}
+    mLastStatusBarAppearanceRegions=
+    mLastLetterboxDetails=
+    mTopIsFullscreen=true
+    mForceShowNavigationBarEnabled=false mAllowLockscreenWhenOn=false
+    mRemoteInsetsControllerControlsSystemBars=false
+    mDecorInsetsInfo:
+      ROTATION_0={nonDecorInsets=Rect(0, 0 - 0, 0), configInsets=Rect(0, 0 - 0, 0), nonDecorFrame=Rect(0, 0 - 400, 525), configFrame=Rect(0, 0 - 400, 525)}
+      ROTATION_90={nonDecorInsets=Rect(0, 0 - 0, 0), configInsets=Rect(0, 0 - 0, 0), nonDecorFrame=Rect(0, 0 - 525, 400), configFrame=Rect(0, 0 - 525, 400)}
+      ROTATION_180={nonDecorInsets=Rect(0, 0 - 0, 0), configInsets=Rect(0, 0 - 0, 0), nonDecorFrame=Rect(0, 0 - 400, 525), configFrame=Rect(0, 0 - 400, 525)}
+      ROTATION_270={nonDecorInsets=Rect(0, 0 - 0, 0), configInsets=Rect(0, 0 - 0, 0), nonDecorFrame=Rect(0, 0 - 525, 400), configFrame=Rect(0, 0 - 525, 400)}
+    SystemGestures:
+      mDisplayCutoutTouchableRegionSize=0
+      mSwipeStartThreshold=Rect(24, 24 - 24, 24)
+      mSwipeDistanceThreshold=24
+    Looper state:
+      Looper (android.ui, tid 21) {9c7fe67}
+        (Total messages: 0, polling=true, quitting=false)
+
+  DisplayRotation
+    mCurrentAppOrientation=SCREEN_ORIENTATION_UNSPECIFIED
+    mLastOrientation=-1
+    mRotation=0 mDeferredRotationPauseCount=0
+    mLandscapeRotation=ROTATION_90 mSeascapeRotation=ROTATION_270
+    mPortraitRotation=ROTATION_0 mUpsideDownRotation=ROTATION_180
+    mSupportAutoRotation=true
+
+    mCarDockRotation=-1 mDeskDockRotation=-1
+    mUserRotationMode=USER_ROTATION_FREE mUserRotation=ROTATION_0 mCameraRotationMode=0 mAllowAllRotations=unknown
+    mDemoHdmiRotation=ROTATION_90 mDemoHdmiRotationLock=false mUndockedHdmiRotation=-1
+    mLidOpenRotation=-1
+    mFixedToUserRotation=true
+
+
+  WindowInsetsStateController
+    InsetsState
+      mDisplayFrame=Rect(0, 0 - 400, 525)
+      mDisplayCutout=DisplayCutout{insets=Rect(0, 0 - 0, 0) waterfall=Insets{left=0, top=0, right=0, bottom=0} boundingRect={Bounds=[Rect(0, 0 - 0, 0), Rect(0, 0 - 0, 0), Rect(0, 0 - 0, 0), Rect(0, 0 - 0, 0)]} cutoutPathParserInfo={CutoutPathParserInfo{displayWidth=0 displayHeight=0 physicalDisplayWidth=0 physicalDisplayHeight=0 density={0.0} cutoutSpec={} rotation={0} scale={0.0} physicalPixelDisplaySizeRatio={0.0}}}}
+      mRoundedCorners=RoundedCorners{[RoundedCorner{position=TopLeft, radius=0, center=Point(0, 0)}, RoundedCorner{position=TopRight, radius=0, center=Point(0, 0)}, RoundedCorner{position=BottomRight, radius=0, center=Point(0, 0)}, RoundedCorner{position=BottomLeft, radius=0, center=Point(0, 0)}]}
+      mRoundedCornerFrame=Rect(0, 0 - 0, 0)
+      mPrivacyIndicatorBounds=PrivacyIndicatorBounds {static bounds=null rotation=0}
+        InsetsSource type=ITYPE_IME frame=[0,0][0,0] visible=false insetsRoundedCornerFrame=false
+    Control map:
+    InsetsSourceProviders:
+      ImeInsetsSourceProvider
+        mSource=InsetsSource type=ITYPE_IME frame=[0,0][0,0] visible=false insetsRoundedCornerFrame=false
+        mSourceFrame=Rect(0, 0 - 0, 0)
+        mIsLeashReadyForDispatching=false
+        mImeShowing=false
+
+  KeyguardController:
+    mKeyguardShowing=false
+    mAodShowing=false
+    mKeyguardGoingAway=false
+   KeyguardShowing=false AodShowing=false KeyguardGoingAway=false DismissalRequested=false  Occluded=false DismissingKeyguardActivity=null TurnScreenOnActivity=null at display=0
+   KeyguardShowing=false AodShowing=false KeyguardGoingAway=false DismissalRequested=false  Occluded=false DismissingKeyguardActivity=null TurnScreenOnActivity=null at display=2
+   KeyguardShowing=false AodShowing=false KeyguardGoingAway=false DismissalRequested=false  Occluded=false DismissingKeyguardActivity=null TurnScreenOnActivity=null at display=3
+    mDismissalRequested=false
+
+  LockTaskController:
+    mLockTaskModeState=NONE
+    mLockTaskModeTasks=
+    mLockTaskPackages (userId:packages)=
+      u0:[]
+      u10:[]
+
+  mCurTaskIdForUser={0=3, 10=1000029}
+  mUserRootTaskInFront={0=3}
+  mVisibilityTransactionDepth=0
+  isHomeRecentsComponent=false
+  mNoHistoryActivities=[]
+
+  TaskOrganizerController:
+      android.window.ITaskOrganizer$Stub$Proxy@f2cc67b uid=10187:
+      android.window.ITaskOrganizer$Stub$Proxy@8ac2c98 uid=1010116 (active):
+        (fullscreen) Task{6f65ef3 #1 type=home}
+        (fullscreen) Task{b13a06a #2 type=standard A=1000:com.android.car.cluster.osdouble}
+        (fullscreen) Task{1bfe4e7 #3 type=standard A=10123:com.android.car.cluster.home}
+        (multi-window) Task{8100bba #1000028 type=standard A=1010141:com.android.car.mapsplaceholder}
+        (fullscreen) Task{3a2c033 #1000029 type=standard A=1010204:dev.changbak.explorer}
+
+  VisibleActivityProcess:[ ProcessRecord{5479f97 867:com.android.car.cluster.home/u0a123} ProcessRecord{fcb616d 890:com.android.car.cluster.osdouble/1000} ProcessRecord{6078fe4 3251:dev.changbak.explorer/u10a204}]
+  NumNonAppVisibleWindowUidMap:[ 1010120:1 10187:2]

@@ -1,0 +1,22 @@
+{
+  "d-validation-logcat.txt": {
+    "FATAL EXCEPTION": 0,
+    "Korean TTS requests": 7,
+    "ANR mentions": 0
+  },
+  "d-family-validation-logcat.txt": {
+    "FATAL EXCEPTION": 0,
+    "Korean TTS requests": 0,
+    "ANR mentions": 3
+  },
+  "d-setup-logcat.txt": {
+    "FATAL EXCEPTION": 29,
+    "Korean TTS requests": 0,
+    "ANR mentions": 0
+  },
+  "d-host-boot-logcat.txt": {
+    "FATAL EXCEPTION": 0,
+    "Korean TTS requests": 0,
+    "ANR mentions": 0
+  }
+}

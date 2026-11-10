@@ -69,3 +69,33 @@ PASS aapt2 badging: versionCode=13 versionName=0.13.0
 PASS org.json is test scope only: no org/json entries inside the APK
 APK SHA-256 ee415ce90f6c3b71faa2b5b21c1fe6fcf6a6989cb2e40a05d4cc4c57973dd86d
 NOT YET RUN on the emulator: the family-memory beat has unit coverage only.
+
+2026-11-10 0.13.1 보호자 메뉴 결함 수정과 가족의 기억 기기 검증
+에뮬레이터: pleos_check_aaos33, API 33 automotive, -gpu host (swiftshader 로는 호스트 프로세스가 139로 죽음)
+
+결함: 보호자 메뉴에서 다른 창을 여는 항목이 전부 조용히 열리지 않았음. 0.13.0 이전부터 있던 문제.
+  원인: AlertDialog 항목을 누르면 우리 handler.post 가 먼저 큐에 들어가고, 다이얼로그의 dismiss
+  콜백이 그 뒤에 들어감. 새 화면이 show() 를 부를 때 dialog 가 아직 비어 있지 않아
+  usable() 이 거짓이 되고 아무 말 없이 반환했음.
+  증명: 제 변경과 무관한 기존 항목 "설명 출처" 도 똑같이 열리지 않음 (e-02).
+  수정: show() 가 열려 있는 다이얼로그를 거부하지 않고 교체함. 이전 리스너를 먼저 떼어
+  새로 저장한 dialog 를 지우지 못하게 함.
+PASS e-03 수정 후 "설명 출처" 가 열림. 기존 기능도 함께 복구됨.
+
+가족의 기억 (0.13.0 신규)
+PASS e-04 보호자 메뉴에서 장소 목록 6곳이 열림
+PASS e-05 시점 라디오 4개와 메모 입력란이 있는 기록 화면
+PASS e-06 "롯데월드타워 · 작년에" 로 저장되고 앱 재시작 후에도 남음
+PASS e-07 03 해설 다음에 "우리 가족의 기억" 단계가 나타남. 문구:
+  "그런데 있잖아. 여기는 작년에 우리 가족이 함께 왔던 곳이야. 기억나지 않아도 괜찮아.
+   오늘 다시 지나가는 것만으로도 좋아." / "보호자가 적어 둔 기억이에요" / 기억나! · 잘 모르겠어
+PASS e-08 "잘 모르겠어" 를 눌러도 04 오늘의 구조 설계자로 넘어감
+PASS e-09 e-10 TTS 엔진을 죽인 채로도 03 에서 가족 단계를 거쳐 04 까지 멈추지 않고 진행
+  Disconnected from TTS engine 2건, FATAL EXCEPTION 0건
+기록이 없을 때 가족 단계가 나오지 않는 것은 Codex 가 109초 무입력 관찰로 확인 (d- 스크린샷)
+
+기기에서 확인하지 못한 것
+- "기억나!" 쪽 경로. 코드상 "잘 모르겠어" 와 같은 함수를 부르고 단위 검사로 고정되어 있으나
+  기기에서 누른 것은 "잘 모르겠어" 뿐임
+- 같은 장소에서 두 번 들려주지 않는지, 기록을 지우면 단계가 사라지는지. 단위 검사만 있음
+- 한국어 음성을 실제로 들어 확인하지는 않음. 합성 요청 로그만 확인
