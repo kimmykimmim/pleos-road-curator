@@ -230,3 +230,23 @@ PASS 실제 Pleos 에뮬레이터에서 사진이 없는 상태로 해설 단계
 PASS 실제 Pleos 에뮬레이터에서 롯데월드타워와 63빌딩의 사진과 출처 표기 확인.
   우리 앱 FATAL 0건. 증거 h-01, h-02.
 검사 251개 통과, 실패 0. 서명 release APK versionCode 18, 29MB.
+
+2026-11-11 0.16.0 실제 Pleos 에뮬레이터 실행 확인
+환경: Pleos Connect v2.1.0 (RELEASE.release_connect_v2.1.0), versionName 0.16.0 설치
+PASS 시연 흐름이 한 번의 터치 뒤 자동 진행. 01 예고 -> 02 관찰 -> 03 이야기 -> 04 역할 놀이
+PASS 질문 단계에 롯데월드타워 실제 사진과 "지금 / 한강 건너에서 보면 이렇게 뾰족해",
+  그 아래 "사진 Ox1997cow · CC BY 3.0 · Wikimedia Commons" 출처 표기. 증거 i-01.
+PASS 해설 단계는 원리 설명 그림으로 돌아감. 증거 i-02. 의도한 동작입니다.
+PASS 우리 앱 FATAL EXCEPTION 0건.
+PASS 차량 오디오 우선순위 승인 5회.
+
+PASS Pleos 기기 내 TTS 가 실제로 동작함 (그동안 미검증이던 항목)
+  Android 대체 음성이 아니라 Pleos 음성 서비스[GAAS]가 쓰입니다. 로그:
+    getTextToSpeech(dev.changbak.explorer:ondevice) - targetLocale:ko_KR
+    getSpeakerType(dev.changbak.explorer) - TTSConfig(speaker=seoyoon)
+    generate(dev.changbak.explorer:ondevice) start speaker=seoyoon locale=ko_KR
+    onDeviceTtsPlayer(dev.changbak.explorer:ondevice) - complete
+  TTS 서비스 제공자는 ai.pleos.playground.caas 입니다.
+  참고: 이 때문에 Google TTS 의 "Synthesis request for locale kor-KOR" 로그는 0건입니다.
+  Pleos 환경에서는 그쪽 경로를 쓰지 않는 것이 맞습니다.
+  소리를 귀로 들어 확인한 것은 아니며, 합성 시작과 완료 로그까지 확인했습니다.
