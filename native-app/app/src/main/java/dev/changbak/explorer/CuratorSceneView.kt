@@ -46,11 +46,11 @@ class CuratorSceneView(context: Context): View(context) {
             fun line(x1:Float,y1:Float,x2:Float,y2:Float,color:Int,width:Float) {
                 p.color=color;p.strokeWidth=width;p.strokeCap=Paint.Cap.ROUND;c.drawLine(x1,y1,x2,y2,p)
             }
-            val teal=Color.rgb(46,113,115);val dark=Color.rgb(55,74,81);val pale=Color.rgb(180,204,194)
-            p.color=Color.rgb(208,224,214);c.drawOval(w*.06f,h*.22f,w*.94f,h*.82f,p)
+            val teal=Color.rgb(8,98,136);val dark=Color.rgb(11,45,63);val pale=Color.rgb(183,214,238)
+            p.color=Color.rgb(205,225,240);c.drawOval(w*.06f,h*.22f,w*.94f,h*.82f,p)
             val mystery=state.phase in setOf(CuratorPhase.READY,CuratorPhase.WAITING)
             if(mystery) {
-                p.color=Color.rgb(246,244,229);c.drawCircle(w*.5f,h*.46f,w*.21f,p)
+                p.color=Color.rgb(255,239,196);c.drawCircle(w*.5f,h*.46f,w*.21f,p)
                 p.color=teal;p.textAlign=Paint.Align.CENTER;p.textSize=h*.23f;p.typeface=Typeface.create("sans-serif",Typeface.BOLD)
                 c.drawText("?",w*.5f,h*.54f,p)
             } else {

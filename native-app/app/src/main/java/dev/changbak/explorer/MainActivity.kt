@@ -98,9 +98,9 @@ class MainActivity : Activity() {
     private lateinit var placeName: TextView
     private lateinit var subline: TextView
     private var statusLabel: TextView? = null
-    private val ink = Color.rgb(31,49,67)
-    private val muted = Color.rgb(99,119,135)
-    private val accent = Color.rgb(36,103,111)
+    private val ink = Color.rgb(11,45,63)
+    private val muted = Color.rgb(104,130,151)
+    private val accent = Color.rgb(8,98,136)
     private val timer = object : Runnable {
         override fun run() {
             if (foreground && demo && playing && !restricted && dialog == null) {
@@ -225,17 +225,27 @@ class MainActivity : Activity() {
                 if (usable()) { drive?.suppress(true);mic = voice.enableCommands(); status = if (mic) "네 생각을 듣고 있어" else "지금은 화면으로 골라줘";if(!mic) drive?.suppress(false);render() }
             } }.create())
     }
-    private fun dp(n: Int) = (n*resources.displayMetrics.density).toInt()
+    /**
+     * Pleos gives this app about 1680dp of width; the reference screen this layout was drawn for
+     * is about 1020dp. One scale carries both type and spacing, so the same layout reads the same
+     * on each instead of sitting small in the corner of the larger screen.
+     */
+    private val uiScale by lazy {
+        val widthDp = resources.displayMetrics.widthPixels / resources.displayMetrics.density
+        (widthDp / 1020f).coerceIn(1f, 1.5f)
+    }
+    private fun dp(n: Int) = (n*uiScale*resources.displayMetrics.density).toInt()
+    private fun sp(n: Float) = n*uiScale
     private fun column() = LinearLayout(this).apply { orientation = LinearLayout.VERTICAL }
     private fun row() = LinearLayout(this).apply { orientation = LinearLayout.HORIZONTAL; gravity = Gravity.CENTER_VERTICAL }
     private fun rounded(color: Int) = GradientDrawable().apply { setColor(color); cornerRadius = dp(28).toFloat() }
     private fun label(text: String, size: Float, color: Int = ink, bold: Boolean = false) = TextView(this).apply {
-        this.text = text; textSize = size; setTextColor(color); includeFontPadding = false; setLineSpacing(dp(5).toFloat(),1f)
+        this.text = text; textSize = sp(size); setTextColor(color); includeFontPadding = false; setLineSpacing(dp(5).toFloat(),1f)
         if (bold) typeface = Typeface.create("sans-serif-medium",Typeface.NORMAL)
     }
     private fun button(text: String, primary: Boolean = false, action: () -> Unit) = Button(this).apply {
-        this.text = text; textSize = 24f; isAllCaps = false; setTextColor(if (primary) Color.WHITE else ink)
-        background = rounded(if(primary) accent else Color.rgb(235,242,241)); minHeight = dp(72)
+        this.text = text; textSize = sp(24f); isAllCaps = false; setTextColor(if (primary) Color.WHITE else ink)
+        background = rounded(if(primary) accent else Color.rgb(231,241,250)); minHeight = dp(72)
         setPadding(dp(16),dp(12),dp(16),dp(12)); setOnClickListener { if (usable()) action() }
     }
     private fun action(text: String, primary: Boolean = false, fn: () -> Unit) {
@@ -243,7 +253,7 @@ class MainActivity : Activity() {
     }
     private fun gap(parent: LinearLayout,n: Int) { parent.addView(View(this),LinearLayout.LayoutParams(1,dp(n))) }
     private fun buildLayout() {
-        val root = column().apply { setBackgroundColor(Color.rgb(245,248,247)); setPadding(dp(30),dp(24),dp(30),dp(24)) }
+        val root = column().apply { setBackgroundColor(Color.rgb(242,247,251)); setPadding(dp(30),dp(24),dp(30),dp(24)) }
         val header = row(); val titles = column()
         titles.addView(label("가는 길이 이야기가 되는 시간",17f,muted)); gap(titles,6)
         titles.addView(label("길 위의 큐레이터",29f,ink,true))
@@ -252,18 +262,28 @@ class MainActivity : Activity() {
         header.addView(button("보호자") { parentMenu() },LinearLayout.LayoutParams(-2,dp(68)))
         root.addView(header); gap(root,24)
         val scroll = ScrollView(this).apply { isFillViewport = true }
-        val body = row().apply { gravity = Gravity.TOP }
-        val left = column().apply { background = rounded(Color.rgb(226,238,233)); setPadding(dp(24),dp(24),dp(24),dp(28)); gravity=Gravity.CENTER_HORIZONTAL }
+        val body = row()
+        val left = column().apply { background = rounded(Color.rgb(223,238,249)); setPadding(dp(24),dp(24),dp(24),dp(28)); gravity=Gravity.CENTER }
         subline = label("경로에서 만나는 발견",20f,accent,true).also { left.addView(it) }
-        scene = CuratorMediaPanel(this).also { left.addView(it,LinearLayout.LayoutParams(-1,dp(290))) }
+        // The drawing takes the leftover height instead of a fixed box, so the panel is full
+        // on a tall screen and still has room to breathe on a short one.
+        scene = CuratorMediaPanel(this).also {
+            left.addView(it,LinearLayout.LayoutParams(-1,-2).apply { topMargin=dp(14);bottomMargin=dp(16) })
+        }
         placeName = label("어떤 곳을 만나게 될까?",31f,ink,true).also { left.addView(it) }
         scene.places={ CuratorCatalog.places+album.load().ownCuratorPlaces() }
-        mediaButton=button("짧은 원리 영상 다시 보기") { scene.replay() }.apply { textSize=18f }
-        left.addView(mediaButton,LinearLayout.LayoutParams(-1,dp(58)))
-        gap(left,12); left.addView(label("예고 → 관찰 → 이야기 → 역할 놀이",19f,muted))
-        body.addView(left,LinearLayout.LayoutParams(0,-2,.46f).apply { marginEnd=dp(22) })
-        card = column().apply { background = rounded(Color.WHITE); setPadding(dp(30),dp(30),dp(30),dp(28)) }
-        body.addView(card,LinearLayout.LayoutParams(0,-2,.54f)); scroll.addView(body)
+        mediaButton=button("짧은 원리 영상 다시 보기") { scene.replay() }.apply { textSize=sp(18f) }
+        left.addView(mediaButton,LinearLayout.LayoutParams(-1,dp(58)).apply { topMargin=dp(12) })
+        // The scene already draws the four step dots with their names, so the text version of
+        // the same list was saying it twice.
+        body.addView(left,LinearLayout.LayoutParams(0,-1,.46f).apply { marginEnd=dp(22) })
+        // Centred, so a short turn sits in the middle of the card rather than hugging the top.
+        card = column().apply {
+            background = rounded(Color.WHITE); setPadding(dp(34),dp(30),dp(34),dp(30))
+            gravity = Gravity.CENTER_VERTICAL
+        }
+        body.addView(card,LinearLayout.LayoutParams(0,-1,.54f)); scroll.addView(body,
+            LinearLayout.LayoutParams(-1,-1))
         root.addView(scroll,LinearLayout.LayoutParams(-1,0,1f)); setContentView(root)
     }
     private fun render() {

@@ -22,6 +22,19 @@ class CuratorMediaPanel(context:Context): FrameLayout(context) {
     private var playingKey:String?=null
     private var generation=0L
     init { addView(video,LayoutParams(-1,-1,Gravity.CENTER));addView(scene,LayoutParams(-1,-1)) }
+
+    /**
+     * The artwork is drawn on a 960x540 field and centred, so a box taller than that ratio just
+     * adds empty margin above and below the drawing. Keeping the panel at the drawing's own
+     * shape puts that space back into the layout, where it reads as breathing room.
+     */
+    override fun onMeasure(widthSpec:Int,heightSpec:Int) {
+        val width=MeasureSpec.getSize(widthSpec)
+        var height=(width*540f/960f).toInt()
+        val limit=MeasureSpec.getSize(heightSpec)
+        if(MeasureSpec.getMode(heightSpec)!=MeasureSpec.UNSPECIFIED && limit in 1 until height) height=limit
+        super.onMeasure(widthSpec,MeasureSpec.makeMeasureSpec(height,MeasureSpec.EXACTLY))
+    }
     fun present(state:CuratorState, allowed:Boolean) {
         current=state;permitted=allowed
         scene.present(state,allowed)
