@@ -17,11 +17,16 @@ class CuratorMediaPanel(context:Context): FrameLayout(context) {
     var places: () -> List<CuratorPlace> = { CuratorCatalog.places }
         set(value) { field=value; scene.places=value }
     private val video=VideoView(context).apply { setAudioFocusRequest(AudioManager.AUDIOFOCUS_NONE); visibility=View.INVISIBLE }
+    private val photos=PhotoSequenceView(context).apply { visibility=View.INVISIBLE }
+    private var photoPlaceId:String?=null
     private var current=CuratorState()
     private var permitted=false
     private var playingKey:String?=null
     private var generation=0L
-    init { addView(video,LayoutParams(-1,-1,Gravity.CENTER));addView(scene,LayoutParams(-1,-1)) }
+    init {
+        addView(video,LayoutParams(-1,-1,Gravity.CENTER));addView(scene,LayoutParams(-1,-1))
+        addView(photos,LayoutParams(-1,-1))
+    }
 
     /**
      * The artwork is drawn on a 960x540 field and centred, so a box taller than that ratio just
@@ -38,6 +43,10 @@ class CuratorMediaPanel(context:Context): FrameLayout(context) {
     fun present(state:CuratorState, allowed:Boolean) {
         current=state;permitted=allowed
         scene.present(state,allowed)
+        // Real photographs of the same place, in the order the change happened, beat a diagram
+        // at showing that the change happened at all. They only run where the place has them.
+        if(state.phase==CuratorPhase.EXPLAIN && allowed && showPhotos(state)) return
+        hidePhotos()
         val key=if(state.phase==CuratorPhase.EXPLAIN && allowed && ValueAnimator.areAnimatorsEnabled()) mediaKey(state) else null
         if(playingKey==key) return
         stop()
@@ -45,8 +54,30 @@ class CuratorMediaPanel(context:Context): FrameLayout(context) {
     }
     fun replay() {
         if(!permitted || current.phase !in setOf(CuratorPhase.EXPLAIN,CuratorPhase.PLAY,CuratorPhase.MEMORY)) return
+        if(photos.visibility==View.VISIBLE) { photos.restart();return }
         val key=mediaKey(current) ?: return
         stop();play(key)
+    }
+    /** True when this place showed its own photographs, so nothing else should take the screen. */
+    private fun showPhotos(state:CuratorState):Boolean {
+        val stages=PhotoStages.of(state.currentId)
+        if(stages.isEmpty()) return false
+        if(photoPlaceId!=state.currentId) {
+            stop()
+            photos.load(stages)
+            if(!photos.hasPhotos) { photoPlaceId=null;return false }
+            photoPlaceId=state.currentId
+            photos.visibility=View.VISIBLE
+            scene.animate().cancel();scene.alpha=0f
+            photos.restart()
+        }
+        return true
+    }
+    private fun hidePhotos() {
+        if(photoPlaceId==null && photos.visibility!=View.VISIBLE) return
+        photoPlaceId=null
+        photos.stop();photos.release();photos.visibility=View.INVISIBLE
+        scene.animate().cancel();scene.alpha=1f
     }
     private fun mediaKey(state:CuratorState)=places().firstOrNull { it.id==state.currentId }?.mediaKey?.takeIf { it.isNotBlank() }
     private fun play(key:String) {
@@ -69,5 +100,5 @@ class CuratorMediaPanel(context:Context): FrameLayout(context) {
         generation++;playingKey=null;scene.animate().cancel();scene.alpha=1f
         video.stopPlayback();video.visibility=View.INVISIBLE
     }
-    override fun onDetachedFromWindow() {stop();super.onDetachedFromWindow()}
+    override fun onDetachedFromWindow() {stop();hidePhotos();super.onDetachedFromWindow()}
 }
