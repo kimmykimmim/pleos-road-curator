@@ -16,8 +16,14 @@ class CuratorDriveService:Service() {
     private val binder=LocalBinder()
     private val main=Handler(Looper.getMainLooper())
     private val album by lazy { FamilyAlbumStore(this) }
+    private val prefs by lazy { JourneyPrefs(this) }
     // The catalog and the proximity list both grow when a guardian adds a place of their own.
-    private val engine=RouteCurator { CuratorCatalog.places+album.load().ownCuratorPlaces() }
+    // The round count is read the same way the screen reads it, so a place asks the same
+    // question whether the journey is being watched or only heard.
+    private val engine=RouteCurator(
+        { CuratorCatalog.places+album.load().ownCuratorPlaces() },
+        { placeId -> prefs.rounds(placeId) },
+    )
     private val discovery=LiveNavigation { LivePlaces.all+album.load().ownLocatedPlaces() }
     private lateinit var voice:VoiceGuide
     private lateinit var navi:CuratorNaviSource
@@ -133,6 +139,10 @@ class CuratorDriveService:Service() {
         // Navigation can continue tracking during a dialog, but cannot silently consume a spoken event.
         if(suppressAudio && turn.narration!=null) return
         val previous=state.phase;state=turn.state
+        // A place that reached its closing card was met all the way through, so the next journey
+        // past it asks something else. Counted here as well as on screen, because a real drive
+        // may run with the app in the background and never pass through the screen's own path.
+        if(previous!=CuratorPhase.MEMORY && state.phase==CuratorPhase.MEMORY) state.currentId?.let(prefs::finished)
         if(state.phase!=CuratorPhase.PLAY) main.removeCallbacks(roleIdle)
         if(state.phase==CuratorPhase.PLAY && previous!=state.phase) main.postDelayed(roleIdle,20_000)
         publish();turn.narration?.let(::narrate)

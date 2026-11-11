@@ -75,8 +75,14 @@ class FamilyAlbum(visits: List<FamilyVisit> = emptyList()) {
             id = visit.placeId,
             name = visit.ownName!!,
             theme = "우리 가족의 장소",
-            question = "여기는 우리에게 어떤 곳이었을까?",
-            guesses = listOf("기억이 나", "잘 모르겠어"),
+            // One round only. A place the app knows nothing about has no second question of
+            // ours to ask; the guardian's own line is the whole story here.
+            rounds = listOf(RoundPrompt(
+                kind = RoundKind.HOOK,
+                lead = "",
+                question = "여기는 우리에게 어떤 곳이었을까?",
+                choices = listOf("기억이 나", "잘 모르겠어"),
+            )),
             observe = "창밖을 한번 봐.",
             // Every word here is the guardian's. The app adds no history of its own.
             explanation = story(visit),

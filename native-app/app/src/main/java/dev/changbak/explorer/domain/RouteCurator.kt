@@ -13,11 +13,20 @@ enum class CuratorVisual {
 }
 data class PlayChoice(val id: String, val label: String, val response: String, val cues: List<String> = emptyList())
 data class PlaceActivity(val role: String, val prompt: String, val choices: List<PlayChoice>)
-data class CuratorPlace(val id: String, val name: String, val theme: String, val question: String,
-    val guesses: List<String>, val observe: String, val explanation: String, val sourceTitle: String, val sourceUrl: String,
+data class CuratorPlace(val id: String, val name: String, val theme: String,
+    /**
+     * One entry per kind of meeting. The first is the hook used on a first encounter; the rest
+     * rotate on later journeys. See [Rounds.promptFor].
+     */
+    val rounds: List<RoundPrompt>,
+    val observe: String, val explanation: String, val sourceTitle: String, val sourceUrl: String,
     val category: String = "역사", val visual: CuratorVisual = CuratorVisual.GATE, val mediaKey: String = "gate",
     val activity: PlaceActivity = PlaceActivity("문지기", "아침 인사를 골라볼래?", listOf(
-        PlayChoice("welcome", "좋은 아침!", "네 인사와 함께 도시의 아침이 열렸어."))))
+        PlayChoice("welcome", "좋은 아침!", "네 인사와 함께 도시의 아침이 열렸어.")))) {
+    /** The first meeting's question. Later meetings go through [Rounds.promptFor]. */
+    val question: String get() = Rounds.promptFor(this, 0).question
+    val guesses: List<String> get() = Rounds.promptFor(this, 0).choices
+}
 data class PlaceApproach(val placeId: String, val etaSeconds: Int?, val passed: Boolean = false, val observable: Boolean = true,
     val nearby: Boolean = false, val arrived: Boolean = false,
     /** Which window the place is at right now, or UNKNOWN when the fixes cannot say. */
@@ -34,14 +43,29 @@ data class CuratorState(val phase: CuratorPhase = CuratorPhase.READY, val routeI
     val routeValid: Boolean = true)
 data class CuratorTurn(val state: CuratorState, val narration: String? = null)
 
-/** Provider supplies ETA to each encounter, not ETA to the final destination. No sight detection claims. */
-class RouteCurator(private val catalogSource: () -> List<CuratorPlace>) {
+/**
+ * Provider supplies ETA to each encounter, not ETA to the final destination. No sight detection
+ * claims.
+ *
+ * @param roundSource how many times this family has already finished this place. A family drives
+ *   the same road daily, so the count decides which of the place's rounds it gets today.
+ */
+class RouteCurator(
+    private val catalogSource: () -> List<CuratorPlace>,
+    private val roundSource: (String) -> Int = { 0 },
+) {
     /** A fixed catalog. The journey's own catalog grows when a guardian adds a place. */
     constructor(catalog: List<CuratorPlace>) : this({ catalog })
 
     private val catalog: List<CuratorPlace> get() = catalogSource()
 
     fun place(state: CuratorState) = catalog.firstOrNull { it.id == state.currentId }
+
+    /** Today's round for a place, chosen by how many times the family has met it before. */
+    fun promptFor(place: CuratorPlace): RoundPrompt = Rounds.promptFor(place, roundSource(place.id))
+
+    /** Today's round for the place being met now, for the screen to draw the same one. */
+    fun prompt(state: CuratorState): RoundPrompt? = place(state)?.let(::promptFor)
     fun memory(state: CuratorState) = state.visits.firstOrNull { it.placeId == state.currentId }
     fun start() = CuratorState(phase = CuratorPhase.WAITING, message = "가는 길에서 만날 이야기를 기다리고 있어.")
     fun tick(state: CuratorState, fix: CuratorFix): CuratorTurn {
@@ -70,8 +94,9 @@ class RouteCurator(private val catalogSource: () -> List<CuratorPlace>) {
             .minByOrNull { it.etaSeconds ?: 0 } ?: return CuratorTurn(next)
         val p = catalog.first { it.id == candidate.placeId }
         val close = candidate.nearby || candidate.etaSeconds in 0..30
-        val text = if(close) "${p.name} 근처야.${point(candidate)} ${p.question} ${p.observe} 안 보이면 듣기만 해도 좋아."
-            else "약 ${((requireNotNull(candidate.etaSeconds) + 59)/60).coerceAtLeast(1)}분 뒤에 ${p.name} 근처를 지나갈 거야. ${p.question}"
+        val ask = promptFor(p).spoken
+        val text = if(close) "${p.name} 근처야.${point(candidate)} $ask ${p.observe} 안 보이면 듣기만 해도 좋아."
+            else "약 ${((requireNotNull(candidate.etaSeconds) + 59)/60).coerceAtLeast(1)}분 뒤에 ${p.name} 근처를 지나갈 거야. $ask"
         return CuratorTurn(next.copy(phase = if(close) CuratorPhase.WATCH else CuratorPhase.PREDICT, currentId = p.id, etaSeconds = candidate.etaSeconds,
             visits = next.visits + PlaceMemory(p.id), message = text), text)
     }
@@ -82,7 +107,10 @@ class RouteCurator(private val catalogSource: () -> List<CuratorPlace>) {
         if (state.phase != CuratorPhase.PREDICT || guess.isBlank()) return CuratorTurn(state)
         val clean = guess.trim().take(160)
         val next = updateMemory(state) { it.copy(guess = clean) }
-        val text = "그렇게 생각했구나. 가까이 가면 직접 살펴보자."
+        // A quiz round owes the child the answer, whichever they picked. It is told the same way
+        // either way: this is a guessing game, not a test, and nothing here is scored.
+        val reveal = place(state)?.let(::promptFor)?.reveal
+        val text = reveal ?: "그렇게 생각했구나. 가까이 가면 직접 살펴보자."
         return CuratorTurn(next.copy(message = text), text)
     }
     fun seen(state: CuratorState, seen: Boolean): CuratorTurn {

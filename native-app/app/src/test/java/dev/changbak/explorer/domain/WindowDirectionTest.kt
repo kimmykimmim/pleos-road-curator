@@ -109,7 +109,9 @@ class WindowDirectionTest {
 
         assertTrue(announce(WindowSide.LEFT).contains("왼쪽 창밖을 봐."))
         assertTrue(announce(WindowSide.RIGHT).contains("오른쪽 창밖을 봐."))
-        assertTrue(announce(WindowSide.UNKNOWN).contains("${place.name} 근처야. ${place.question}"))
+        // With no side to name, the place's own opening line follows straight on.
+        assertTrue(announce(WindowSide.UNKNOWN)
+            .contains("${place.name} 근처야. ${Rounds.promptFor(place, 0).spoken}"))
         assertTrue(!announce(WindowSide.UNKNOWN).contains("창밖을 봐."))
     }
 }

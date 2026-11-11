@@ -27,7 +27,11 @@ import org.json.JSONObject
 class MainActivity : Activity() {
     private val handler = Handler(Looper.getMainLooper())
     private val album by lazy { FamilyAlbumStore(this) }
-    private val engine = RouteCurator { CuratorCatalog.places + album.load().ownCuratorPlaces() }
+    private val prefs by lazy { JourneyPrefs(this) }
+    private val engine = RouteCurator(
+        { CuratorCatalog.places + album.load().ownCuratorPlaces() },
+        { placeId -> prefs.rounds(placeId) },
+    )
     private var state = CuratorState()
     private lateinit var voice: VoiceGuide
     private var drive: CuratorDriveService? = null
@@ -186,14 +190,27 @@ class MainActivity : Activity() {
         state = turn.state
         if(state.phase!=CuratorPhase.PLAY) handler.removeCallbacks(roleIdle)
         else if(previousPhase!=CuratorPhase.PLAY) armRoleIdle()
-        if (changed) { render(); if (state.phase in setOf(CuratorPhase.MEMORY, CuratorPhase.FINISHED)) saveSummary() }
+        if (changed) {
+            // A place that reaches its closing card has been met all the way through, so the
+            // next journey past it asks something else. Skipping before the story does not count.
+            if (previousPhase != CuratorPhase.MEMORY && state.phase == CuratorPhase.MEMORY) {
+                state.currentId?.let(prefs::finished)
+            }
+            render(); if (state.phase in setOf(CuratorPhase.MEMORY, CuratorPhase.FINISHED)) saveSummary()
+        }
         val text = turn.narration ?: return
         quiet(); val token = narrationGeneration
-        // A narration that fails must still release the phase that is waiting for it.
+        // A narration that fails must still release the phase that is waiting for it, and a
+        // question that has finished being read is the moment the back seat gets to answer.
         val release: () -> Unit = {
-            if (token == narrationGeneration && usable() &&
-                NarrationRecovery.shouldAdvance(state.phase, token, narrationGeneration, false, false)
-            ) apply(advanceAfterNarration())
+            if (token == narrationGeneration && usable()) {
+                if (NarrationRecovery.shouldAdvance(state.phase, token, narrationGeneration, false, false)) {
+                    apply(advanceAfterNarration())
+                } else if (BackSeat.shouldListen(state.phase, prefs.backSeatVoice, foreground,
+                        restricted, dialog != null, mic)) {
+                    openMic()
+                }
+            }
         }
         voice.speak(text, onAborted = release, onDone = release)
     }
@@ -210,35 +227,72 @@ class MainActivity : Activity() {
     }
 
     private fun jump(seconds: Int) { quiet(); demoTime = seconds; feedDemo() }
+    /** The answers currently drawn, so a child naming one out loud picks the same button. */
+    private fun spokenChoices(): List<String> = when (state.phase) {
+        CuratorPhase.PREDICT -> engine.prompt(state)?.choices.orEmpty()
+        CuratorPhase.PLAY -> engine.place(state)?.activity?.choices?.map { it.label }.orEmpty()
+        else -> emptyList()
+    }
+
+    /**
+     * A sentence from the back seat. The same path serves the microphone and the guardian's
+     * typed relay, so both reach the journey as the child's own answer.
+     */
     private fun accept(text: String) {
         if (!usable()) return
         drive?.suppress(false)
-        val compact = text.replace(Regex("[\\s\\p{Z}\\p{P}]"), "")
-        if (compact in setOf("쉬자","그만","그만할래","잠깐쉴래")) { playing = false; drive?.setPaused(true);quiet(); status = "쉬는 중이에요"; render(); return }
-        if (compact in setOf("다음","넘어가자","건너뛸래")) { apply(engine.skip(state)); return }
-        when (state.phase) {
-            CuratorPhase.PREDICT -> apply(engine.predict(state, text))
-            CuratorPhase.WATCH -> when {
-                Regex("안보|못봤|못보|안봤").containsMatchIn(compact) -> apply(engine.seen(state,false))
-                Regex("보여|봤어|보인다|찾았").containsMatchIn(compact) -> apply(engine.seen(state,true))
-                else -> { status = "보이면 ‘봤어’, 안 보이면 ‘안 보여’라고 알려줘"; statusLabel?.text = status }
+        when (val said = SpokenReply.of(text, spokenChoices())) {
+            SpokenIntent.Rest -> { playing = false; drive?.setPaused(true); quiet(); status = "쉬는 중이에요"; render() }
+            SpokenIntent.Skip -> apply(engine.skip(state))
+            SpokenIntent.Repeat -> if (live) drive?.repeat() else { quiet(); voice.speak(state.message) }
+            SpokenIntent.Unclear -> { status = "다시 한 번 말해 줄래?"; statusLabel?.text = status }
+            is SpokenIntent.Choose -> when (state.phase) {
+                CuratorPhase.PREDICT -> engine.prompt(state)?.choices?.getOrNull(said.index)
+                    ?.let { apply(engine.predict(state, it)) }
+                CuratorPhase.PLAY -> engine.place(state)?.activity?.choices?.getOrNull(said.index)
+                    ?.let { apply(engine.perform(state, it.id)) }
+                else -> Unit
             }
-            CuratorPhase.PLAY -> {
-                apply(engine.respondToPlay(state,text))
+            is SpokenIntent.OwnWords -> {
+                val compact = SpokenReply.compact(said.text)
+                when (state.phase) {
+                    CuratorPhase.PREDICT -> apply(engine.predict(state, said.text))
+                    CuratorPhase.WATCH -> when {
+                        Regex("안보|못봤|못보|안봤").containsMatchIn(compact) -> apply(engine.seen(state, false))
+                        Regex("보여|봤어|보인다|찾았|있어").containsMatchIn(compact) -> apply(engine.seen(state, true))
+                        else -> { status = "보이면 ‘봤어’, 안 보이면 ‘안 보여’라고 알려줘"; statusLabel?.text = status }
+                    }
+                    CuratorPhase.PLAY -> apply(engine.respondToPlay(state, said.text))
+                    else -> { status = "지금은 편하게 듣고 있어도 좋아"; statusLabel?.text = status }
+                }
             }
-
-            else -> { status = "지금은 편하게 듣고 있어도 좋아"; statusLabel?.text = status }
         }
     }
+    /**
+     * Opens the microphone for one answer, with nothing further to press.
+     *
+     * A guardian who turned on 뒷자리 말하기 has already answered the question this would ask,
+     * and asking it again on screen would hand the decision back to the only person who can
+     * reach the screen. That is precisely what the back seat cannot do, so this path does not
+     * stop to confirm. It still opens for one turn and closes itself.
+     */
+    private fun openMic() {
+        if (!usable() || mic) return
+        drive?.suppress(true)
+        mic = voice.enableCommands()
+        if (!mic) drive?.suppress(false)
+        status = if (mic) "듣고 있어. 그냥 말해도 돼." else "지금은 화면으로 골라줘"
+        render()
+    }
+
+    /** The on-screen way in. Whoever presses it is agreeing to the microphone right then. */
     private fun listen() {
         if (!usable()) return
         if (mic) { quiet();drive?.suppress(false);render(); return }
         quiet(); playing = false
         show(AlertDialog.Builder(this).setTitle("네 생각을 들려줘")
             .setMessage("확인을 누르면 이번 답변을 듣기 시작해요. 음성은 기기 안에서 처리하고 외부 AI로 보내지 않아요.")
-            .setNegativeButton("나중에", null).setPositiveButton("이야기할게") { _, _ -> menuAction {
-                if (usable()) { drive?.suppress(true);mic = voice.enableCommands(); status = if (mic) "네 생각을 듣고 있어" else "지금은 화면으로 골라줘";if(!mic) drive?.suppress(false);render() }
-            } }.create())
+            .setNegativeButton("나중에", null).setPositiveButton("이야기할게") { _, _ -> menuAction { openMic() } }.create())
     }
     /**
      * Pleos gives this app about 1680dp of width; the reference screen this layout was drawn for
@@ -306,7 +360,11 @@ class MainActivity : Activity() {
         badge.text = if(live) "실제 내비 / ${if(playing) "음성 여행" else "잠시 쉼"}" else if(demo) "${selectedRoute.title} / 시간 10배" else "정차 시연"
         val place = engine.place(state)
         placeName.text = place?.name ?: "길에서 만날 이야기"
-        subline.text = if (state.phase==CuratorPhase.FINISHED) "오늘 지나온 발견" else state.etaSeconds?.let { if(it>0) "이 지점까지 약 ${(it+59)/60}분" else "이 지점 근처를 지났어요" } ?: "경로에서 만나는 발견"
+        val met = place?.let { prefs.rounds(it.id) } ?: 0
+        val where = if (state.phase==CuratorPhase.FINISHED) "오늘 지나온 발견" else state.etaSeconds?.let { if(it>0) "이 지점까지 약 ${(it+59)/60}분" else "이 지점 근처를 지났어요" } ?: "경로에서 만나는 발견"
+        // Saying which meeting this is explains, without a word of instruction, why the question
+        // changed since last time.
+        subline.text = if (met > 0 && state.phase !in setOf(CuratorPhase.FINISHED,CuratorPhase.READY)) "$where  ·  ${met+1}번째 만남" else where
         scene.visibility=if(restricted) View.INVISIBLE else View.VISIBLE
         scene.present(state, !restricted && foreground && dialog==null)
         // A guardian's own place has no bundled film, so the button must not promise one.
@@ -344,10 +402,24 @@ class MainActivity : Activity() {
             action("한강의 과학 여행") { startDemo(CuratorRoutes.routes[0]) }
             action("도심의 오래된 이야기") { startDemo(CuratorRoutes.routes[1]) }; return
         }
-        val heading=when(state.phase) { CuratorPhase.PREDICT -> "01  먼저 상상해 보기"; CuratorPhase.WATCH -> "02  창밖에서 만나기"; CuratorPhase.EXPLAIN -> "03  장소의 이야기"; CuratorPhase.FAMILY -> "우리 가족의 기억"; CuratorPhase.PLAY -> "04  오늘의 ${engine.place(state)?.activity?.role ?: "상상 놀이"}"; CuratorPhase.COMPARE -> "04  상상 놀이"; CuratorPhase.MEMORY -> "오늘의 발견"; CuratorPhase.FINISHED -> "오늘 만난 이야기"; else -> "다음 이야기를 기다려요" }
+        // The first line names what kind of turn this is. A child who has met this place before
+        // should be able to tell at a glance that today is not the same question again.
+        val round=engine.prompt(state)
+        val askHeading=when(round?.kind) {
+            RoundKind.DEEPER -> "01  또 다른 질문"
+            RoundKind.QUIZ -> "01  맞혀 보기"
+            RoundKind.HUNT -> "01  찾기 놀이"
+            else -> "01  먼저 상상해 보기"
+        }
+        val heading=when(state.phase) { CuratorPhase.PREDICT -> askHeading; CuratorPhase.WATCH -> "02  창밖에서 만나기"; CuratorPhase.EXPLAIN -> "03  장소의 이야기"; CuratorPhase.FAMILY -> "우리 가족의 기억"; CuratorPhase.PLAY -> "04  오늘의 ${engine.place(state)?.activity?.role ?: "상상 놀이"}"; CuratorPhase.COMPARE -> "04  상상 놀이"; CuratorPhase.MEMORY -> "오늘의 발견"; CuratorPhase.FINISHED -> "오늘 만난 이야기"; else -> "다음 이야기를 기다려요" }
         card.addView(label(heading,21f,accent,true)); gap(card,22)
+        // The hook is the half of the question that makes a six year old look up, so it belongs
+        // on screen as well as in the speaker. On a later meeting it says what changed instead.
+        if(state.phase==CuratorPhase.PREDICT) round?.lead?.takeIf { it.isNotBlank() }?.let {
+            card.addView(label(it,24f,muted)); gap(card,14)
+        }
         val text=when(state.phase) {
-            CuratorPhase.PREDICT -> engine.place(state)?.question ?: state.message
+            CuratorPhase.PREDICT -> engine.prompt(state)?.question ?: state.message
             CuratorPhase.PLAY -> engine.place(state)?.activity?.prompt ?: state.message
             CuratorPhase.EXPLAIN -> when(engine.place(state)?.visual) {
                 CuratorVisual.TOWER -> "몸통과 바깥 기둥이 힘을 나눠요."
@@ -363,8 +435,14 @@ class MainActivity : Activity() {
         card.addView(label(text,if(state.phase==CuratorPhase.EXPLAIN) 28f else 33f,ink,true)); gap(card,18)
         when(state.phase) {
             CuratorPhase.PREDICT -> {
-                engine.memory(state)?.guess?.let { card.addView(label("네 생각: $it",22f,accent)); gap(card,12) }
-                engine.place(state)?.guesses?.forEach { guess -> action(guess) { apply(engine.predict(state,guess)) } }
+                engine.memory(state)?.guess?.let { guess ->
+                    card.addView(label("네 생각: $guess",22f,accent)); gap(card,12)
+                    // A quiz owes the answer to the eyes as well as the ears. A child who missed
+                    // the spoken line, or a guardian who wants to read it out, needs it here.
+                    round?.reveal?.let { card.addView(label(it,25f,ink)); gap(card,14) }
+                }
+                if(prefs.backSeatVoice) { card.addView(label(if(mic) "듣고 있어요. 뒷자리에서 그냥 말해도 돼요." else "말로 답해도 돼요.",19f,if(mic) accent else muted)); gap(card,8) }
+                engine.prompt(state)?.choices?.forEach { guess -> action(guess) { apply(engine.predict(state,guess)) } }
                 action("내 말로 이야기하기",true) { listen() }
             }
             CuratorPhase.WATCH -> { action("봤어!",true) { apply(engine.seen(state,true)) }; action("안 보여") { apply(engine.seen(state,false)) } }
@@ -417,7 +495,8 @@ class MainActivity : Activity() {
         next.setOnDismissListener { if(dialog===next) { dialog=null;drive?.suppress(false);render();armRoleIdle() } }; next.show()
     }
     private fun parentMenu() {
-        val items=arrayOf(if(playing) "이야기 잠깐 멈추기" else "이야기 이어서 재생", "시점 이동해서 확인", "말 대신 입력", "가족이 함께 갔던 곳 기록", "오늘 이야기 마치기", "설명 출처", "지난 시연 기억", "실제 내비 음성 여행 시작", "다른 시연 경로 선택")
+        val items=arrayOf(if(playing) "이야기 잠깐 멈추기" else "이야기 이어서 재생", "시점 이동해서 확인", "말 대신 입력", "가족이 함께 갔던 곳 기록", "오늘 이야기 마치기", "설명 출처", "지난 시연 기억", "실제 내비 음성 여행 시작", "다른 시연 경로 선택",
+            "뒷자리 말하기  ·  ${if(prefs.backSeatVoice) "켜짐" else "꺼짐"}", "질문을 처음 만남으로 되돌리기")
         show(AlertDialog.Builder(this).setTitle("보호자 / 정차 시연").setItems(items) { _,i -> menuAction {
             when(i) {
                 0 -> { if(live) drive?.setPaused(!drive!!.paused) else if(demo) { playing=!playing;render() } }
@@ -429,9 +508,46 @@ class MainActivity : Activity() {
                 6 -> previousSummary()
                 7 -> startLive()
                 8 -> routeMenu()
+                9 -> backSeatSetting()
+                10 -> resetRounds()
             }
         } }.setNegativeButton("닫기",null).create())
     }
+    /**
+     * The back seat's microphone, and the guardian's decision about it.
+     *
+     * The child cannot reach the screen, so without this they cannot answer at all. That is a
+     * real reason to open a microphone and not a good enough one to do it unasked, so it starts
+     * off and this screen says plainly what turning it on means.
+     */
+    private fun backSeatSetting() {
+        val on = prefs.backSeatVoice
+        show(AlertDialog.Builder(this).setTitle("뒷자리에서 말로 답하기")
+            .setMessage(if(on)
+                "지금은 켜져 있어요. 질문을 읽어 준 뒤 한 번씩 마이크가 열려서, 아이가 화면에 손을 대지 않고 대답할 수 있어요.\n\n한 번의 질문에 한 번만 열리고, 대답하거나 잠시 조용하면 바로 닫혀요. 목소리는 차 안에서 처리하고 밖으로 보내지 않아요. 녹음해서 남기지도 않아요."
+                else "아이는 화면 뒤에 앉아 있어서 버튼을 누를 수 없어요. 이걸 켜면 질문을 읽어 준 뒤 마이크가 한 번씩 열려서, 아이가 그냥 말하면 돼요.\n\n한 번의 질문에 한 번만 열리고, 대답하거나 잠시 조용하면 바로 닫혀요. 목소리는 차 안에서 처리하고 밖으로 보내지 않아요. 녹음해서 남기지도 않아요.")
+            .setNegativeButton("닫기",null)
+            .setPositiveButton(if(on) "끄기" else "켜기") { _,_ -> menuAction {
+                prefs.backSeatVoice = !on
+                status = if(prefs.backSeatVoice) "뒷자리에서 말로 답할 수 있어요" else "이제 화면으로만 답해요"
+                if(!prefs.backSeatVoice && mic) quiet()
+                render()
+            } }.create())
+    }
+
+    /**
+     * Back to first meetings. Offered because a family may want the hooks again for a younger
+     * child, and because nothing the app counted about them should be beyond their reach.
+     */
+    private fun resetRounds() {
+        show(AlertDialog.Builder(this).setTitle("질문을 처음 만남으로")
+            .setMessage("장소마다 몇 번째 만남인지 세어 둔 것을 지워요. 다음 번에는 모든 장소가 처음 질문으로 다시 시작해요. 가족의 기억 기록은 그대로 남아요.")
+            .setNegativeButton("닫기",null)
+            .setPositiveButton("되돌리기") { _,_ -> menuAction {
+                prefs.resetRounds(); status = "다음 여행에서는 처음 질문으로 만나요"; render()
+            } }.create())
+    }
+
     private fun routeMenu() {
         show(AlertDialog.Builder(this).setTitle("가는 길의 이야기를 골라요")
             .setItems(CuratorRoutes.routes.map { "${it.title}\n${it.subtitle}" }.toTypedArray()) { _,i -> menuAction { startDemo(CuratorRoutes.routes[i]) } }
