@@ -22,7 +22,16 @@ data class CuratorPlace(val id: String, val name: String, val theme: String,
     val observe: String, val explanation: String, val sourceTitle: String, val sourceUrl: String,
     val category: String = "역사", val visual: CuratorVisual = CuratorVisual.GATE, val mediaKey: String = "gate",
     val activity: PlaceActivity = PlaceActivity("문지기", "아침 인사를 골라볼래?", listOf(
-        PlayChoice("welcome", "좋은 아침!", "네 인사와 함께 도시의 아침이 열렸어.")))) {
+        PlayChoice("welcome", "좋은 아침!", "네 인사와 함께 도시의 아침이 열렸어."))),
+    /** This place's side of a spoken exchange, for when the child answers out loud. */
+    val talk: PlaceTalk = PlaceTalk(
+        topics = emptyList(),
+        echo = "“${PlaceTalk.THEIR_WORDS}”라고 했구나. 그렇게 생각할 수도 있겠다.",
+        unsure = "몰라도 괜찮아.",
+        silence = "괜찮아. 생각만 해도 좋아.",
+        closing = "이제 창밖을 봐.",
+    ),
+) {
     /** The first meeting's question. Later meetings go through [Rounds.promptFor]. */
     val question: String get() = Rounds.promptFor(this, 0).question
     val guesses: List<String> get() = Rounds.promptFor(this, 0).choices
@@ -102,6 +111,35 @@ class RouteCurator(
     }
     /** Names the window only when the fixes are confident enough to name one. */
     private fun point(approach: PlaceApproach) = approach.side.hint?.let { " $it" } ?: ""
+
+    /**
+     * The child said something out loud while the place is still ahead.
+     *
+     * This is the spoken counterpart of [predict], and the difference is the point: [predict]
+     * takes one of two answers that were printed on screen, while this takes whatever a child
+     * in the back seat actually said and says something back to it. The exchange runs for
+     * [VoiceTalk.MAX_TURNS] turns and then the window takes over, because the place is moving
+     * past while this is happening.
+     *
+     * @param turn which turn of this place's conversation this is, counting from 1.
+     */
+    fun heard(state: CuratorState, text: String, turn: Int): CuratorTurn {
+        if (state.phase != CuratorPhase.PREDICT) return CuratorTurn(state)
+        val p = place(state) ?: return CuratorTurn(state)
+        val clean = text.trim().take(160)
+        // A quiz owes the answer to the first thing the child says, whatever that was. There is
+        // nothing to draw out of them afterwards: they asked a question and it has an answer.
+        val line = promptFor(p).reveal ?: VoiceTalk.reply(p, clean, turn).line
+        val next = updateMemory(state) { it.copy(guess = it.guess ?: clean.ifBlank { null }) }
+        return CuratorTurn(next.copy(message = line), line)
+    }
+
+    /** Whether the child is still being asked for something here, so the microphone reopens. */
+    fun expectsAnswer(state: CuratorState, turnsTaken: Int): Boolean {
+        if (state.phase != CuratorPhase.PREDICT) return state.phase in setOf(CuratorPhase.WATCH, CuratorPhase.PLAY)
+        if (place(state)?.let { promptFor(it).reveal } != null) return turnsTaken < 1
+        return turnsTaken < VoiceTalk.MAX_TURNS
+    }
 
     fun predict(state: CuratorState, guess: String): CuratorTurn {
         if (state.phase != CuratorPhase.PREDICT || guess.isBlank()) return CuratorTurn(state)

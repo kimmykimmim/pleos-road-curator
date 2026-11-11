@@ -92,6 +92,15 @@ class FamilyAlbum(visits: List<FamilyVisit> = emptyList()) {
             visual = CuratorVisual.FAMILY,
             // No bundled film belongs to a place only this family knows.
             mediaKey = "",
+            // The app knows nothing about this place, so it has nothing to ask back. It can
+            // still say what the child said, which is the whole of what it honestly has.
+            talk = PlaceTalk(
+                topics = emptyList(),
+                echo = "“${PlaceTalk.THEIR_WORDS}”라고 했구나. 그것도 우리 가족 이야기야.",
+                unsure = "기억나지 않아도 괜찮아.",
+                silence = "괜찮아. 오늘 다시 지나가는 것만으로도 좋아.",
+                closing = "창밖을 한번 봐.",
+            ),
             activity = PlaceActivity(
                 // The screen already prefixes "오늘의", so the role must not repeat it.
                 "이야기꾼", "이곳에서 무엇이 기억나는지 말해 줄래?",
