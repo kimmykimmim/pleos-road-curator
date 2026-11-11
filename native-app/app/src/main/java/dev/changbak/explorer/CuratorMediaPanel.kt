@@ -18,6 +18,10 @@ class CuratorMediaPanel(context:Context): FrameLayout(context) {
         set(value) { field=value; scene.places=value }
     private val video=VideoView(context).apply { setAudioFocusRequest(AudioManager.AUDIOFOCUS_NONE); visibility=View.INVISIBLE }
     private val photos=PhotoSequenceView(context).apply { visibility=View.INVISIBLE }
+
+    /** The photograph's caption is read by the child, so it follows their language. */
+    var language: ChildLanguage = ChildLanguage.KOREAN
+        set(value) { field=value; photos.language=value }
     private var photoPlaceId:String?=null
     private var current=CuratorState()
     private var permitted=false

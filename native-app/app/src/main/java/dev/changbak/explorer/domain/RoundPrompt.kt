@@ -34,6 +34,14 @@ enum class RoundKind {
  */
 data class RoundPrompt(
     val kind: RoundKind,
+    /**
+     * Which interest this question belongs to.
+     *
+     * A place offers questions in the fields it honestly has one in. 숭례문 can be asked about
+     * as history, as building, or as a shape; 롯데월드타워 has no history question of ours,
+     * so it does not pretend to. A child's interests pick among what is there.
+     */
+    val field: InterestField,
     val lead: String,
     val question: String,
     val choices: List<String>,
@@ -59,18 +67,32 @@ data class RoundPrompt(
  * opening fact is never repeated as though it were news.
  */
 object Rounds {
-    fun promptFor(place: CuratorPlace, round: Int): RoundPrompt {
+    /**
+     * @param profile what the guardian told the app about the child. An empty profile leaves
+     *   the place's own order untouched, which is what every journey did before this existed.
+     */
+    fun promptFor(place: CuratorPlace, round: Int, profile: ChildProfile = ChildProfile()): RoundPrompt {
         val all = place.rounds
         if (all.isEmpty()) return fallback(place)
         val safe = round.coerceAtLeast(0)
-        if (safe == 0 || all.size == 1) return all.first()
-        val later = all.drop(1)
-        return later[(safe - 1) % later.size]
+        // The hook belongs to the place, so a first meeting opens with the hook this child's
+        // interests point at, and with the place's own when none of them do.
+        val hooks = all.filter { it.kind == RoundKind.HOOK }
+        if (safe == 0 && hooks.isNotEmpty()) {
+            return hooks.firstOrNull { profile.likes(it.field) } ?: hooks.first()
+        }
+        val later = all.filter { it.kind != RoundKind.HOOK }.ifEmpty { all }
+        // The child's own fields come first and are used up before anything else. Filtering the
+        // rest away instead would leave a place that has one question in their field asking it
+        // on every single drive, which is the thing the rounds exist to prevent.
+        val ordered = later.filter { profile.likes(it.field) } + later.filterNot { profile.likes(it.field) }
+        return ordered[(safe - 1).coerceAtLeast(0) % ordered.size]
     }
 
     /** A guardian's own place has no written rounds, so its single question stands in. */
     private fun fallback(place: CuratorPlace) = RoundPrompt(
         kind = RoundKind.HOOK,
+        field = InterestField.LIVING,
         lead = "",
         question = "${place.name}은 어떤 곳이었을까?",
         choices = listOf("기억이 날 것 같아", "잘 모르겠어"),

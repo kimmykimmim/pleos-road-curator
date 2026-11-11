@@ -26,7 +26,17 @@ data class PhotoStage(
     val license: String = "",
     val source: String = "Wikimedia Commons",
     val page: String = "",
+    /** The same two lines for a child who reads English. */
+    val yearEn: String = "",
+    val captionEn: String = "",
 ) {
+    /** What the caption says, in the language the child is being spoken to in. */
+    fun yearIn(language: ChildLanguage) =
+        if (language == ChildLanguage.ENGLISH && yearEn.isNotBlank()) yearEn else year
+
+    fun captionIn(language: ChildLanguage) =
+        if (language == ChildLanguage.ENGLISH && captionEn.isNotBlank()) captionEn else caption
+
     /** A photograph may only be shown when it can say who made it and on what terms. */
     val usable: Boolean get() = asset.isNotBlank() && author.isNotBlank() && license.isNotBlank()
 
@@ -55,6 +65,7 @@ object PhotoStages {
         "lotte" to listOf(
             PhotoStage(
                 asset = "lotte-now.jpg", year = "지금", caption = "한강 건너에서 보면 이렇게 뾰족해",
+                yearEn = "Now", captionEn = "From across the river it looks this pointy",
                 author = "Ox1997cow", license = CC_BY_3,
                 page = "https://commons.wikimedia.org/wiki/File:Lotte_World_Tower_near_Cheongdam_Bridge.jpg",
             ),
@@ -62,6 +73,7 @@ object PhotoStages {
         "building63" to listOf(
             PhotoStage(
                 asset = "building63-now.jpg", year = "지금", caption = "금빛으로 반짝이는 벽을 찾아봐",
+                yearEn = "Now", captionEn = "Look for the wall that shines gold",
                 author = "Sebastian Hoering", license = CC_BY_SA_4,
                 page = "https://commons.wikimedia.org/wiki/File:63_Building.jpg",
             ),
@@ -69,6 +81,7 @@ object PhotoStages {
         "yeouido" to listOf(
             PhotoStage(
                 asset = "yeouido-now.jpg", year = "지금", caption = "강 가운데 섬에 높은 건물이 가득해",
+                yearEn = "Now", captionEn = "An island in the river, full of tall buildings",
                 author = "Ox1997cow", license = CC_BY_SA_3,
                 page = "https://commons.wikimedia.org/wiki/File:%EB%8F%99%EC%9E%91%EB%8C%80%EA%B5%90%EC%97%90%EC%84%9C_%EB%B3%B8_%EC%97%AC%EC%9D%98%EB%8F%84%EC%9D%98_%EB%A7%88%EC%B2%9C%EB%A3%A8%EB%93%A4.jpg",
             ),
@@ -76,6 +89,7 @@ object PhotoStages {
         "sungnyemun" to listOf(
             PhotoStage(
                 asset = "sungnyemun-now.jpg", year = "지금", caption = "높은 건물 사이에 기와 지붕이 있어",
+                yearEn = "Now", captionEn = "A tiled roof between the tall buildings",
                 author = "Sean Young (@assanges)", license = CC_BY_4,
                 page = "https://commons.wikimedia.org/wiki/File:Namdaemun_Sungnyemun_Gate_20240219.jpg",
             ),
@@ -83,6 +97,7 @@ object PhotoStages {
         "gwanghwamun" to listOf(
             PhotoStage(
                 asset = "gwanghwamun-now.jpg", year = "지금", caption = "넓은 길 끝에 산을 등진 문이 있어",
+                yearEn = "Now", captionEn = "A gate at the end of a wide road, with a mountain behind",
                 author = "Huntsmanleader", license = CC0,
                 page = "https://commons.wikimedia.org/wiki/File:Gwanghwamun_December_2023.jpg",
             ),

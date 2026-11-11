@@ -4,6 +4,7 @@ import android.animation.ValueAnimator
 import android.content.Context
 import android.graphics.*
 import android.view.View
+import dev.changbak.explorer.domain.ChildLanguage
 import dev.changbak.explorer.domain.PhotoStage
 import kotlin.math.max
 
@@ -32,6 +33,9 @@ class PhotoSequenceView(context: Context) : View(context) {
 
     /** One photograph is enough to recognise a place; two or more also show a change. */
     val hasPhotos: Boolean get() = frames.isNotEmpty()
+
+    /** The caption is read by the child, so it follows the language they are spoken to in. */
+    var language: ChildLanguage = ChildLanguage.KOREAN
 
     /** How long one photograph is held before it starts dissolving into the next. */
     private val holdMs = 2600L
@@ -139,12 +143,12 @@ class PhotoSequenceView(context: Context) : View(context) {
         text.typeface = Typeface.create("sans-serif-medium", Typeface.NORMAL)
         text.textSize = h * .085f
         text.color = cream
-        canvas.drawText(stage.year, pad, h - pad * 2.5f, text)
+        canvas.drawText(stage.yearIn(language), pad, h - pad * 2.5f, text)
 
         text.typeface = Typeface.create("sans-serif", Typeface.NORMAL)
         text.textSize = h * .062f
         text.color = Color.WHITE
-        canvas.drawText(stage.caption, pad, h - pad * 1.1f, text)
+        canvas.drawText(stage.captionIn(language), pad, h - pad * 1.1f, text)
 
         // The source rides with the photograph. A picture with no stated origin is the one
         // thing this app must never put in front of a child as if it were the place.

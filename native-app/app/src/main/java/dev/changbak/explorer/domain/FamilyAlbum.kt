@@ -45,13 +45,19 @@ data class FamilyVisit(
  * The guardian's records, keyed by place. Reading is what the journey does on the road, so it
  * stays a plain lookup with no I/O.
  */
-class FamilyAlbum(visits: List<FamilyVisit> = emptyList()) {
+class FamilyAlbum(
+    visits: List<FamilyVisit> = emptyList(),
+    /** The child's language, for the app's own frame around a guardian's record. */
+    private val language: ChildLanguage = ChildLanguage.DEFAULT,
+) {
+    private val say: Narration get() = Narration.of(language)
+
     private val byPlace = visits.associateBy { it.placeId }
     val places: Set<String> get() = byPlace.keys
     val isEmpty: Boolean get() = byPlace.isEmpty()
     fun of(placeId: String?): FamilyVisit? = placeId?.let(byPlace::get)
-    fun with(visit: FamilyVisit) = FamilyAlbum(byPlace.values.filter { it.placeId != visit.placeId } + visit)
-    fun without(placeId: String) = FamilyAlbum(byPlace.values.filter { it.placeId != placeId })
+    fun with(visit: FamilyVisit) = FamilyAlbum(byPlace.values.filter { it.placeId != visit.placeId } + visit, language)
+    fun without(placeId: String) = FamilyAlbum(byPlace.values.filter { it.placeId != placeId }, language)
     fun toList(): List<FamilyVisit> = byPlace.values.sortedBy { it.placeId }
 
     val ownVisits: List<FamilyVisit> get() = byPlace.values.filter { it.isOwn }.sortedBy { it.placeId }
@@ -79,6 +85,8 @@ class FamilyAlbum(visits: List<FamilyVisit> = emptyList()) {
             // ours to ask; the guardian's own line is the whole story here.
             rounds = listOf(RoundPrompt(
                 kind = RoundKind.HOOK,
+                // A family's own place is theirs; no interest of ours selects it away.
+                field = InterestField.LIVING,
                 lead = "",
                 question = "여기는 우리에게 어떤 곳이었을까?",
                 choices = listOf("기억이 나", "잘 모르겠어"),
@@ -126,9 +134,11 @@ class FamilyAlbum(visits: List<FamilyVisit> = emptyList()) {
     private fun story(visit: FamilyVisit): String {
         val note = visit.note?.trim()?.take(FamilyVisit.MAX_NOTE).orEmpty()
         return buildString {
-            append("그런데 있잖아. 여기는 ${visit.whenLabel} 우리 가족이 함께 왔던 곳이야.")
+            append(say.familyRecall(visit.whenLabel))
+            // The guardian's own note goes in exactly as they wrote it. Translating a parent's
+            // sentence would be the app putting words in their mouth.
             if (note.isNotEmpty()) append(" $note")
-            append(" 기억나지 않아도 괜찮아. 오늘 다시 지나가는 것만으로도 좋아.")
+            append(" ${say.familyReassure}")
         }
     }
 

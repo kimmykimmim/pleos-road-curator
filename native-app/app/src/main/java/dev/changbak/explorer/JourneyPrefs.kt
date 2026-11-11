@@ -1,6 +1,7 @@
 package dev.changbak.explorer
 
 import android.content.Context
+import dev.changbak.explorer.domain.ChildProfile
 
 /**
  * How many times this family has already finished each place, and the back seat setting.
@@ -43,11 +44,20 @@ class JourneyPrefs(context: Context) {
         get() = prefs.getBoolean(KEY_BACK_SEAT, false)
         set(value) { prefs.edit().putBoolean(KEY_BACK_SEAT, value).apply() }
 
+    /**
+     * What the guardian told the app about their child: what they are into, what they love
+     * right now, and the language they speak in the car. Stays in this car like everything else.
+     */
+    var profile: ChildProfile
+        get() = ChildProfile.decode(prefs.getString(KEY_PROFILE, null))
+        set(value) { prefs.edit().putString(KEY_PROFILE, ChildProfile.encode(value)).apply() }
+
     private fun key(placeId: String) = "$PREFIX$placeId"
 
     private companion object {
         const val PREFIX = "round:"
         const val KEY_BACK_SEAT = "back_seat_voice"
+        const val KEY_PROFILE = "child_profile"
         /** Far past the point where the rounds have begun rotating. Keeps the number sane. */
         const val MAX = 9999
     }

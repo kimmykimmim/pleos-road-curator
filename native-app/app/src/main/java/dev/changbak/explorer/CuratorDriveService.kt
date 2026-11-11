@@ -20,9 +20,13 @@ class CuratorDriveService:Service() {
     // The catalog and the proximity list both grow when a guardian adds a place of their own.
     // The round count is read the same way the screen reads it, so a place asks the same
     // question whether the journey is being watched or only heard.
+    // Read through, like the screen. The language is fixed for the journey because the speech
+    // engines are told theirs when this service starts.
+    private val profile: ChildProfile get() = prefs.profile
     private val engine=RouteCurator(
-        { CuratorCatalog.places+album.load().ownCuratorPlaces() },
+        { CuratorCatalog.places(profile.language)+album.load().ownCuratorPlaces() },
         { placeId -> prefs.rounds(placeId) },
+        { profile },
     )
     private val discovery=LiveNavigation { LivePlaces.all+album.load().ownLocatedPlaces() }
     private lateinit var voice:VoiceGuide
@@ -80,7 +84,7 @@ class CuratorDriveService:Service() {
                 override fun onStop() { end() }
             });isActive=true
         }
-        voice=VoiceGuide(this,onState={},onCommand={},onError={ connectionStatus=it;publish() },initializeListening=false)
+        voice=VoiceGuide(this,onState={},onCommand={},onError={ connectionStatus=it;publish() },initializeListening=false,locale=profile.language.locale)
         stillness=VehicleStillness(this,::onStillnessChanged).also { it.start() }
         navi=CuratorNaviSource(this,status={ connectionStatus=it;publish() },onFrame={ frame ->
             if(started && !paused) {

@@ -36,6 +36,14 @@ class VoiceGuide(
     private val onError: (String) -> Unit,
     private val onUtterance: ((String) -> Unit)? = null,
     private val initializeListening: Boolean = true,
+    /**
+     * What the car speaks and listens for.
+     *
+     * Fixed for the life of this guide: the engines are told once at initialisation, so a
+     * language change recreates the screen rather than swapping a locale under a half-spoken
+     * sentence.
+     */
+    private val locale: Locale = Locale.KOREA,
 ) {
     private val app = context.applicationContext
     private val main = Handler(Looper.getMainLooper())
@@ -164,7 +172,7 @@ class VoiceGuide(
                     ttsInitTimer?.let(main::removeCallbacks)
                     ttsInitTimer = null
                     try {
-                        engine.setLocale(Locale.KOREA)
+                        engine.setLocale(locale)
                         engine.setAudioAttributes(attributes)
                         ttsInitializing = false
                         ttsReady = true
@@ -211,10 +219,10 @@ class VoiceGuide(
                 val engine = androidTts
                 if (result != AndroidTts.SUCCESS || engine == null) { failAndroidTts(); return@post }
                 try {
-                    val koreanVoice = engine.voices?.firstOrNull {
-                        it.locale.language == Locale.KOREAN.language && !it.isNetworkConnectionRequired
+                    val match = engine.voices?.firstOrNull {
+                        it.locale.language == locale.language && !it.isNetworkConnectionRequired
                     }
-                    if (koreanVoice == null || engine.setVoice(koreanVoice) != AndroidTts.SUCCESS) {
+                    if (match == null || engine.setVoice(match) != AndroidTts.SUCCESS) {
                         failAndroidTts()
                         return@post
                     }
@@ -281,7 +289,7 @@ class VoiceGuide(
                     sttInitTimer?.let(main::removeCallbacks)
                     sttInitTimer = null
                     try {
-                        engine.setLocale(Locale.KOREA)
+                        engine.setLocale(locale)
                         sttInitializing = false
                         sttReady = true
                         publishState(state, force = true)

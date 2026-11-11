@@ -32,12 +32,12 @@ class RoundPromptTest {
 
     @Test
     fun `later meetings rotate through the remaining rounds in order`() {
-        assertEquals(RoundKind.DEEPER, Rounds.promptFor(lotte, 1).kind)
-        assertEquals(RoundKind.QUIZ, Rounds.promptFor(lotte, 2).kind)
-        assertEquals(RoundKind.HUNT, Rounds.promptFor(lotte, 3).kind)
-        // Four rounds in, it comes back round rather than running out.
-        assertEquals(Rounds.promptFor(lotte, 1), Rounds.promptFor(lotte, 4))
-        assertEquals(Rounds.promptFor(lotte, 2), Rounds.promptFor(lotte, 5))
+        val later = lotte.rounds.filter { it.kind != RoundKind.HOOK }
+        later.indices.forEach { index ->
+            assertEquals("round ${index + 1}", later[index], Rounds.promptFor(lotte, index + 1))
+        }
+        // Past the end it comes back round rather than running out.
+        assertEquals(later.first(), Rounds.promptFor(lotte, later.size + 1))
     }
 
     @Test
@@ -77,8 +77,13 @@ class RoundPromptTest {
     @Test
     fun `every place offers a hook, a deeper question, a quiz and a looking game`() {
         places.forEach { place ->
-            assertEquals("${place.id}", listOf(RoundKind.HOOK, RoundKind.DEEPER, RoundKind.QUIZ, RoundKind.HUNT),
-                place.rounds.map { it.kind })
+            val kinds = place.rounds.map { it.kind }
+            assertTrue(place.id, kinds.count { it == RoundKind.HOOK } >= 1)
+            assertTrue(place.id, kinds.count { it == RoundKind.DEEPER } >= 1)
+            assertEquals(place.id, 1, kinds.count { it == RoundKind.QUIZ })
+            assertTrue(place.id, kinds.count { it == RoundKind.HUNT } >= 1)
+            // Hooks come first so a first meeting never has to search past a later round.
+            assertEquals(place.id, kinds.sortedBy { if (it == RoundKind.HOOK) 0 else 1 }, kinds)
         }
     }
 
@@ -114,10 +119,18 @@ class RoundPromptTest {
     }
 
     @Test
-    fun `a later round says what was asked before, so the change is audible`() {
-        places.flatMap { it.rounds }.filter { it.kind == RoundKind.DEEPER }.forEach { prompt ->
-            assertTrue(prompt.lead, prompt.lead.contains("지난번"))
+    fun `a round that says what was asked before is only used where that is true`() {
+        // With interests picking the rounds, "지난번엔 바람 이야기를 했지" is a claim about what
+        // this child heard last time. It holds only when the place opens that field with a hook,
+        // because a first meeting always gives the child the hook in their own field.
+        places.forEach { place ->
+            val hooked = place.rounds.filter { it.kind == RoundKind.HOOK }.map { it.field }.toSet()
+            place.rounds.filter { it.lead.contains("지난번") }.forEach { prompt ->
+                assertTrue("${place.id}: ${prompt.lead}", prompt.field in hooked)
+            }
         }
+        // And at least some rounds do name it, or nothing would ever feel like a second visit.
+        assertTrue(places.flatMap { it.rounds }.count { it.lead.contains("지난번") } >= 4)
     }
 
     @Test
@@ -130,7 +143,7 @@ class RoundPromptTest {
 
     @Test
     fun `the spoken line joins the lead to the question`() {
-        val prompt = RoundPrompt(RoundKind.HOOK, "들어 볼래?", "왜 그럴까?", listOf("응", "아니"))
+        val prompt = RoundPrompt(RoundKind.HOOK, InterestField.SCIENCE, "들어 볼래?", "왜 그럴까?", listOf("응", "아니"))
 
         assertEquals("들어 볼래? 왜 그럴까?", prompt.spoken)
         assertEquals("왜 그럴까?", prompt.copy(lead = "").spoken)

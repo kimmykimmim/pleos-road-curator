@@ -114,10 +114,13 @@ object SpokenReply {
         val said = compact(text)
         // Whole words come from the sentence as spoken: compacting first would weld it into one
         // long string and leave nothing to compare a choice's words against.
-        val spoken = words(text).filter { it.length >= 2 }
+        // A stem match needs a real word behind it. "the" starts "there", and in English that
+        // alone would make a child naming one answer look like they named both.
+        val spoken = words(text).filter { it.length >= STEM_MIN }
         val hits = choices.indices.filter { index ->
             distinctive(choices, index).any { key ->
-                said.contains(key) || spoken.any { word -> key.startsWith(word) || word.startsWith(key) }
+                said.contains(key) ||
+                    spoken.any { word -> key.length >= STEM_MIN && (key.startsWith(word) || word.startsWith(key)) }
             }
         }
         // Two choices matched means the sentence named neither of them clearly enough, and
@@ -128,12 +131,25 @@ object SpokenReply {
     /** The words of one choice that no other choice shares. */
     private fun distinctive(all: List<String>, index: Int): List<String> {
         val others = all.filterIndexed { other, _ -> other != index }.map(::compact)
-        val own = words(all[index]).filter { word -> others.none { it.contains(word) } }
+        val plain = words(all[index]).filter { word -> others.none { it.contains(word) } }
+        // Filler words identify nothing on their own, but a one-word answer made entirely of
+        // them still has to be reachable: dropping them all would leave that answer unsayable.
+        val own = plain.filterNot { it.lowercase() in FILLER }.ifEmpty { plain }
         // "첫 번째" against "열 번째" comes down to one syllable each, and a child saying "첫"
         // has answered as clearly as anyone can. Single syllables are a last resort, not a
         // default, because on their own they match far too much.
         return own.filter { it.length >= 2 }.ifEmpty { own }
     }
+
+    /** Words that carry no answer in them, so they never stand for one. */
+    private val FILLER = setOf(
+        "is","are","the","a","an","it","its","do","does","doing","did","you","your","i","my",
+        "to","of","in","on","at","and","or","so","that","this","there","here","would","will",
+        "can","be","been","was","were","have","has","just","like","really","very",
+    )
+
+    /** Shortest word that may be matched as the start of a longer one. */
+    private const val STEM_MIN = 4
 
     /** A sentence or a choice, cut into the words a child would actually say. */
     private fun words(text: String): List<String> = text

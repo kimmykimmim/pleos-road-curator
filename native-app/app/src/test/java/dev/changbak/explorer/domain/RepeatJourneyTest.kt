@@ -43,19 +43,23 @@ class RepeatJourneyTest {
         assertTrue(firstQuestion().contains("몇 층짜리"))
         round = 3
         assertTrue(firstQuestion().contains("구름에 닿아"))
+        // And a fifth one still has somewhere new to go.
+        round = 4
+        assertTrue(firstQuestion().contains("어떤 모양으로 할래"))
     }
 
     @Test
-    fun `four drives past are four different openings, then they rotate`() {
-        val heard = (0..3).map { round = it; firstQuestion() }
+    fun `every round this place has is a different opening, then they rotate`() {
+        val rounds = lotte.rounds.filter { it.kind != RoundKind.HOOK }.size
+        val heard = (0..rounds).map { round = it; firstQuestion() }
 
         assertEquals(heard.size, heard.toSet().size)
-        // The fifth comes back round to the second rather than running out, and still differs
-        // from the one just before it: a family never hears the same opening twice in a row.
-        round = 4
-        val fifth = firstQuestion()
-        assertEquals(heard[1], fifth)
-        assertNotEquals(heard[3], fifth)
+        // Past the end it comes back round rather than running out, and still differs from the
+        // one just before: a family never hears the same opening twice in a row.
+        round = rounds + 1
+        val next = firstQuestion()
+        assertEquals(heard[1], next)
+        assertNotEquals(heard[rounds], next)
     }
 
     @Test

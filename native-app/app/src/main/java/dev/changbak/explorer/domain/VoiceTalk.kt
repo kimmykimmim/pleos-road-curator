@@ -37,10 +37,26 @@ data class PlaceTalk(
     val unsure: String,
     val silence: String,
     val closing: String,
+    /**
+     * Answers that are not so, and what to say instead of "no".
+     *
+     * A child who says the glass holds the building up has noticed something real: the glass is
+     * the biggest thing they can see. Told they are wrong, they learn that answering out loud
+     * costs something, and in a car they cannot leave they simply stop. So each of these starts
+     * from what the child got right, hands them a clue, and lets the true thing arrive as the
+     * interesting part rather than as a correction.
+     *
+     * Checked before [topics]: a sentence can mention the right subject and still have the
+     * wrong idea in it, and the idea is what needs answering.
+     */
+    val gentle: List<TalkBranch> = emptyList(),
 ) {
     companion object {
         /** Where the child's own words go in [echo]. */
         const val THEIR_WORDS = "%s"
+
+        /** Nothing the app says back to a child may contain any of these. */
+        val NEVER_SAY = listOf("틀렸", "오답", "아니야", "잘못", "정답이 아니", "wrong", "incorrect", "no, ")
     }
 }
 
@@ -77,10 +93,14 @@ object VoiceTalk {
             // how the back seat learns to stop answering at all.
             return TalkReply(join(talk.unsure, talk.closing, true), false)
         }
-        val topic = talk.topics.firstOrNull { topic ->
+        // An idea that is not so is answered first, because a sentence can name the right
+        // subject while carrying the wrong idea, and the idea is the part that needs an answer.
+        val branch = talk.gentle.firstOrNull { branch ->
+            branch.cues.any { compact.contains(SpokenReply.compact(it)) }
+        } ?: talk.topics.firstOrNull { topic ->
             topic.cues.any { compact.contains(SpokenReply.compact(it)) }
         }
-        val body = topic?.reply ?: talk.echo.replace(PlaceTalk.THEIR_WORDS, quote(heard))
+        val body = branch?.reply ?: talk.echo.replace(PlaceTalk.THEIR_WORDS, quote(heard))
         return TalkReply(join(body, talk.closing, last), !last)
     }
 

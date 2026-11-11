@@ -13,6 +13,13 @@
 - 맞혀 보기 단계에는 답이 있지만 채점하지 않습니다. 어느 쪽을 골라도 같은 말로 답을 알려 줍니다.
   틀렸다는 말을 넣지 마세요. 검사가 이 문구를 막고 있습니다.
 - 글은 짧게, 버튼은 크게, 음성 중심으로 구성합니다. 시각 전환은 기존 페이드 효과를 유지합니다.
+- 질문은 아이의 관심 분야에서 고릅니다. 장소마다 정직하게 물을 수 있는 분야에만 질문을 두고,
+  없는 분야를 위해 장소를 비틀지 않습니다. 비트는 순간 지어낸 사실이 들어갑니다.
+- 아이가 사실과 다른 답을 해도 아니라고 하지 않습니다. 아이가 맞게 본 것에서 시작해 단서를
+  주고, 맞는 내용을 재미있는 쪽으로 건넵니다[`gentle`]. 금지어는 `PlaceTalk.NEVER_SAY`에 있고
+  검사가 두 언어 모두에서 고정합니다.
+- 아이가 보고 듣는 모든 말은 설정한 언어를 따릅니다. 보호자 화면은 한국어입니다.
+  그림 속에 그려 넣은 글자는 아직 한국어입니다.
 - `뒷자리 말하기`가 켜져 있으면 질문 단계에 보기를 화면에 띄우지 않습니다. 보기가 보이면
   아이는 읽고 고르기만 합니다. 질문은 말로 던지고 아이 말을 듣고 되받습니다.
   보호자나 아이가 `화면으로 고를래`를 누르면 그 장소만 보기로 돌아갑니다.
@@ -34,7 +41,7 @@
 
 - 프로젝트: `native-app`
 - 패키지: `dev.changbak.explorer`
-- 버전: `0.19.0`, versionCode `21`
+- 버전: `0.20.0`, versionCode `22`
 - 저장소: 비공개 깃허브 `kimmykimmim/pleos-road-curator`. 작업 사본은 Drive 밖 로컬에 둡니다.
 - API 34, minSdk 28, Kotlin, Android 기본 View 및 Canvas
 - SDK: NaviHelper 3.0.5, Vehicle 2.3.2, TextToSpeech 3.3.1, SpeechToText 3.3.1
@@ -47,7 +54,11 @@
 - `domain/CuratorContent.kt`: 확인한 자료를 바탕으로 만든 6개 장소 해설, 역할 놀이, 장소마다 4개의 질문 묶음
 - `domain/RoundPrompt.kt`: 몇 번째 만남인지에 따라 어떤 질문을 쓸지 고르는 규칙
 - `domain/BackSeat.kt`: 질문을 읽어 준 뒤 마이크를 열지 판단, 아이가 말한 문장을 보기와 맞추기
-- `domain/VoiceTalk.kt`: 아이 말에 되받는 대화. 장소마다 사람이 쓴 갈래와 되읽어 주기
+- `domain/VoiceTalk.kt`: 아이 말에 되받는 대화. 장소마다 사람이 쓴 갈래, 사실과 다른 답에
+  부드럽게 알려 주는 갈래[`gentle`], 되읽어 주기
+- `domain/ChildProfile.kt`: 보호자가 설정한 관심 분야, 좋아하는 것, 아이가 쓰는 말
+- `domain/Phrases.kt`, `domain/Narration.kt`: 아이가 보고 듣는 말의 언어별 묶음
+- `domain/CuratorContentEn.kt`: 영어 장소 묶음. 한국어와 id, 그림, 출처, 사실이 같습니다
 - `JourneyPrefs.kt`: 장소별 만남 횟수와 뒷자리 말하기 설정. 차 안에만 저장
 - `CuratorMediaArt.kt`, `CuratorSceneView.kt`, `CuratorMediaPanel.kt`: 자체 제작 그림, 페이드 전환, 로컬 MP4
 - `audio/VoiceGuide.kt`: Pleos 음성 및 Android TTS 대체 처리, 음성 우선순위 처리, 한 번만 오는 결과 통보[`onDone` 또는 `onAborted`]

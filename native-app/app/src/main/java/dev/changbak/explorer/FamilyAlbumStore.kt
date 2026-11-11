@@ -1,6 +1,7 @@
 package dev.changbak.explorer
 
 import android.content.Context
+import dev.changbak.explorer.domain.ChildLanguage
 import dev.changbak.explorer.domain.FamilyAlbum
 import dev.changbak.explorer.domain.FamilyVisit
 import dev.changbak.explorer.domain.GeoPoint
@@ -12,11 +13,11 @@ import dev.changbak.explorer.domain.GeoPoint
  * The service and the screen both read it, so each read re-opens the stored text rather than
  * holding a copy that could go stale after the guardian edits it mid-journey.
  */
-class FamilyAlbumStore(context: Context) {
+class FamilyAlbumStore(context: Context, private val language: () -> ChildLanguage = { ChildLanguage.DEFAULT }) {
     private val prefs = context.applicationContext
         .getSharedPreferences("family_album", Context.MODE_PRIVATE)
 
-    fun load(): FamilyAlbum = FamilyAlbum(FamilyAlbum.decode(prefs.getString(KEY, null)))
+    fun load(): FamilyAlbum = FamilyAlbum(FamilyAlbum.decode(prefs.getString(KEY, null)), language())
 
     fun remember(visit: FamilyVisit) = write(load().with(visit))
 

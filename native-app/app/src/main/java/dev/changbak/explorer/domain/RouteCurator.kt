@@ -23,6 +23,12 @@ data class CuratorPlace(val id: String, val name: String, val theme: String,
     val category: String = "역사", val visual: CuratorVisual = CuratorVisual.GATE, val mediaKey: String = "gate",
     val activity: PlaceActivity = PlaceActivity("문지기", "아침 인사를 골라볼래?", listOf(
         PlayChoice("welcome", "좋은 아침!", "네 인사와 함께 도시의 아침이 열렸어."))),
+    /**
+     * A line connecting this place to something the child already loves, said before the
+     * question. Only where the connection is true: a place with nothing honest to say about
+     * dinosaurs says nothing about dinosaurs.
+     */
+    val bridges: Map<FavouriteTopic, String> = emptyMap(),
     /** This place's side of a spoken exchange, for when the child answers out loud. */
     val talk: PlaceTalk = PlaceTalk(
         topics = emptyList(),
@@ -62,6 +68,7 @@ data class CuratorTurn(val state: CuratorState, val narration: String? = null)
 class RouteCurator(
     private val catalogSource: () -> List<CuratorPlace>,
     private val roundSource: (String) -> Int = { 0 },
+    private val profileSource: () -> ChildProfile = { ChildProfile() },
 ) {
     /** A fixed catalog. The journey's own catalog grows when a guardian adds a place. */
     constructor(catalog: List<CuratorPlace>) : this({ catalog })
@@ -70,20 +77,44 @@ class RouteCurator(
 
     fun place(state: CuratorState) = catalog.firstOrNull { it.id == state.currentId }
 
-    /** Today's round for a place, chosen by how many times the family has met it before. */
-    fun promptFor(place: CuratorPlace): RoundPrompt = Rounds.promptFor(place, roundSource(place.id))
+    /** What the guardian told the app about this child. */
+    private val profile: ChildProfile get() = profileSource()
+
+    /** The journey's own sentences, in whatever language the child is spoken to in. */
+    private val say: Narration get() = Narration.of(profile.language)
+
+    /**
+     * Today's round for a place, chosen by how many times the family has met it before and by
+     * what this child is into.
+     */
+    fun promptFor(place: CuratorPlace): RoundPrompt =
+        Rounds.promptFor(place, roundSource(place.id), profile)
+
+    /**
+     * The whole opening, with the line connecting this place to something the child loves when
+     * there is a true one to say. A favourite with nothing honest to say here says nothing.
+     */
+    fun openingFor(place: CuratorPlace): String {
+        val bridge = bridgeFor(place)
+        val ask = promptFor(place).spoken
+        return if (bridge == null) ask else "$bridge $ask"
+    }
+
+    /** The line about something the child loves, or null when this place has none for them. */
+    fun bridgeFor(place: CuratorPlace): String? =
+        profile.favourites.firstNotNullOfOrNull { place.bridges[it] }
 
     /** Today's round for the place being met now, for the screen to draw the same one. */
     fun prompt(state: CuratorState): RoundPrompt? = place(state)?.let(::promptFor)
     fun memory(state: CuratorState) = state.visits.firstOrNull { it.placeId == state.currentId }
-    fun start() = CuratorState(phase = CuratorPhase.WAITING, message = "가는 길에서 만날 이야기를 기다리고 있어.")
+    fun start() = CuratorState(phase = CuratorPhase.WAITING, message = say.waiting)
     fun tick(state: CuratorState, fix: CuratorFix): CuratorTurn {
         if (!fix.fresh || (fix.routeId == state.routeId && fix.sequence <= state.sequence) || state.phase == CuratorPhase.READY || state.phase == CuratorPhase.FINISHED) return CuratorTurn(state)
         var next = state.copy(routeId = fix.routeId, sequence = fix.sequence, routeValid = true)
         val current = fix.approaches.firstOrNull { it.placeId == state.currentId }
         if (state.currentId != null && current == null && state.phase in setOf(CuratorPhase.PREDICT, CuratorPhase.WATCH)) {
             next = next.copy(phase = CuratorPhase.WAITING, currentId = null, etaSeconds = null,
-                deferred = next.deferred + state.currentId, message = "길이 바뀌었어. 새 길에서 만날 곳을 다시 살펴볼게.")
+                deferred = next.deferred + state.currentId, message = say.routeChanged)
         }
         if (current != null) {
             next = next.copy(etaSeconds = current.etaSeconds?.coerceAtLeast(0))
@@ -91,8 +122,8 @@ class RouteCurator(
                 if (current.passed || current.arrived) return explain(next, current.arrived)
                 if ((current.etaSeconds in 0..30 || current.nearby) && state.phase == CuratorPhase.PREDICT) {
                     val p = place(next) ?: return CuratorTurn(next)
-                    val text = if (current.observable) "곧 ${p.name} 근처야.${point(current)} ${p.observe} 안 보이면 그냥 지나가도 좋아."
-                        else "지금은 보기 어려운 구간이야. 지나간 뒤 이야기로 만나자."
+                    val text = if (current.observable) say.comingUp(p.name, point(current), p.observe)
+                        else say.notVisible
                     return CuratorTurn(next.copy(phase = CuratorPhase.WATCH, message = text), text)
                 }
             }
@@ -103,14 +134,14 @@ class RouteCurator(
             .minByOrNull { it.etaSeconds ?: 0 } ?: return CuratorTurn(next)
         val p = catalog.first { it.id == candidate.placeId }
         val close = candidate.nearby || candidate.etaSeconds in 0..30
-        val ask = promptFor(p).spoken
-        val text = if(close) "${p.name} 근처야.${point(candidate)} $ask ${p.observe} 안 보이면 듣기만 해도 좋아."
-            else "약 ${((requireNotNull(candidate.etaSeconds) + 59)/60).coerceAtLeast(1)}분 뒤에 ${p.name} 근처를 지나갈 거야. $ask"
+        val ask = openingFor(p)
+        val text = if(close) say.closeBy(p.name, point(candidate), ask, p.observe)
+            else say.minutesAhead(((requireNotNull(candidate.etaSeconds) + 59)/60).coerceAtLeast(1), p.name, ask)
         return CuratorTurn(next.copy(phase = if(close) CuratorPhase.WATCH else CuratorPhase.PREDICT, currentId = p.id, etaSeconds = candidate.etaSeconds,
             visits = next.visits + PlaceMemory(p.id), message = text), text)
     }
     /** Names the window only when the fixes are confident enough to name one. */
-    private fun point(approach: PlaceApproach) = approach.side.hint?.let { " $it" } ?: ""
+    private fun point(approach: PlaceApproach) = say.side(approach.side)
 
     /**
      * The child said something out loud while the place is still ahead.
@@ -148,18 +179,20 @@ class RouteCurator(
         // A quiz round owes the child the answer, whichever they picked. It is told the same way
         // either way: this is a guessing game, not a test, and nothing here is scored.
         val reveal = place(state)?.let(::promptFor)?.reveal
-        val text = reveal ?: "그렇게 생각했구나. 가까이 가면 직접 살펴보자."
+        val text = reveal ?: say.thoughtNoted
         return CuratorTurn(next.copy(message = text), text)
     }
     fun seen(state: CuratorState, seen: Boolean): CuratorTurn {
         if (state.phase != CuratorPhase.WATCH || !state.routeValid) return CuratorTurn(state)
         val next = updateMemory(state) { it.copy(seen = if (seen) SeenStatus.SEEN else SeenStatus.NOT_SEEN) }
-        return if (seen) explain(next) else CuratorTurn(next.copy(message = "괜찮아. 지나가면 이야기로 들려줄게."), "괜찮아. 지나가면 이야기로 들려줄게.")
+        return if (seen) explain(next) else CuratorTurn(next.copy(message = say.notSeenYet), say.notSeenYet)
     }
     private fun explain(state: CuratorState, arrived: Boolean = false): CuratorTurn {
         val p = place(state) ?: return CuratorTurn(state)
         if (memory(state)?.explained == true) return CuratorTurn(state)
-        val text = (if (memory(state)?.seen == SeenStatus.SEEN) "네가 본 ${p.name} 이야기야. " else if(arrived) "${p.name}에 도착했어. 보지 못했어도 괜찮아. " else "${p.name} 근처를 지났어. 보지 못했어도 괜찮아. ") + p.explanation
+        val opening = if (memory(state)?.seen == SeenStatus.SEEN) say.sawIt(p.name)
+            else if (arrived) say.arrived(p.name) else say.wentPast(p.name)
+        val text = opening + p.explanation
         return CuratorTurn(updateMemory(state) { it.copy(explained = true) }.copy(phase = CuratorPhase.EXPLAIN, message = text), text)
     }
     /**
@@ -186,7 +219,7 @@ class RouteCurator(
     }
 
     private fun play(state: CuratorState, p: CuratorPlace): CuratorTurn {
-        val text = "이제 우리가 상상해 보자. 너는 ${p.activity.role}야! ${p.activity.prompt}"
+        val text = say.pretend(p.activity.role, p.activity.prompt)
         return CuratorTurn(state.copy(phase = CuratorPhase.PLAY, message = text), text)
     }
     fun perform(state: CuratorState, choiceId: String): CuratorTurn {
@@ -198,7 +231,7 @@ class RouteCurator(
     }
     fun listenOnly(state: CuratorState): CuratorTurn {
         if (state.phase != CuratorPhase.PLAY) return CuratorTurn(state)
-        return CuratorTurn(state.copy(phase = CuratorPhase.MEMORY, message = "이번에는 이야기로 만났어. 편하게 다음 풍경을 기다려도 좋아."))
+        return CuratorTurn(state.copy(phase = CuratorPhase.MEMORY, message = say.listenedOnly))
     }
     fun respondToPlay(state: CuratorState, text: String): CuratorTurn {
         if (state.phase != CuratorPhase.PLAY || text.isBlank() || text.length > 160) return CuratorTurn(state)
@@ -210,7 +243,7 @@ class RouteCurator(
     }
     fun ownIdea(state: CuratorState, text: String): CuratorTurn {
         if (state.phase != CuratorPhase.PLAY || text.isBlank() || text.length > 160) return CuratorTurn(state)
-        val message = "네 생각으로 장면을 완성했어. 이제 편하게 다음 풍경을 만나러 가자."
+        val message = say.ownIdea
         return CuratorTurn(updateMemory(state) { it.copy(activityId = "own", activityLabel = "내 말로 만든 장면") }
             .copy(phase = CuratorPhase.MEMORY, message = message), message)
     }
@@ -227,9 +260,9 @@ class RouteCurator(
     fun skip(state: CuratorState): CuratorTurn {
         val id = state.currentId ?: return CuratorTurn(state)
         return CuratorTurn(state.copy(phase = CuratorPhase.WAITING, currentId = null, etaSeconds = null,
-            deferred = state.deferred + id, message = "좋아. 편하게 밖을 보고 있어도 돼."))
+            deferred = state.deferred + id, message = say.skipped))
     }
-    fun finish(state: CuratorState) = CuratorTurn(state.copy(phase = CuratorPhase.FINISHED, message = "오늘 길에서 만난 이야기를 돌아볼까?"))
+    fun finish(state: CuratorState) = CuratorTurn(state.copy(phase = CuratorPhase.FINISHED, message = say.finished))
     fun navigationLost(state: CuratorState) = state.copy(routeValid = false)
     private fun updateMemory(state: CuratorState, change: (PlaceMemory) -> PlaceMemory) = state.copy(
         visits = state.visits.map { if (it.placeId == state.currentId) change(it) else it })

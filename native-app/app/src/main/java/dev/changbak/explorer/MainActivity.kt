@@ -28,9 +28,18 @@ class MainActivity : Activity() {
     private val handler = Handler(Looper.getMainLooper())
     private val album by lazy { FamilyAlbumStore(this) }
     private val prefs by lazy { JourneyPrefs(this) }
+    /**
+     * Read through on every use, so a guardian who changes an interest sees it at the next
+     * place rather than at the next launch. Language is the exception: the speech engines are
+     * told theirs once, so changing it recreates the screen instead.
+     */
+    private val profile: ChildProfile get() = prefs.profile
+    private val say by lazy { Phrases.of(profile.language) }
+    private fun catalog() = CuratorCatalog.places(profile.language) + album.load().ownCuratorPlaces()
     private val engine = RouteCurator(
-        { CuratorCatalog.places + album.load().ownCuratorPlaces() },
+        { catalog() },
         { placeId -> prefs.rounds(placeId) },
+        { profile },
     )
     private var state = CuratorState()
     private lateinit var voice: VoiceGuide
@@ -134,7 +143,7 @@ class MainActivity : Activity() {
         super.onCreate(savedInstanceState)
         voice = VoiceGuide(this, onState = { value -> runOnUiThread {
             val wasListening=mic
-            status = when(value) { "speaking" -> "이야기를 듣는 중"; "listening" -> "네 생각을 듣고 있어"; else -> "말하지 않아도 괜찮아" }
+            status = when(value) { "speaking" -> say.nowSpeaking; "listening" -> say.nowListening; else -> say.noNeedToSpeak }
             if (::voice.isInitialized && !voice.enabled) mic = false
             if(wasListening && !mic) {
                 drive?.suppress(false); armRoleIdle()
@@ -146,7 +155,8 @@ class MainActivity : Activity() {
             if(wasListening != mic) { lastCard = null; render() }
             statusLabel?.text = status
         } }, onCommand = {}, onError = { value -> runOnUiThread { mic = false;drive?.suppress(false);status = value;statusLabel?.text = value } },
-            onUtterance = { words -> runOnUiThread { if (mic && usable()) { answered = true; quiet(); accept(words) } } })
+            onUtterance = { words -> runOnUiThread { if (mic && usable()) { answered = true; quiet(); accept(words) } } },
+            locale = profile.language.locale)
         buildLayout(); render()
         try {
             car = Car.createCar(this, handler, Car.CAR_WAIT_TIMEOUT_DO_NOT_WAIT) { service, ready -> runOnUiThread {
@@ -364,7 +374,7 @@ class MainActivity : Activity() {
     private fun buildLayout() {
         val root = column().apply { setBackgroundColor(Color.rgb(242,247,251)); setPadding(dp(30),dp(24),dp(30),dp(24)) }
         val header = row(); val titles = column()
-        titles.addView(label("가는 길이 이야기가 되는 시간",17f,muted)); gap(titles,6)
+        titles.addView(label(say.tagline,17f,muted)); gap(titles,6)
         titles.addView(label("길 위의 큐레이터",29f,ink,true))
         header.addView(titles,LinearLayout.LayoutParams(0,-2,1f))
         badge = label("시연 경로",18f,accent,true).also { header.addView(it,LinearLayout.LayoutParams(-2,-2).apply { marginEnd=dp(22) }) }
@@ -380,8 +390,8 @@ class MainActivity : Activity() {
             left.addView(it,LinearLayout.LayoutParams(-1,-2).apply { topMargin=dp(14);bottomMargin=dp(16) })
         }
         placeName = label("어떤 곳을 만나게 될까?",31f,ink,true).also { left.addView(it) }
-        scene.places={ CuratorCatalog.places+album.load().ownCuratorPlaces() }
-        mediaButton=button("짧은 원리 영상 다시 보기") { scene.replay() }.apply { textSize=sp(18f) }
+        scene.places={ catalog() }; scene.language=profile.language
+        mediaButton=button(say.replayFilm) { scene.replay() }.apply { textSize=sp(18f) }
         left.addView(mediaButton,LinearLayout.LayoutParams(-1,dp(58)).apply { topMargin=dp(12) })
         // The scene already draws the four step dots with their names, so the text version of
         // the same list was saying it twice.
@@ -397,14 +407,16 @@ class MainActivity : Activity() {
     }
     private fun render() {
         if (!::card.isInitialized || isDestroyed) return
-        badge.text = if(live) "실제 내비 / ${if(playing) "음성 여행" else "잠시 쉼"}" else if(demo) "${selectedRoute.title} / 시간 10배" else "정차 시연"
+        badge.text = if(live) "실제 내비 / ${if(playing) "음성 여행" else "잠시 쉼"}"
+            else if(demo) "${say.routeNames[selectedRoute.id] ?: selectedRoute.title} / 시간 10배" else "정차 시연"
         val place = engine.place(state)
-        placeName.text = place?.name ?: "길에서 만날 이야기"
+        placeName.text = place?.name ?: say.noPlaceYet
         val met = place?.let { prefs.rounds(it.id) } ?: 0
-        val where = if (state.phase==CuratorPhase.FINISHED) "오늘 지나온 발견" else state.etaSeconds?.let { if(it>0) "이 지점까지 약 ${(it+59)/60}분" else "이 지점 근처를 지났어요" } ?: "경로에서 만나는 발견"
+        val where = if (state.phase==CuratorPhase.FINISHED) say.todaysRoute
+            else state.etaSeconds?.let { if(it>0) say.minutesAway((it+59)/60) else say.passedHere } ?: say.routeDiscovery
         // Saying which meeting this is explains, without a word of instruction, why the question
         // changed since last time.
-        subline.text = if (met > 0 && state.phase !in setOf(CuratorPhase.FINISHED,CuratorPhase.READY)) "$where  ·  ${met+1}번째 만남" else where
+        subline.text = if (met > 0 && state.phase !in setOf(CuratorPhase.FINISHED,CuratorPhase.READY)) "$where  ·  ${say.meeting(met+1)}" else where
         scene.visibility=if(restricted) View.INVISIBLE else View.VISIBLE
         scene.present(state, !restricted && foreground && dialog==null)
         // A guardian's own place has no bundled film, so the button must not promise one.
@@ -436,27 +448,34 @@ class MainActivity : Activity() {
             action("시연으로 살펴보기") { routeMenu() };return
         }
         if(state.phase==CuratorPhase.READY) {
-            card.addView(label("지나칠 뻔한 곳에\n어떤 이야기가 있을까?",37f,ink,true)); gap(card,24)
-            card.addView(label("약 5분 전 질문을 듣고,\n가까이 가면 직접 살펴봐요.",25f,muted)); gap(card,18)
-            action("실제 내비로 음성 여행 시작",true) { startLive() }
-            action("한강의 과학 여행") { startDemo(CuratorRoutes.routes[0]) }
-            action("도심의 오래된 이야기") { startDemo(CuratorRoutes.routes[1]) }; return
+            card.addView(label(say.readyTitle,37f,ink,true)); gap(card,24)
+            card.addView(label(say.readySubtitle,25f,muted)); gap(card,18)
+            action(say.startLive,true) { startLive() }
+            CuratorRoutes.routes.forEach { route ->
+                action(say.routeNames[route.id] ?: route.title) { startDemo(route) }
+            }; return
         }
         // The first line names what kind of turn this is. A child who has met this place before
         // should be able to tell at a glance that today is not the same question again.
         val round=engine.prompt(state)
         val askHeading=when(round?.kind) {
-            RoundKind.DEEPER -> "01  또 다른 질문"
-            RoundKind.QUIZ -> "01  맞혀 보기"
-            RoundKind.HUNT -> "01  찾기 놀이"
-            else -> "01  먼저 상상해 보기"
+            RoundKind.DEEPER -> say.stepPredictDeeper
+            RoundKind.QUIZ -> say.stepPredictQuiz
+            RoundKind.HUNT -> say.stepPredictHunt
+            else -> say.stepPredictImagine
         }
-        val heading=when(state.phase) { CuratorPhase.PREDICT -> askHeading; CuratorPhase.WATCH -> "02  창밖에서 만나기"; CuratorPhase.EXPLAIN -> "03  장소의 이야기"; CuratorPhase.FAMILY -> "우리 가족의 기억"; CuratorPhase.PLAY -> "04  오늘의 ${engine.place(state)?.activity?.role ?: "상상 놀이"}"; CuratorPhase.COMPARE -> "04  상상 놀이"; CuratorPhase.MEMORY -> "오늘의 발견"; CuratorPhase.FINISHED -> "오늘 만난 이야기"; else -> "다음 이야기를 기다려요" }
+        val heading=when(state.phase) { CuratorPhase.PREDICT -> askHeading; CuratorPhase.WATCH -> say.stepWatch; CuratorPhase.EXPLAIN -> say.stepExplain; CuratorPhase.FAMILY -> say.stepFamily; CuratorPhase.PLAY -> say.stepPlayPrefix+(engine.place(state)?.activity?.role ?: ""); CuratorPhase.COMPARE -> say.stepPlayPrefix; CuratorPhase.MEMORY -> say.stepMemory; CuratorPhase.FINISHED -> say.stepFinished; else -> say.stepWaiting }
         card.addView(label(heading,21f,accent,true)); gap(card,22)
         // The hook is the half of the question that makes a six year old look up, so it belongs
         // on screen as well as in the speaker. On a later meeting it says what changed instead.
-        if(state.phase==CuratorPhase.PREDICT) round?.lead?.takeIf { it.isNotBlank() }?.let {
-            card.addView(label(it,24f,muted)); gap(card,14)
+        if(state.phase==CuratorPhase.PREDICT) {
+            // The line about what this child loves comes first, the same way it is spoken.
+            engine.place(state)?.let { engine.bridgeFor(it) }?.let {
+                card.addView(label(it,24f,accent)); gap(card,10)
+            }
+            round?.lead?.takeIf { it.isNotBlank() }?.let {
+                card.addView(label(it,24f,muted)); gap(card,14)
+            }
         }
         val text=when(state.phase) {
             CuratorPhase.PREDICT -> engine.prompt(state)?.question ?: state.message
@@ -476,7 +495,7 @@ class MainActivity : Activity() {
         when(state.phase) {
             CuratorPhase.PREDICT -> {
                 engine.memory(state)?.guess?.let { guess ->
-                    card.addView(label("네가 한 말: $guess",22f,accent)); gap(card,12)
+                    card.addView(label(say.youSaid+guess,22f,accent)); gap(card,12)
                     // What the app said back. It is spoken, but a guardian glancing over should
                     // be able to see the exchange, and a child who missed it can be read it.
                     if(talking) { card.addView(label(state.message,25f,ink)); gap(card,14) }
@@ -484,52 +503,52 @@ class MainActivity : Activity() {
                 if(talking) {
                     // Nothing to point at. Printing the two answers here would turn a question
                     // the child has to think about into one they only have to read.
-                    card.addView(label(if(mic) "듣고 있어. 그냥 말해도 돼." else "잠깐 기다려 줄게.",24f,if(mic) accent else muted))
+                    card.addView(label(if(mic) say.listening else say.waitingForYou,24f,if(mic) accent else muted))
                     gap(card,16)
-                    action("다시 물어봐 줘") { quiet(); voice.speak(state.message) { heardNothing() } }
-                    action("화면으로 고를래") { showChoices = true; lastCard = null; render() }
+                    action(say.askAgain) { quiet(); voice.speak(state.message) { heardNothing() } }
+                    action(say.useTheScreen) { showChoices = true; lastCard = null; render() }
                 } else {
                     // A quiz owes the answer to the eyes as well as the ears.
                     round?.reveal?.takeIf { engine.memory(state)?.guess != null }
                         ?.let { card.addView(label(it,25f,ink)); gap(card,14) }
                     engine.prompt(state)?.choices?.forEach { guess -> action(guess) { apply(engine.predict(state,guess)) } }
-                    action("내 말로 이야기하기",true) { listen() }
+                    action(say.sayItMyself,true) { listen() }
                 }
             }
             CuratorPhase.WATCH -> if(talking) {
-                card.addView(label(if(mic) "보이면 ‘봤어’라고 말해 줘." else "찾으면 말해 줘.",24f,if(mic) accent else muted)); gap(card,16)
-                action("화면으로 고를래") { showChoices = true; lastCard = null; render() }
-            } else { action("봤어!",true) { apply(engine.seen(state,true)) }; action("안 보여") { apply(engine.seen(state,false)) } }
+                card.addView(label(if(mic) say.watchListening else say.watchWaiting,24f,if(mic) accent else muted)); gap(card,16)
+                action(say.useTheScreen) { showChoices = true; lastCard = null; render() }
+            } else { action(say.sawIt,true) { apply(engine.seen(state,true)) }; action(say.didNotSee) { apply(engine.seen(state,false)) } }
             CuratorPhase.EXPLAIN -> {
-                action("이제 내가 해 볼래!") { quiet(); apply(advanceAfterNarration()) }
-                action("해설을 글로 보기") {
+                action(say.myTurn) { quiet(); apply(advanceAfterNarration()) }
+                action(say.readTheStory) {
                     show(AlertDialog.Builder(this).setTitle(engine.place(state)?.name).setMessage(state.message).setPositiveButton("닫기",null).create())
                 }
             }
             CuratorPhase.FAMILY -> {
-                card.addView(label("보호자가 적어 둔 기억이에요",19f,muted)); gap(card,8)
+                card.addView(label(say.guardianNote,19f,muted)); gap(card,8)
                 // Both answers go to the same place. The child is never graded on remembering.
-                action("기억나!",true) { quiet(); apply(engine.afterFamilyMemory(state)) }
-                action("잘 모르겠어") { quiet(); apply(engine.afterFamilyMemory(state)) }
+                action(say.rememberIt,true) { quiet(); apply(engine.afterFamilyMemory(state)) }
+                action(say.notSure) { quiet(); apply(engine.afterFamilyMemory(state)) }
             }
             CuratorPhase.PLAY -> {
-                card.addView(label("여기부터는 우리의 상상 놀이",19f,muted)); gap(card,8)
+                card.addView(label(say.pretendPlay,19f,muted)); gap(card,8)
                 if(talking) {
-                    card.addView(label(if(mic) "듣고 있어. 네 생각을 말해 줘." else "생각나면 말해 줘.",24f,if(mic) accent else muted)); gap(card,16)
-                    action("화면으로 고를래") { showChoices = true; lastCard = null; render() }
+                    card.addView(label(if(mic) say.playListening else say.playWaiting,24f,if(mic) accent else muted)); gap(card,16)
+                    action(say.useTheScreen) { showChoices = true; lastCard = null; render() }
                 } else {
                     engine.place(state)?.activity?.choices?.forEach { choice -> action(choice.label,true) { apply(engine.perform(state,choice.id)) } }
-                    action("내 말로 바꿔 볼래") { listen() }
+                    action(say.inMyOwnWords) { listen() }
                 }
             }
-            CuratorPhase.MEMORY -> { memoryCard(engine.memory(state)); action("계속 창밖 보기",true) { if(live) drive?.setPaused(false) else { playing=true;render();feedDemo() } } }
+            CuratorPhase.MEMORY -> { memoryCard(engine.memory(state)); action(say.keepWatching,true) { if(live) drive?.setPaused(false) else { playing=true;render();feedDemo() } } }
             CuratorPhase.FINISHED -> { state.visits.forEach { memoryCard(it) }; action("새 시연 여행",true) { startDemo() } }
-            else -> { action(if(playing) "잠깐 쉬기" else "이어서 가기",true) { playing=!playing; render() } }
+            else -> { action(if(playing) say.pause else say.resume,true) { playing=!playing; render() } }
         }
         if(state.phase !in setOf(CuratorPhase.FINISHED,CuratorPhase.WAITING)) {
             gap(card,18); val small=row()
-            small.addView(button("다시 듣기") { if(live) drive?.repeat() else { quiet();voice.speak(state.message) } },LinearLayout.LayoutParams(0,dp(68),1f))
-            small.addView(button("넘어갈래") { quiet(); apply(engine.skip(state)) },LinearLayout.LayoutParams(0,dp(68),1f).apply { marginStart=dp(10) }); card.addView(small)
+            small.addView(button(say.listenAgain) { if(live) drive?.repeat() else { quiet();voice.speak(state.message) } },LinearLayout.LayoutParams(0,dp(68),1f))
+            small.addView(button(say.skip) { quiet(); apply(engine.skip(state)) },LinearLayout.LayoutParams(0,dp(68),1f).apply { marginStart=dp(10) }); card.addView(small)
         }
         gap(card,18); statusLabel=label(status,18f,muted).also { card.addView(it) }
     }
@@ -555,7 +574,8 @@ class MainActivity : Activity() {
     }
     private fun parentMenu() {
         val items=arrayOf(if(playing) "이야기 잠깐 멈추기" else "이야기 이어서 재생", "시점 이동해서 확인", "말 대신 입력", "가족이 함께 갔던 곳 기록", "오늘 이야기 마치기", "설명 출처", "지난 시연 기억", "실제 내비 음성 여행 시작", "다른 시연 경로 선택",
-            "뒷자리 말하기  ·  ${if(prefs.backSeatVoice) "켜짐" else "꺼짐"}", "질문을 처음 만남으로 되돌리기")
+            "뒷자리 말하기  ·  ${if(prefs.backSeatVoice) "켜짐" else "꺼짐"}", "질문을 처음 만남으로 되돌리기",
+            "아이 설정  ·  ${profileSummary()}")
         show(AlertDialog.Builder(this).setTitle("보호자 / 정차 시연").setItems(items) { _,i -> menuAction {
             when(i) {
                 0 -> { if(live) drive?.setPaused(!drive!!.paused) else if(demo) { playing=!playing;render() } }
@@ -569,9 +589,70 @@ class MainActivity : Activity() {
                 8 -> routeMenu()
                 9 -> backSeatSetting()
                 10 -> resetRounds()
+                11 -> childSetup()
             }
         } }.setNegativeButton("닫기",null).create())
     }
+    /** How a guardian may say when, in the language they are setting up in. */
+    private fun whenChoices() = Narration.of(profile.language).whenChoices
+
+    /** What is set right now, short enough to sit on a menu line. */
+    private fun profileSummary(): String {
+        val saved = prefs.profile
+        val fields = saved.fields.joinToString(" ") { FIELD_LABELS.getValue(it) }
+        return LANGUAGE_LABELS.getValue(saved.language) + " · " + fields.ifBlank { "관심사 없음" }
+    }
+
+    /**
+     * What the guardian knows about their child that the app cannot work out.
+     *
+     * Interests choose which question a place asks, not how a place is explained. A place only
+     * offers a field it honestly has a question in, so this narrows what the child is asked
+     * rather than rewriting any place to match them.
+     */
+    private fun childSetup() {
+        val saved = prefs.profile
+        val column = LinearLayout(this).apply {
+            orientation = LinearLayout.VERTICAL; setPadding(dp(24), dp(10), dp(24), 0)
+        }
+        column.addView(label("아이가 쓰는 말", 20f, accent))
+        val languages = RadioGroup(this).apply { orientation = LinearLayout.VERTICAL }
+        ChildLanguage.entries.forEachIndexed { index, option ->
+            languages.addView(RadioButton(this).apply {
+                id = index + 1; text = LANGUAGE_LABELS.getValue(option); textSize = 21f
+                isChecked = saved.language == option
+            })
+        }
+        column.addView(languages)
+        column.addView(label("질문을 고를 관심 분야", 20f, accent))
+        column.addView(label("고른 분야에 질문이 있는 장소에서는 그 질문을 먼저 해요. 없는 곳은 그 장소의 질문을 그대로 해요.", 17f, muted))
+        val fields = InterestField.entries.map { field ->
+            CheckBox(this).apply { text = FIELD_LABELS.getValue(field); textSize = 21f; isChecked = field in saved.fields }
+                .also(column::addView)
+        }
+        column.addView(label("요즘 좋아하는 것  ·  최대 ${ChildProfile.MAX_FAVOURITES}개", 20f, accent))
+        column.addView(label("정말로 이어지는 장소에서만 한마디 덧붙여요. 억지로 엮지 않아요.", 17f, muted))
+        val favourites = FavouriteTopic.entries.map { topic ->
+            CheckBox(this).apply { text = FAVOURITE_LABELS.getValue(topic); textSize = 21f; isChecked = topic in saved.favourites }
+                .also(column::addView)
+        }
+        show(AlertDialog.Builder(this).setTitle("아이 설정").setView(ScrollView(this).apply { addView(column) })
+            .setNegativeButton("닫기", null)
+            .setPositiveButton("저장하기") { _, _ -> menuAction {
+                val language = ChildLanguage.entries.getOrNull(languages.checkedRadioButtonId - 1) ?: saved.language
+                prefs.profile = ChildProfile(
+                    fields = InterestField.entries.filterIndexed { index, _ -> fields[index].isChecked }.toSet(),
+                    favourites = FavouriteTopic.entries.filterIndexed { index, _ -> favourites[index].isChecked }
+                        .take(ChildProfile.MAX_FAVOURITES).toSet(),
+                    language = language,
+                )
+                // The speech engines are told their language once, at start-up, so a change
+                // takes a fresh screen rather than a locale swapped under a half-spoken line.
+                if (language != saved.language) { quiet(); recreate() }
+                else { status = "아이 설정을 저장했어요"; lastCard = null; render() }
+            } }.create())
+    }
+
     /**
      * The back seat's microphone, and the guardian's decision about it.
      *
@@ -677,7 +758,7 @@ class MainActivity : Activity() {
         }
         column.addView(name)
         val choices=RadioGroup(this).apply { orientation=LinearLayout.VERTICAL }
-        FamilyVisit.WHEN_CHOICES.forEachIndexed { index,choice ->
+        whenChoices().forEachIndexed { index,choice ->
             choices.addView(RadioButton(this).apply { id=index+1;text=choice;textSize=21f;isChecked=index==0 })
         }
         column.addView(choices)
@@ -693,8 +774,8 @@ class MainActivity : Activity() {
             .setPositiveButton("저장하기") { _,_ -> menuAction {
                 val called=name.text.toString().trim()
                 if(called.isEmpty()) { status="이곳을 부를 이름을 적어 주세요.";render();return@menuAction }
-                val picked=FamilyVisit.WHEN_CHOICES.getOrNull(choices.checkedRadioButtonId-1)
-                    ?: FamilyVisit.WHEN_CHOICES.first()
+                val picked=whenChoices().getOrNull(choices.checkedRadioButtonId-1)
+                    ?: whenChoices().first()
                 album.rememberHere(called,here,picked,note.text.toString().trim().takeIf(String::isNotEmpty))
                 status="${called}을 우리 가족의 장소로 저장했어요."
                 render()
@@ -720,7 +801,7 @@ class MainActivity : Activity() {
         }
         column.addView(label("언제 갔는지 골라 주세요. 아이에게 그대로 말해 줄 표현이에요.",19f,muted))
         val choices=RadioGroup(this).apply { orientation=LinearLayout.VERTICAL }
-        FamilyVisit.WHEN_CHOICES.forEachIndexed { index,choice ->
+        whenChoices().forEachIndexed { index,choice ->
             choices.addView(RadioButton(this).apply {
                 id=index+1; text=choice; textSize=21f
                 isChecked=existing?.whenLabel==choice || (existing==null && index==0)
@@ -737,8 +818,8 @@ class MainActivity : Activity() {
         val builder=AlertDialog.Builder(this).setTitle(place.name).setView(column)
             .setNegativeButton("닫기",null)
             .setPositiveButton("기록하기") { _,_ -> menuAction {
-                val picked=FamilyVisit.WHEN_CHOICES.getOrNull(choices.checkedRadioButtonId-1)
-                    ?: FamilyVisit.WHEN_CHOICES.first()
+                val picked=whenChoices().getOrNull(choices.checkedRadioButtonId-1)
+                    ?: whenChoices().first()
                 album.remember(FamilyVisit(place.id,picked,note.text.toString().trim().takeIf(String::isNotEmpty)))
                 status="${place.name}을 가족의 기억으로 적어 두었어요."; render()
             } }
@@ -777,5 +858,28 @@ class MainActivity : Activity() {
             }.joinToString("\n\n")
         }.getOrDefault("").ifBlank { "아직 남긴 시연 기억이 없어요." }
         show(AlertDialog.Builder(this).setTitle("지난 시연에서 만난 곳").setMessage(text+"\n\n자유롭게 말한 문장과 음성은 저장하지 않아요.").setPositiveButton("닫기",null).create())
+    }
+
+    private companion object {
+        val LANGUAGE_LABELS = mapOf(
+            ChildLanguage.KOREAN to "한국어",
+            ChildLanguage.ENGLISH to "English",
+        )
+        val FIELD_LABELS = mapOf(
+            InterestField.SCIENCE to "과학",
+            InterestField.HISTORY to "역사",
+            InterestField.ART to "예술",
+            InterestField.NATURE to "자연",
+            InterestField.LIVING to "생활",
+        )
+        val FAVOURITE_LABELS = mapOf(
+            FavouriteTopic.DINOSAUR to "공룡",
+            FavouriteTopic.SPACE to "우주",
+            FavouriteTopic.ANIMALS to "동물",
+            FavouriteTopic.VEHICLES to "탈것",
+            FavouriteTopic.DRAWING to "그림",
+            FavouriteTopic.MUSIC to "음악",
+            FavouriteTopic.ROBOTS to "로봇",
+        )
     }
 }
