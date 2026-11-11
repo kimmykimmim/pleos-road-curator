@@ -7,6 +7,12 @@
     <uses-permission android:name="pleos.car.permission.STT_SERVICE" />
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="pleos.car.permission.NAVI_ROUTE" />
+    <!--
+      Gear position and brake pedal, read only, for deciding when the car is standing still.
+      Only the read permission is declared: the app never sets a vehicle value, so none of the
+      matching CONTROL_CAR_* permissions belong here.
+    -->
+    <uses-permission android:name="pleos.car.permission.CAR_DRIVE" />
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE_MEDIA_PLAYBACK" />
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE_LOCATION" />

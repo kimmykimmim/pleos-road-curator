@@ -153,3 +153,35 @@ FATAL EXCEPTION 0건
 - 정차 순간 영상 권유: 이 에뮬레이터에는 Pleos Vehicle 서비스가 없어 기어와 브레이크 신호가
   오지 않음. 앱은 "서 있지 않음" 으로 두고 충돌 없이 동작함. 단위 검사 8개로만 고정됨.
 - 시점 이동해서 확인 목록에는 보호자 장소가 들어가지 않음. 시연에서는 기다리면 만날 수 있음.
+
+2026-11-11 실제 Pleos Connect 에뮬레이터에서 검증 (그동안 미검증이던 항목)
+환경: Pleos Connect v2.1.0, API 34, arm64, 2560x1440, 공식 기기 프로필 Pleos_Connect_v2_0
+  이미지: system-images;android-34;pleos_car_emulator;arm64-v8a
+  출처: https://nexus-playground.pleos.ai/repository/raw-releases/connect-avd/2.x/crp-arm64-sys-img.xml
+  zip SHA-1 24d28eb2f18eba5e87c861a7eb2bdccebb049419 — 매니페스트 값과 일치 확인
+  설치 재현: tools/pleos-emulator-setup.sh
+  ro.build.display.id = RELEASE.release_connect_v2.1.0 test-keys
+
+PASS 설치와 실행: versionCode 15, 0.14.0. 모든 구간에서 FATAL EXCEPTION 0건.
+PASS Pleos 셸 안에서 자기 영역만 사용. 앱 창 Rect(853,90 - 2535,1300) = 1682x1210.
+  왼쪽 계기판과 하단 공조는 Pleos 가 그립니다. f-01, f-06.
+PASS Pleos 권한이 실제로 부여됨:
+  pleos.car.permission.NAVI_ROUTE granted=true
+  pleos.car.permission.TTS_SERVICE granted=true
+  pleos.car.permission.STT_SERVICE granted=true
+  pleos.car.permission.CAR_DRIVE granted=true   <- 이번에 추가한 기어/브레이크 읽기 권한
+  ai.pleos.playground.service.vehicle.VEHICLE_BINDING granted=true
+PASS 위치 권한을 Pleos 한국어 시스템 창으로 요청. 앱 시작이 아니라 여행 시작 때만. f-02.
+PASS NaviHelper 실제 연결. onDestinationInfo, onWayPointInfo 콜백 수신.
+  일반 Automotive 에뮬레이터에서 나던 "connect failed cause : service has not started yet" 없음.
+PASS 경로 없는 상태를 정확히 표시: "내비게이션에서 목적지를 정하고 안내를 시작해 주세요." f-03.
+PASS 실제 경로 안내 연동. Pleos 내비에서 롯데월드타워를 목적지로 설정[40분, 13km, 도착 11:19].
+  앱이 "실제 내비 연결"로 바뀌고 "예고 가능한 장소 1곳 / 가까운 장소 0곳" 표시. f-05, f-06.
+  = getDestinationInfo 가 돌려준 목적지를 LivePlaces.match 가 카탈로그의 lotte 와 연결함.
+PASS 2400초는 300초보다 크므로 아직 질문하지 않음. 임계값 아래에서만 말하는 동작이 맞음.
+
+아직 확인하지 못한 것
+- 300초 임계값을 실제로 넘는 순간. 이 에뮬레이터의 내비 엔진은 자체 차량 위치를 쓰고
+  emulator 콘솔의 geo fix 로 움직이지 않습니다. 주행 시뮬레이션 수단을 더 찾아야 합니다.
+- 통과 판정, 왼쪽 오른쪽 방향 안내, 정차 순간 영상 권유의 실제 주행 확인.
+- Pleos 기기 내 TTS 로 실제 음성이 나오는지.
