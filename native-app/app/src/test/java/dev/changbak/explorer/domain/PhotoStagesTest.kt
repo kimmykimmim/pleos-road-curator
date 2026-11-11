@@ -6,60 +6,73 @@ import org.junit.Assert.assertTrue
 import org.junit.Test
 
 class PhotoStagesTest {
-    private fun cleared(asset: String, year: String, caption: String) =
-        PhotoStage(asset, year, caption, source = "서울역사박물관", license = "공공누리 제1유형")
+    private val all = PhotoStages.byPlace.values.flatten()
 
     @Test
-    fun `a photograph with no stated source is never usable`() {
-        val stage = PhotoStage("yeouido-1-sandbar.jpg", "아주 오래전", "모래섬이었어요")
+    fun `a photograph with no author or licence is never shown`() {
+        val bare = PhotoStage("lotte-now.jpg", "지금", "뾰족해")
 
-        assertFalse(stage.usable)
-        assertFalse(stage.copy(source = "서울역사박물관").usable)
-        assertFalse(stage.copy(license = "공공누리 제1유형").usable)
-        assertTrue(stage.copy(source = "서울역사박물관", license = "공공누리 제1유형").usable)
+        assertFalse(bare.usable)
+        assertFalse(bare.copy(author = "Ox1997cow").usable)
+        assertFalse(bare.copy(license = "CC BY 3.0").usable)
+        assertTrue(bare.copy(author = "Ox1997cow", license = "CC BY 3.0").usable)
     }
 
     @Test
     fun `a stage with no file is never usable, however well it is credited`() {
-        assertFalse(PhotoStage("", "지금", "도시", "서울기록원", "공공누리 제1유형").usable)
+        assertFalse(PhotoStage("", "지금", "도시", "Ox1997cow", "CC BY 3.0").usable)
     }
 
     @Test
-    fun `the app ships no photographs, so no place shows any yet`() {
-        // Every stage in the catalog is still waiting for a cleared file and a source. Until
-        // then each place keeps the drawing, which is the honest thing to show.
-        PhotoStages.byPlace.keys.forEach { assertEquals(emptyList<PhotoStage>(), PhotoStages.of(it)) }
+    fun `every photograph the app ships names its author and licence`() {
+        assertTrue(all.isNotEmpty())
+        all.forEach { stage ->
+            assertTrue(stage.usable)
+            assertTrue(stage.author.isNotBlank())
+            assertTrue(stage.license.isNotBlank())
+            assertTrue(stage.page.startsWith("https://"))
+        }
     }
 
     @Test
-    fun `one photograph alone does not replace a drawing that explains something`() {
-        val one = listOf(cleared("a.jpg", "지금", "오늘의 모습"))
-        // A single picture shows no change, which is the only reason to take the screen.
-        assertTrue(one.all { it.usable })
-        assertTrue(one.size < 2)
+    fun `the credit line carries author, licence and source together`() {
+        val credit = all.first().credit
+
+        assertTrue(credit.contains(all.first().author))
+        assertTrue(credit.contains(all.first().license))
+        assertTrue(credit.contains("Wikimedia Commons"))
     }
 
     @Test
-    fun `a place with no entry asks for nothing`() {
-        assertEquals(emptyList<PhotoStage>(), PhotoStages.of("own:1700000000000"))
-        assertEquals(emptyList<PhotoStage>(), PhotoStages.of(null))
+    fun `one photograph is enough while the child is still looking`() {
+        // Recognising the place out of the window is the whole point of this phase.
+        assertEquals(1, PhotoStages.forRecognising("lotte").size)
     }
 
     @Test
-    fun `every staged place is a place the app actually knows`() {
+    fun `one photograph does not replace the drawing that explains the place`() {
+        // After the place has been passed the child has already seen the real thing. The
+        // drawing earns the screen by showing what the window cannot.
+        assertTrue(PhotoStages.forExplaining("lotte").isEmpty())
+        assertTrue(PhotoStages.byPlace.keys.all { PhotoStages.forExplaining(it).isEmpty() })
+    }
+
+    @Test
+    fun `a place with no photograph asks for nothing`() {
+        // 청진옥 is an alley restaurant with no freely licensed photograph, so it keeps its drawing.
+        assertTrue(PhotoStages.forRecognising("cheongjinok").isEmpty())
+        assertTrue(PhotoStages.forRecognising("own:1700000000000").isEmpty())
+        assertTrue(PhotoStages.forRecognising(null).isEmpty())
+    }
+
+    @Test
+    fun `every photographed place is a place the app actually knows`() {
         val known = CuratorCatalog.places.map { it.id }.toSet()
         assertTrue(PhotoStages.byPlace.keys.all { it in known })
     }
 
     @Test
-    fun `every staged place has at least a before and an after`() {
-        PhotoStages.byPlace.forEach { (place, stages) ->
-            assertTrue("$place 는 변화를 보여 줄 두 장이 필요합니다", stages.size >= 2)
-        }
-    }
-
-    @Test
-    fun `each file is asked for once, so two places cannot claim the same photograph`() {
+    fun `each file is claimed by one place only`() {
         val assets = PhotoStages.expectedAssets()
 
         assertEquals(assets.size, assets.toSet().size)
@@ -67,11 +80,10 @@ class PhotoStagesTest {
     }
 
     @Test
-    fun `captions speak to a child, not to an archivist`() {
-        PhotoStages.byPlace.values.flatten().forEach { stage ->
+    fun `captions speak to a child looking out of a moving window`() {
+        all.forEach { stage ->
             assertTrue(stage.year.isNotBlank())
             assertTrue(stage.caption.isNotBlank())
-            // Short enough to read from the back seat while the car is moving.
             assertTrue(stage.caption.length <= 28)
         }
     }

@@ -30,7 +30,8 @@ class PhotoSequenceView(context: Context) : View(context) {
     private val source = Rect()
     private val target = RectF()
 
-    val hasPhotos: Boolean get() = frames.size >= 2
+    /** One photograph is enough to recognise a place; two or more also show a change. */
+    val hasPhotos: Boolean get() = frames.isNotEmpty()
 
     /** How long one photograph is held before it starts dissolving into the next. */
     private val holdMs = 2600L
@@ -64,7 +65,7 @@ class PhotoSequenceView(context: Context) : View(context) {
     }
 
     fun start() {
-        if (!hasPhotos) return
+        if (frames.size < 2) return
         stop()
         if (!ValueAnimator.areAnimatorsEnabled()) { fade = 1f; invalidate(); return }
         step()
@@ -149,7 +150,7 @@ class PhotoSequenceView(context: Context) : View(context) {
         // thing this app must never put in front of a child as if it were the place.
         text.textSize = h * .042f
         text.color = Color.argb(205, 255, 255, 255)
-        val credit = "출처 ${stage.source}"
+        val credit = stage.credit
         canvas.drawText(credit, w - pad - text.measureText(credit), h - pad * .5f, text)
     }
 

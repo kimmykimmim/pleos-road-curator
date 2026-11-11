@@ -43,9 +43,10 @@ class CuratorMediaPanel(context:Context): FrameLayout(context) {
     fun present(state:CuratorState, allowed:Boolean) {
         current=state;permitted=allowed
         scene.present(state,allowed)
-        // Real photographs of the same place, in the order the change happened, beat a diagram
-        // at showing that the change happened at all. They only run where the place has them.
-        if(state.phase==CuratorPhase.EXPLAIN && allowed && showPhotos(state)) return
+        // While the child is still hunting for the place, a photograph of the real thing is
+        // what turns the window into "어? 이거구나". Once it has been passed the drawing takes
+        // over, because it explains what the window could not show.
+        if(allowed && showPhotos(state)) return
         hidePhotos()
         val key=if(state.phase==CuratorPhase.EXPLAIN && allowed && ValueAnimator.areAnimatorsEnabled()) mediaKey(state) else null
         if(playingKey==key) return
@@ -60,13 +61,17 @@ class CuratorMediaPanel(context:Context): FrameLayout(context) {
     }
     /** True when this place showed its own photographs, so nothing else should take the screen. */
     private fun showPhotos(state:CuratorState):Boolean {
-        val stages=PhotoStages.of(state.currentId)
+        val stages=when(state.phase) {
+            CuratorPhase.PREDICT,CuratorPhase.WATCH -> PhotoStages.forRecognising(state.currentId)
+            CuratorPhase.EXPLAIN -> PhotoStages.forExplaining(state.currentId)
+            else -> emptyList()
+        }
         if(stages.isEmpty()) return false
-        if(photoPlaceId!=state.currentId) {
+        if(photoPlaceId!=state.currentId+state.phase.name) {
             stop()
             photos.load(stages)
             if(!photos.hasPhotos) { photoPlaceId=null;return false }
-            photoPlaceId=state.currentId
+            photoPlaceId=state.currentId+state.phase.name
             photos.visibility=View.VISIBLE
             scene.animate().cancel();scene.alpha=0f
             photos.restart()
