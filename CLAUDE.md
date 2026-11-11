@@ -29,7 +29,7 @@
 
 - 프로젝트: `native-app`
 - 패키지: `dev.changbak.explorer`
-- 버전: `0.14.0`, versionCode `15`
+- 버전: `0.17.0`, versionCode `19`
 - 저장소: 비공개 깃허브 `kimmykimmim/pleos-road-curator`. 작업 사본은 Drive 밖 로컬에 둡니다.
 - API 34, minSdk 28, Kotlin, Android 기본 View 및 Canvas
 - SDK: NaviHelper 3.0.5, Vehicle 2.3.2, TextToSpeech 3.3.1, SpeechToText 3.3.1
@@ -75,7 +75,7 @@
 - 실제 SDK 조회: `connected=true`, `mode=SAFE_GUIDING`
 - 실제 SDK에서 경로 상태, 현재 위치, 목적지, 경유지 콜백을 각각 1회 받음. 오류 0.
 - `SAFE_GUIDING`은 목적지로 안내 중인 상태를 입증하지 않습니다. 실제 5분 전 안내와 통과의 전체 검증은 미완료입니다.
-- 에뮬레이터에 0.11.0 설치 완료. 앱이 화면 최상단에서 실행됨을 시스템 상태로 확인했습니다.
+- 에뮬레이터에 0.17.0 설치 완료. 네 단계 진행, 실제 사진, 가족의 기억, 보호자 기록을 화면으로 확인했습니다. 기능별 녹화본은 `validation/clips/`에 있습니다.
 - 위치 권한은 아직 허용되지 않은 상태입니다. `ACCESS_FINE_LOCATION: granted=false`.
 - 실제 음성 서비스 시작은 앱에서 위치 권한을 허용하고 별도로 확인해야 합니다.
 
