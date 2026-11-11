@@ -158,6 +158,21 @@ class MainActivity : Activity() {
         runCatching { restrictions?.unregisterListener(); car?.disconnect() }; super.onDestroy()
     }
     private fun usable() = foreground && connected && !restricted && dialog == null
+    /**
+     * Runs a guardian choice after its menu is actually gone.
+     *
+     * A dialog item click queues its own dismiss as a message, so a plain handler.post from the
+     * click runs first, while `dialog` still holds the closing menu. Every usable() check inside
+     * that runnable then reads "a dialog is already up" and the choice does nothing at all: the
+     * jump to a demo position, the end of the day, the child's typed answer. Closing the menu
+     * here, before the work is queued, is what lets a menu choice reach the app.
+     */
+    private fun menuAction(action: () -> Unit) {
+        dialog?.let { previous -> previous.setOnDismissListener(null); previous.dismiss() }
+        dialog = null
+        drive?.suppress(false)
+        handler.post { action(); armRoleIdle() }
+    }
     /** EXPLAIN and FAMILY both wait for narration; each leaves by its own next step. */
     private fun advanceAfterNarration() =
         if (state.phase == CuratorPhase.FAMILY) engine.afterFamilyMemory(state)
@@ -221,7 +236,7 @@ class MainActivity : Activity() {
         quiet(); playing = false
         show(AlertDialog.Builder(this).setTitle("네 생각을 들려줘")
             .setMessage("확인을 누르면 이번 답변을 듣기 시작해요. 음성은 기기 안에서 처리하고 외부 AI로 보내지 않아요.")
-            .setNegativeButton("나중에", null).setPositiveButton("이야기할게") { _, _ -> handler.post {
+            .setNegativeButton("나중에", null).setPositiveButton("이야기할게") { _, _ -> menuAction {
                 if (usable()) { drive?.suppress(true);mic = voice.enableCommands(); status = if (mic) "네 생각을 듣고 있어" else "지금은 화면으로 골라줘";if(!mic) drive?.suppress(false);render() }
             } }.create())
     }
@@ -403,7 +418,7 @@ class MainActivity : Activity() {
     }
     private fun parentMenu() {
         val items=arrayOf(if(playing) "이야기 잠깐 멈추기" else "이야기 이어서 재생", "시점 이동해서 확인", "말 대신 입력", "가족이 함께 갔던 곳 기록", "오늘 이야기 마치기", "설명 출처", "지난 시연 기억", "실제 내비 음성 여행 시작", "다른 시연 경로 선택")
-        show(AlertDialog.Builder(this).setTitle("보호자 / 정차 시연").setItems(items) { _,i -> handler.post {
+        show(AlertDialog.Builder(this).setTitle("보호자 / 정차 시연").setItems(items) { _,i -> menuAction {
             when(i) {
                 0 -> { if(live) drive?.setPaused(!drive!!.paused) else if(demo) { playing=!playing;render() } }
                 1 -> demoControls()
@@ -419,7 +434,7 @@ class MainActivity : Activity() {
     }
     private fun routeMenu() {
         show(AlertDialog.Builder(this).setTitle("가는 길의 이야기를 골라요")
-            .setItems(CuratorRoutes.routes.map { "${it.title}\n${it.subtitle}" }.toTypedArray()) { _,i -> handler.post { startDemo(CuratorRoutes.routes[i]) } }
+            .setItems(CuratorRoutes.routes.map { "${it.title}\n${it.subtitle}" }.toTypedArray()) { _,i -> menuAction { startDemo(CuratorRoutes.routes[i]) } }
             .setNegativeButton("닫기",null).create())
     }
     private fun demoControls() {
@@ -428,7 +443,7 @@ class MainActivity : Activity() {
             val name=CuratorCatalog.places.first { it.id==id }.name
             listOf("$name 약 5분 전", "$name 가까이", "$name 통과")
         }
-        show(AlertDialog.Builder(this).setTitle("시연 위치 신호").setItems(entries.toTypedArray()) { _,i -> handler.post {
+        show(AlertDialog.Builder(this).setTitle("시연 위치 신호").setItems(entries.toTypedArray()) { _,i -> menuAction {
             val index=i/3;val stage=i%3
             val chosen=selectedRoute.placeIds[index]
             // A jump is a fresh, isolated preview. Earlier unfinished scenes must not block it.
@@ -452,7 +467,7 @@ class MainActivity : Activity() {
             saved.of(place.id)?.let { "${place.name}  ·  ${it.whenLabel}" } ?: place.name
         }).toTypedArray()
         show(AlertDialog.Builder(this).setTitle("가족이 함께 갔던 곳")
-            .setItems(labels) { _,index -> handler.post {
+            .setItems(labels) { _,index -> menuAction {
                 if(index==0) rememberHere() else familyEntry(places[index-1])
             } }
             .setNegativeButton("닫기",null).create())
@@ -500,9 +515,9 @@ class MainActivity : Activity() {
         column.addView(note)
         show(AlertDialog.Builder(this).setTitle("지금 여기를 기억해 두기").setView(column)
             .setNegativeButton("닫기",null)
-            .setPositiveButton("저장하기") { _,_ -> handler.post {
+            .setPositiveButton("저장하기") { _,_ -> menuAction {
                 val called=name.text.toString().trim()
-                if(called.isEmpty()) { status="이곳을 부를 이름을 적어 주세요.";render();return@post }
+                if(called.isEmpty()) { status="이곳을 부를 이름을 적어 주세요.";render();return@menuAction }
                 val picked=FamilyVisit.WHEN_CHOICES.getOrNull(choices.checkedRadioButtonId-1)
                     ?: FamilyVisit.WHEN_CHOICES.first()
                 album.rememberHere(called,here,picked,note.text.toString().trim().takeIf(String::isNotEmpty))
@@ -546,13 +561,13 @@ class MainActivity : Activity() {
         column.addView(note)
         val builder=AlertDialog.Builder(this).setTitle(place.name).setView(column)
             .setNegativeButton("닫기",null)
-            .setPositiveButton("기록하기") { _,_ -> handler.post {
+            .setPositiveButton("기록하기") { _,_ -> menuAction {
                 val picked=FamilyVisit.WHEN_CHOICES.getOrNull(choices.checkedRadioButtonId-1)
                     ?: FamilyVisit.WHEN_CHOICES.first()
                 album.remember(FamilyVisit(place.id,picked,note.text.toString().trim().takeIf(String::isNotEmpty)))
                 status="${place.name}을 가족의 기억으로 적어 두었어요."; render()
             } }
-        if(existing!=null) builder.setNeutralButton("기록 지우기") { _,_ -> handler.post {
+        if(existing!=null) builder.setNeutralButton("기록 지우기") { _,_ -> menuAction {
             album.forget(place.id); status="${place.name}의 기록을 지웠어요."; render()
         } }
         show(builder.create())
@@ -561,7 +576,7 @@ class MainActivity : Activity() {
         playing=false
         val field=EditText(this).apply { hint="아이가 말할 법한 생각을 입력해 보세요"; textSize=23f; filters=arrayOf(android.text.InputFilter.LengthFilter(160)); importantForAutofill=View.IMPORTANT_FOR_AUTOFILL_NO }
         show(AlertDialog.Builder(this).setTitle("말 대신 입력하기").setView(field).setNegativeButton("닫기",null)
-            .setPositiveButton("전하기") { _,_ -> handler.post { accept(field.text.toString()) } }.create())
+            .setPositiveButton("전하기") { _,_ -> menuAction { accept(field.text.toString()) } }.create())
     }
     private fun sources() {
         val text=CuratorCatalog.places.joinToString("\n\n") { "${it.name}\n${it.sourceTitle}\n${it.sourceUrl}" }
