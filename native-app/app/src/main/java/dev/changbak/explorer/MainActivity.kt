@@ -542,13 +542,12 @@ class MainActivity : Activity() {
         // clipToOutline is what lets the illustration run into the hero's rounded corners
         // instead of sitting in a square of its own.
         val left = column().apply { background = heroFill(); clipToOutline = true }; hero = left
-        scene = CuratorMediaPanel(this).also { left.addView(it,LinearLayout.LayoutParams(-1,-2)) }
+        // The picture takes the room, not a fixed slice of it. A 16:9 box in a tall panel left
+        // a band of empty colour between the picture and the name that read as a fault.
+        scene = CuratorMediaPanel(this).also { left.addView(it,LinearLayout.LayoutParams(-1,0,1f)) }
         scene.places={ catalog() }; scene.language=profile.language
-        // Anchored to the bottom. The flat colour between the picture and the name is the
-        // breathing room the whole panel is built around, not a gap to be filled.
-        val caption = column().apply {
-            setPadding(dp(30),dp(22),dp(30),dp(30)); gravity = Gravity.BOTTOM
-        }
+        // Sits under the picture at its own height. The picture above it has the rest.
+        val caption = column().apply { setPadding(dp(30),dp(20),dp(30),dp(28)) }
         // Two facts, two chips. Joining them with a middle dot would be the template chrome
         // that turns every unrelated pair into "A · B"; they are separate things and the layout
         // can say so for free.
@@ -567,9 +566,7 @@ class MainActivity : Activity() {
         }
         caption.addView(mediaButton,LinearLayout.LayoutParams(-2,dp(56)).apply { topMargin=dp(16) })
         heroCaption = caption
-        // The caption block takes what is left under the picture, so the name sits low on the
-        // dark end of the gradient however tall the screen is.
-        left.addView(caption,LinearLayout.LayoutParams(-1,0,1f))
+        left.addView(caption,LinearLayout.LayoutParams(-1,-2))
         body.addView(left,LinearLayout.LayoutParams(0,-1,.46f).apply { marginEnd=dp(22) })
         // Centred, so a short turn sits in the middle of the card rather than hugging the top.
         card = column().apply {

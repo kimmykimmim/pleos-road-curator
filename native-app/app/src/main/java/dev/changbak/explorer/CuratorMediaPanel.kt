@@ -37,11 +37,22 @@ class CuratorMediaPanel(context:Context): FrameLayout(context) {
      * adds empty margin above and below the drawing. Keeping the panel at the drawing's own
      * shape puts that space back into the layout, where it reads as breathing room.
      */
+    /**
+     * Takes the height it is given, and only falls back to 16:9 when nobody has decided one.
+     *
+     * This used to force width times 540/960 always. In a tall panel that left a band of empty
+     * colour as big as the picture itself between the picture and the place's name, which reads
+     * as a layout fault rather than as space. The host now hands this view the room it has and
+     * the content fits itself: a photograph fills and crops, a drawing sits centred at its own
+     * proportions rather than stretching.
+     */
     override fun onMeasure(widthSpec:Int,heightSpec:Int) {
         val width=MeasureSpec.getSize(widthSpec)
-        var height=(width*540f/960f).toInt()
-        val limit=MeasureSpec.getSize(heightSpec)
-        if(MeasureSpec.getMode(heightSpec)!=MeasureSpec.UNSPECIFIED && limit in 1 until height) height=limit
+        val given=MeasureSpec.getSize(heightSpec)
+        val height=if(MeasureSpec.getMode(heightSpec)==MeasureSpec.EXACTLY && given>0) given
+            else (width*540f/960f).toInt().let { wide ->
+                if(MeasureSpec.getMode(heightSpec)!=MeasureSpec.UNSPECIFIED && given in 1 until wide) given else wide
+            }
         super.onMeasure(widthSpec,MeasureSpec.makeMeasureSpec(height,MeasureSpec.EXACTLY))
     }
     fun present(state:CuratorState, allowed:Boolean) {

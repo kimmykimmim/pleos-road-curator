@@ -133,29 +133,39 @@ class PhotoSequenceView(context: Context) : View(context) {
     }
 
     private fun caption(canvas: Canvas, stage: PhotoStage, w: Float, h: Float) {
-        val pad = h * .045f
-        val barTop = h - h * .26f
+        // Sized against the frame's width, not its height.
+        //
+        // These were fractions of the height, which was fine while the view was always 16:9.
+        // Once the panel started taking whatever height it was given, a tall frame blew the
+        // caption up until it collided with the chips over it. The width is what the line has
+        // to fit across, so the width is what should set its size.
+        val base = minOf(h, w / 1.78f)
+        val pad = base * .045f
+        val barTop = h - base * .33f
         paint.shader = LinearGradient(0f, barTop, 0f, h, Color.TRANSPARENT,
             Color.argb(215, 11, 45, 63), Shader.TileMode.CLAMP)
         canvas.drawRect(0f, barTop, w, h, paint)
         paint.shader = null
 
         text.typeface = Typeface.create("sans-serif-medium", Typeface.NORMAL)
-        text.textSize = h * .085f
+        text.textSize = base * .085f
         text.color = cream
-        canvas.drawText(stage.yearIn(language), pad, h - pad * 2.5f, text)
+        canvas.drawText(stage.yearIn(language), pad, h - pad * 3.4f, text)
 
         text.typeface = Typeface.create("sans-serif", Typeface.NORMAL)
-        text.textSize = h * .062f
+        text.textSize = base * .062f
         text.color = Color.WHITE
-        canvas.drawText(stage.captionIn(language), pad, h - pad * 1.1f, text)
+        canvas.drawText(stage.captionIn(language), pad, h - pad * 1.8f, text)
 
         // The source rides with the photograph. A picture with no stated origin is the one
         // thing this app must never put in front of a child as if it were the place.
-        text.textSize = h * .042f
+        //
+        // On its own line under the caption. It used to be right-aligned on almost the same
+        // baseline, so a long caption ran straight into the attribution and neither could be
+        // read — the one line that legally has to be legible.
+        text.textSize = base * .042f
         text.color = Color.argb(205, 255, 255, 255)
-        val credit = stage.credit
-        canvas.drawText(credit, w - pad - text.measureText(credit), h - pad * .5f, text)
+        canvas.drawText(stage.credit, pad, h - pad * .6f, text)
     }
 
     init { setBackgroundColor(Color.rgb(238, 246, 252)) }

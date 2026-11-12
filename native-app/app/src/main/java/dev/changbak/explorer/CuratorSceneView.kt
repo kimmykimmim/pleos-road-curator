@@ -29,13 +29,34 @@ class CuratorSceneView(context: Context): View(context) {
     }
     override fun onDetachedFromWindow() { animator?.cancel(); super.onDetachedFromWindow() }
     override fun onDraw(canvas: Canvas) {
-        if(progress<1f) { canvas.saveLayerAlpha(0f,0f,width.toFloat(),height.toFloat(),((1f-progress)*255).toInt()); drawScene(canvas,width.toFloat(),height.toFloat(),prior,lookUp(prior)); canvas.restore() }
+        if(progress<1f) { canvas.saveLayerAlpha(0f,0f,width.toFloat(),height.toFloat(),((1f-progress)*255).toInt()); letterboxed(canvas,prior); canvas.restore() }
         canvas.saveLayerAlpha(0f,0f,width.toFloat(),height.toFloat(),(progress*255).toInt())
-        drawScene(canvas,width.toFloat(),height.toFloat(),state,lookUp(state)); canvas.restore()
+        letterboxed(canvas,state); canvas.restore()
+    }
+
+    /**
+     * Draws the scene at its own proportions, centred in whatever box this view was given.
+     *
+     * The compositions are laid out for 16:9 and carry labels at their edges. Stretching one to
+     * fill a taller panel would bend the building it is explaining, so the drawing keeps its
+     * shape and the panel's own colour shows above and below it.
+     */
+    private fun letterboxed(canvas: Canvas, value: CuratorState) {
+        val w=width.toFloat(); val h=height.toFloat()
+        if(w<=0f || h<=0f) return
+        val artW=if(w/h>RATIO) h*RATIO else w
+        val artH=if(w/h>RATIO) h else w/RATIO
+        val x=(w-artW)/2f; val y=(h-artH)/2f
+        canvas.save(); canvas.clipRect(x,y,x+artW,y+artH); canvas.translate(x,y)
+        drawScene(canvas,artW,artH,value,lookUp(value))
+        canvas.restore()
     }
     private fun lookUp(value: CuratorState) = places().firstOrNull { it.id==value.currentId }
 
     companion object {
+        /** What the drawings are composed for. */
+        private const val RATIO = 960f/540f
+
         /**
          * [place] is passed in rather than looked up here: a guardian's own place lives in their
          * records, not in the bundled catalog, and defaulting would draw another place's artwork.
