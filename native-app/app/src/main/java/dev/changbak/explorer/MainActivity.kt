@@ -6,6 +6,7 @@ import android.content.*
 import android.content.pm.PackageManager
 import android.os.IBinder
 import android.animation.ValueAnimator
+import android.view.animation.DecelerateInterpolator
 import android.car.Car
 import android.car.drivingstate.CarUxRestrictions
 import android.car.drivingstate.CarUxRestrictionsManager
@@ -115,6 +116,14 @@ class MainActivity : Activity() {
     private var dialog: AlertDialog? = null
     private var lastCard: List<Any?>? = null
     private lateinit var card: LinearLayout
+    private lateinit var columns: LinearLayout
+    private lateinit var hero: LinearLayout
+    private lateinit var cardPanel: View
+    private lateinit var heroCaption: View
+    /** Sits behind both columns and comes forward only while a picture is filling the screen. */
+    private lateinit var backdrop: View
+    /** Whether the picture is currently filling the screen for an explanation. */
+    private var zoomed = false
     private lateinit var scene: CuratorMediaPanel
     private lateinit var mediaButton: Button
     private lateinit var badge: TextView
@@ -365,6 +374,30 @@ class MainActivity : Activity() {
     }
     private fun dp(n: Int) = (n*uiScale*resources.displayMetrics.density).toInt()
     private fun sp(n: Float) = n*uiScale
+    /**
+     * Six sizes, and nothing between them.
+     *
+     * Thirteen different sizes were in use, most of them a point or two apart, which reads as
+     * noise rather than as hierarchy: nothing on the screen said "I am the sentence to read
+     * first". A child glancing up from the back seat has about a second, so the steps are far
+     * enough apart to be told apart at a glance, and the sentence size is small enough that a
+     * question fits on two lines instead of pushing the buttons off the card.
+     */
+    private object Text {
+        /** One per panel at most: the place's name, or the screen's one question. */
+        const val DISPLAY = 30f
+        /** The sentence this turn is about. */
+        const val TITLE = 24f
+        /** Anything you press. */
+        const val ACTION = 21f
+        /** Supporting sentences: the hook, the lead, the answer to a quiz. */
+        const val BODY = 19f
+        /** Names of things: a step, a chip, a place in a list. */
+        const val LABEL = 17f
+        /** Notes about the app rather than the journey. */
+        const val CAPTION = 14f
+    }
+
     private fun column() = LinearLayout(this).apply { orientation = LinearLayout.VERTICAL }
     private fun row() = LinearLayout(this).apply { orientation = LinearLayout.HORIZONTAL; gravity = Gravity.CENTER_VERTICAL }
     private fun rounded(color: Int, radius: Int = 28) =
@@ -385,7 +418,7 @@ class MainActivity : Activity() {
 
     /** A small round badge, the way the reference numbers its rows. */
     private fun chip(text: String, fill: Int, textColor: Int, size: Int = 46) = TextView(this).apply {
-        this.text = text; textSize = sp(17f); setTextColor(textColor)
+        this.text = text; textSize = sp(Text.LABEL); setTextColor(textColor)
         typeface = Typeface.create("sans-serif-medium", Typeface.NORMAL)
         gravity = Gravity.CENTER; background = pill(fill)
         minWidth = dp(size); minHeight = dp(size); includeFontPadding = false
@@ -393,7 +426,7 @@ class MainActivity : Activity() {
 
     /** A label on the illustration: pale type inside a translucent pill, never a hard box. */
     private fun heroChip(text: String) = TextView(this).apply {
-        this.text = text; textSize = sp(17f); setTextColor(Color.WHITE)
+        this.text = text; textSize = sp(Text.LABEL); setTextColor(Color.WHITE)
         typeface = Typeface.create("sans-serif-medium", Typeface.NORMAL)
         background = pill(onHero); setPadding(dp(18),dp(8),dp(18),dp(9)); includeFontPadding = false
     }
@@ -406,10 +439,10 @@ class MainActivity : Activity() {
      */
     private fun stepHeader(text: String): View {
         val number = Regex("^(\\d{1,2})\\s+(.*)$").find(text.trim())
-            ?: return label(text, 21f, accent, true)
+            ?: return label(text, Text.LABEL, accent, true)
         return row().apply {
             addView(chip(number.groupValues[1], accent, Color.WHITE, 44))
-            addView(label(number.groupValues[2], 21f, accent, true),
+            addView(label(number.groupValues[2], Text.LABEL, accent, true),
                 LinearLayout.LayoutParams(-2,-2).apply { marginStart = dp(12) })
         }
     }
@@ -432,7 +465,7 @@ class MainActivity : Activity() {
         if (bold) typeface = Typeface.create("sans-serif-medium",Typeface.NORMAL)
     }
     private fun button(text: String, primary: Boolean = false, action: () -> Unit) = Button(this).apply {
-        this.text = text; textSize = sp(24f); isAllCaps = false; setTextColor(if (primary) Color.WHITE else ink)
+        this.text = text; textSize = sp(Text.ACTION); isAllCaps = false; setTextColor(if (primary) Color.WHITE else ink)
         if (primary) typeface = Typeface.create("sans-serif-medium", Typeface.NORMAL)
         // Fully rounded. A pill reads as something to press from across the back seat in a way
         // a softened rectangle does not.
@@ -454,19 +487,19 @@ class MainActivity : Activity() {
     private fun buildLayout() {
         val root = column().apply { setBackgroundColor(ground); setPadding(dp(30),dp(22),dp(30),dp(24)) }
         val header = row(); val titles = column()
-        titles.addView(label(say.tagline,17f,muted)); gap(titles,4)
-        titles.addView(label("길 위의 큐레이터",29f,ink,true))
+        titles.addView(label(say.tagline,Text.CAPTION,muted)); gap(titles,4)
+        titles.addView(label("길 위의 큐레이터",Text.ACTION,ink,true))
         header.addView(titles,LinearLayout.LayoutParams(0,-2,1f))
-        badge = label("시연 경로",17f,accent,true).apply {
+        badge = label("시연 경로",Text.CAPTION,accent,true).apply {
             background = pill(pale); setPadding(dp(18),dp(9),dp(18),dp(10))
         }.also { header.addView(it,LinearLayout.LayoutParams(-2,-2).apply { marginEnd=dp(16) }) }
-        header.addView(button("보호자") { parentMenu() }.apply { textSize=sp(20f) },
+        header.addView(button("보호자") { parentMenu() }.apply { textSize=sp(Text.LABEL) },
             LinearLayout.LayoutParams(-2,dp(64)))
         root.addView(header); gap(root,20)
-        val body = row()
+        val body = row(); columns = body
         // clipToOutline is what lets the illustration run into the hero's rounded corners
         // instead of sitting in a square of its own.
-        val left = column().apply { background = heroFill(); clipToOutline = true }
+        val left = column().apply { background = heroFill(); clipToOutline = true }; hero = left
         scene = CuratorMediaPanel(this).also { left.addView(it,LinearLayout.LayoutParams(-1,-2)) }
         scene.places={ catalog() }; scene.language=profile.language
         // Anchored to the bottom. The flat colour between the picture and the name is the
@@ -474,15 +507,16 @@ class MainActivity : Activity() {
         val caption = column().apply {
             setPadding(dp(30),dp(22),dp(30),dp(30)); gravity = Gravity.BOTTOM
         }
-        subline = label("경로에서 만나는 발견",17f,Color.WHITE,true).apply {
+        subline = label("경로에서 만나는 발견",Text.CAPTION,Color.WHITE,true).apply {
             background = pill(onHero); setPadding(dp(18),dp(8),dp(18),dp(9))
         }.also { caption.addView(it,LinearLayout.LayoutParams(-2,-2)) }
         gap(caption,14)
-        placeName = label("어떤 곳을 만나게 될까?",33f,Color.WHITE,true).also { caption.addView(it) }
+        placeName = label("어떤 곳을 만나게 될까?",Text.DISPLAY,Color.WHITE,true).also { caption.addView(it) }
         mediaButton=button(say.replayFilm) { scene.replay() }.apply {
-            textSize=sp(18f); setTextColor(Color.WHITE); background = pill(onHero)
+            textSize=sp(Text.LABEL); setTextColor(Color.WHITE); background = pill(onHero)
         }
         caption.addView(mediaButton,LinearLayout.LayoutParams(-2,dp(56)).apply { topMargin=dp(16) })
+        heroCaption = caption
         // The caption block takes what is left under the picture, so the name sits low on the
         // dark end of the gradient however tall the screen is.
         left.addView(caption,LinearLayout.LayoutParams(-1,0,1f))
@@ -498,11 +532,75 @@ class MainActivity : Activity() {
             isFillViewport = true; isVerticalScrollBarEnabled = false
             addView(card,FrameLayout.LayoutParams(-1,-2))
         }
+        cardPanel = cardScroll
         body.addView(cardScroll,LinearLayout.LayoutParams(0,-1,.54f))
         // The two columns fill the screen exactly once. Wrapping them in a scroller of their
         // own let a long turn stretch the whole page and push the picture off the bottom.
-        root.addView(body,LinearLayout.LayoutParams(-1,0,1f)); setContentView(root)
+        //
+        // They sit on a stage so an explanation can bring its own ground forward: the backdrop
+        // takes the deep colour of the hero, and the picture is the only thing left on it.
+        backdrop = View(this).apply { background = rounded(deep,36); alpha = 0f }
+        val stage = FrameLayout(this).apply {
+            addView(backdrop, FrameLayout.LayoutParams(-1,-1))
+            addView(body, FrameLayout.LayoutParams(-1,-1))
+        }
+        root.addView(stage,LinearLayout.LayoutParams(-1,0,1f)); setContentView(root)
     }
+    /**
+     * The explanation fills the screen, then gives it back.
+     *
+     * Everything before this moment points at the window; the explanation is the one beat that
+     * is about the picture, so the picture takes the whole screen for as long as it lasts and
+     * then shrinks back into its panel. The view is scaled where it stands rather than moved
+     * into an overlay, so a film that is already playing keeps playing through the change.
+     *
+     * A tap on the enlarged picture puts it back early, so nobody is stuck looking at it.
+     */
+    private fun setExplainZoom(on: Boolean) {
+        if (!::columns.isInitialized || zoomed == on) return
+        zoomed = on
+        val duration = if (ValueAnimator.areAnimatorsEnabled()) 420L else 0L
+        if (on) {
+            // Both the hero and the row holding it have to stop clipping: a ViewGroup clips
+            // each child to that child's own bounds, so the row alone would still cut the
+            // picture off at the hero's edge. What remains clipping is the stage, which is
+            // exactly the area the picture is allowed to fill.
+            hero.clipToOutline = false; hero.clipChildren = false; hero.z = 20f
+            columns.clipChildren = false
+            columns.post {
+                if (!zoomed) return@post
+                val toCentreX = columns.width / 2f - (hero.x + scene.x + scene.width / 2f)
+                val toCentreY = columns.height / 2f - (hero.y + scene.y + scene.height / 2f)
+                // Fit, not fill. The drawing carries labels at its edges, and a picture that
+                // explains something must not have its explanation cropped off to look bigger.
+                val fit = minOf(
+                    columns.width.toFloat() / scene.width.coerceAtLeast(1),
+                    columns.height.toFloat() / scene.height.coerceAtLeast(1),
+                ) * .94f
+                scene.animate().scaleX(fit).scaleY(fit).translationX(toCentreX).translationY(toCentreY)
+                    .setDuration(duration).setInterpolator(DecelerateInterpolator()).start()
+                cardPanel.animate().alpha(0f).setDuration(duration).start()
+                heroCaption.animate().alpha(0f).setDuration(duration).start()
+                backdrop.animate().alpha(1f).setDuration(duration).start()
+            }
+            scene.setOnClickListener { setExplainZoom(false) }
+        } else {
+            scene.setOnClickListener(null); scene.isClickable = false
+            scene.animate().scaleX(1f).scaleY(1f).translationX(0f).translationY(0f)
+                .setDuration(duration).setInterpolator(DecelerateInterpolator())
+                .withEndAction {
+                    if (!zoomed) {
+                        hero.clipToOutline = true; hero.clipChildren = true; hero.z = 0f
+                        columns.clipChildren = true
+                    }
+                }
+                .start()
+            cardPanel.animate().alpha(1f).setDuration(duration).start()
+            heroCaption.animate().alpha(1f).setDuration(duration).start()
+            backdrop.animate().alpha(0f).setDuration(duration).start()
+        }
+    }
+
     private fun render() {
         if (!::card.isInitialized || isDestroyed) return
         badge.text = if(live) "실제 내비 / ${if(playing) "음성 여행" else "잠시 쉼"}"
@@ -517,6 +615,8 @@ class MainActivity : Activity() {
         subline.text = if (met > 0 && state.phase !in setOf(CuratorPhase.FINISHED,CuratorPhase.READY)) "$where  ·  ${say.meeting(met+1)}" else where
         scene.visibility=if(restricted) View.INVISIBLE else View.VISIBLE
         scene.present(state, !restricted && foreground && dialog==null)
+        // The explanation is the one beat that is about the picture rather than the window.
+        setExplainZoom(state.phase==CuratorPhase.EXPLAIN && !restricted && foreground)
         // A guardian's own place has no bundled film, so the button must not promise one.
         val hasFilm=engine.place(state)?.mediaKey?.isNotBlank()==true
         mediaButton.visibility=if(hasFilm && state.phase in setOf(CuratorPhase.EXPLAIN,CuratorPhase.PLAY,CuratorPhase.MEMORY)) View.VISIBLE else View.GONE
@@ -533,21 +633,21 @@ class MainActivity : Activity() {
     private fun populate() {
         card.removeAllViews(); statusLabel=null
         if(!connected || restricted) {
-            card.addView(label(if(!connected) "차량과 연결하고 있어요" else "지금은 쉬어가요",36f,ink,true)); gap(card,22)
-            card.addView(label(if(live) "화면은 쉬고, 시작한 음성 여행은 계속돼요." else "차가 멈추면 이야기를 이어가요.",25f,muted)); return
+            card.addView(label(if(!connected) "차량과 연결하고 있어요" else "지금은 쉬어가요",Text.DISPLAY,ink,true)); gap(card,20)
+            card.addView(label(if(live) "화면은 쉬고, 시작한 음성 여행은 계속돼요." else "차가 멈추면 이야기를 이어가요.",Text.BODY,muted)); return
         }
         if(live && (state.phase in setOf(CuratorPhase.READY,CuratorPhase.WAITING) || !state.routeValid)) {
-            card.addView(label("가는 길의 이야기를 찾고 있어요",30f,ink,true));gap(card,20)
-            card.addView(label(naviStatus,24f,muted));gap(card,16)
-            card.addView(label("등록된 목적지와 경유지는 약 5분 전, 그 밖의 장소는 가까워졌을 때 소개해요.",23f,muted))
-            gap(card,12);card.addView(label("현재 서울 6곳 / 위치로 찾는 장소 5곳",18f,muted))
-            drive?.let { card.addView(label("예고 가능한 장소 ${it.timedCount}곳 / 가까운 장소 ${it.nearbyCount}곳",19f,accent)) }
+            card.addView(label("가는 길의 이야기를 찾고 있어요",Text.TITLE,ink,true));gap(card,16)
+            card.addView(label(naviStatus,Text.BODY,muted));gap(card,14)
+            card.addView(label("등록된 목적지와 경유지는 약 5분 전, 그 밖의 장소는 가까워졌을 때 소개해요.",Text.BODY,muted))
+            gap(card,10);card.addView(label("현재 서울 6곳 / 위치로 찾는 장소 5곳",Text.CAPTION,muted))
+            drive?.let { card.addView(label("예고 가능한 장소 ${it.timedCount}곳 / 가까운 장소 ${it.nearbyCount}곳",Text.CAPTION,accent)) }
             action(if(playing) "음성 여행 잠시 쉬기" else "음성 여행 다시 연결",true) { drive?.setPaused(!drive!!.paused) ?: startLive() }
             action("시연으로 살펴보기") { routeMenu() };return
         }
         if(state.phase==CuratorPhase.READY) {
-            card.addView(label(say.readyTitle,37f,ink,true)); gap(card,24)
-            card.addView(label(say.readySubtitle,25f,muted)); gap(card,18)
+            card.addView(label(say.readyTitle,Text.DISPLAY,ink,true)); gap(card,20)
+            card.addView(label(say.readySubtitle,Text.BODY,muted)); gap(card,18)
             action(say.startLive,true) { startLive() }
             CuratorRoutes.routes.forEach { route ->
                 action(say.routeNames[route.id] ?: route.title) { startDemo(route) }
@@ -569,10 +669,10 @@ class MainActivity : Activity() {
         if(state.phase==CuratorPhase.PREDICT) {
             // The line about what this child loves comes first, the same way it is spoken.
             engine.place(state)?.let { engine.bridgeFor(it) }?.let {
-                card.addView(label(it,24f,accent)); gap(card,10)
+                card.addView(label(it,Text.BODY,accent)); gap(card,10)
             }
             round?.lead?.takeIf { it.isNotBlank() }?.let {
-                card.addView(label(it,24f,muted)); gap(card,14)
+                card.addView(label(it,Text.BODY,muted)); gap(card,12)
             }
         }
         val text=when(state.phase) {
@@ -589,32 +689,32 @@ class MainActivity : Activity() {
             }
             else -> state.message
         }
-        card.addView(label(text,if(state.phase==CuratorPhase.EXPLAIN) 28f else 33f,ink,true)); gap(card,18)
+        card.addView(label(text,Text.TITLE,ink,true)); gap(card,16)
         when(state.phase) {
             CuratorPhase.PREDICT -> {
                 engine.memory(state)?.guess?.let { guess ->
-                    card.addView(label(say.youSaid+guess,22f,accent)); gap(card,12)
+                    card.addView(label(say.youSaid+guess,Text.LABEL,accent)); gap(card,10)
                     // What the app said back. It is spoken, but a guardian glancing over should
                     // be able to see the exchange, and a child who missed it can be read it.
-                    if(talking) { card.addView(label(state.message,25f,ink)); gap(card,14) }
+                    if(talking) { card.addView(label(state.message,Text.BODY,ink)); gap(card,12) }
                 }
                 if(talking) {
                     // Nothing to point at. Printing the two answers here would turn a question
                     // the child has to think about into one they only have to read.
-                    card.addView(label(if(mic) say.listening else say.waitingForYou,24f,if(mic) accent else muted))
+                    card.addView(label(if(mic) say.listening else say.waitingForYou,Text.BODY,if(mic) accent else muted))
                     gap(card,16)
                     action(say.askAgain) { quiet(); voice.speak(state.message) { heardNothing() } }
                     action(say.useTheScreen) { showChoices = true; lastCard = null; render() }
                 } else {
                     // A quiz owes the answer to the eyes as well as the ears.
                     round?.reveal?.takeIf { engine.memory(state)?.guess != null }
-                        ?.let { card.addView(label(it,25f,ink)); gap(card,14) }
+                        ?.let { card.addView(label(it,Text.BODY,ink)); gap(card,12) }
                     engine.prompt(state)?.choices?.forEach { guess -> action(guess) { apply(engine.predict(state,guess)) } }
                     action(say.sayItMyself,true) { listen() }
                 }
             }
             CuratorPhase.WATCH -> if(talking) {
-                card.addView(label(if(mic) say.watchListening else say.watchWaiting,24f,if(mic) accent else muted)); gap(card,16)
+                card.addView(label(if(mic) say.watchListening else say.watchWaiting,Text.BODY,if(mic) accent else muted)); gap(card,14)
                 action(say.useTheScreen) { showChoices = true; lastCard = null; render() }
             } else { action(say.sawIt,true) { apply(engine.seen(state,true)) }; action(say.didNotSee) { apply(engine.seen(state,false)) } }
             CuratorPhase.EXPLAIN -> {
@@ -624,15 +724,15 @@ class MainActivity : Activity() {
                 }
             }
             CuratorPhase.FAMILY -> {
-                card.addView(label(say.guardianNote,19f,muted)); gap(card,8)
+                card.addView(label(say.guardianNote,Text.CAPTION,muted)); gap(card,8)
                 // Both answers go to the same place. The child is never graded on remembering.
                 action(say.rememberIt,true) { quiet(); apply(engine.afterFamilyMemory(state)) }
                 action(say.notSure) { quiet(); apply(engine.afterFamilyMemory(state)) }
             }
             CuratorPhase.PLAY -> {
-                card.addView(label(say.pretendPlay,19f,muted)); gap(card,8)
+                card.addView(label(say.pretendPlay,Text.CAPTION,muted)); gap(card,8)
                 if(talking) {
-                    card.addView(label(if(mic) say.playListening else say.playWaiting,24f,if(mic) accent else muted)); gap(card,16)
+                    card.addView(label(if(mic) say.playListening else say.playWaiting,Text.BODY,if(mic) accent else muted)); gap(card,14)
                     action(say.useTheScreen) { showChoices = true; lastCard = null; render() }
                 } else {
                     engine.place(state)?.activity?.choices?.forEach { choice -> action(choice.label,true) { apply(engine.perform(state,choice.id)) } }
@@ -655,15 +755,15 @@ class MainActivity : Activity() {
             small.addView(button(say.listenAgain) { if(live) drive?.repeat() else { quiet();voice.speak(state.message) } },LinearLayout.LayoutParams(0,dp(68),1f))
             small.addView(button(say.skip) { quiet(); apply(engine.skip(state)) },LinearLayout.LayoutParams(0,dp(68),1f).apply { marginStart=dp(10) }); card.addView(small)
         }
-        gap(card,18); statusLabel=label(status,18f,muted).also { card.addView(it) }
+        gap(card,14); statusLabel=label(status,Text.CAPTION,muted).also { card.addView(it) }
     }
     private fun memoryCard(memory: PlaceMemory?) {
         memory ?: return
         val p=CuratorCatalog.places.firstOrNull { it.id==memory.placeId } ?: return
-        card.addView(label(p.name,25f,accent,true)); gap(card,8)
+        card.addView(label(p.name,Text.LABEL,accent,true)); gap(card,8)
         val guess=memory.guess?.let { "처음 생각: $it\n" } ?: ""
         val observed=when(memory.seen) { SeenStatus.SEEN -> "직접 봤어"; SeenStatus.NOT_SEEN -> "보이지 않아 이야기로 만났어"; else -> "봤는지는 아직 말하지 않았어" }
-        card.addView(label(guess+observed+"\n"+(memory.activityLabel ?: "다음에 해 볼 놀이로 남겼어"),21f,muted)); gap(card,18)
+        card.addView(label(guess+observed+"\n"+(memory.activityLabel ?: "다음에 해 볼 놀이로 남겼어"),Text.BODY,muted)); gap(card,16)
     }
     private fun show(next: AlertDialog) {
         // A guardian-menu item opens its screen from a posted runnable. The list dialog's own
@@ -724,25 +824,25 @@ class MainActivity : Activity() {
         val column = LinearLayout(this).apply {
             orientation = LinearLayout.VERTICAL; setPadding(dp(24), dp(10), dp(24), 0)
         }
-        column.addView(label("아이가 쓰는 말", 20f, accent))
+        column.addView(label("아이가 쓰는 말", Text.LABEL, accent, true))
         val languages = RadioGroup(this).apply { orientation = LinearLayout.VERTICAL }
         ChildLanguage.entries.forEachIndexed { index, option ->
             languages.addView(RadioButton(this).apply {
-                id = index + 1; text = LANGUAGE_LABELS.getValue(option); textSize = 21f
+                id = index + 1; text = LANGUAGE_LABELS.getValue(option); textSize = Text.ACTION
                 isChecked = saved.language == option
             })
         }
         column.addView(languages)
-        column.addView(label("질문을 고를 관심 분야", 20f, accent))
-        column.addView(label("고른 분야에 질문이 있는 장소에서는 그 질문을 먼저 해요. 없는 곳은 그 장소의 질문을 그대로 해요.", 17f, muted))
+        column.addView(label("질문을 고를 관심 분야", Text.LABEL, accent, true))
+        column.addView(label("고른 분야에 질문이 있는 장소에서는 그 질문을 먼저 해요. 없는 곳은 그 장소의 질문을 그대로 해요.", Text.CAPTION, muted))
         val fields = InterestField.entries.map { field ->
-            CheckBox(this).apply { text = FIELD_LABELS.getValue(field); textSize = 21f; isChecked = field in saved.fields }
+            CheckBox(this).apply { text = FIELD_LABELS.getValue(field); textSize = Text.ACTION; isChecked = field in saved.fields }
                 .also(column::addView)
         }
-        column.addView(label("요즘 좋아하는 것  ·  최대 ${ChildProfile.MAX_FAVOURITES}개", 20f, accent))
-        column.addView(label("정말로 이어지는 장소에서만 한마디 덧붙여요. 억지로 엮지 않아요.", 17f, muted))
+        column.addView(label("요즘 좋아하는 것  ·  최대 ${ChildProfile.MAX_FAVOURITES}개", Text.LABEL, accent, true))
+        column.addView(label("정말로 이어지는 장소에서만 한마디 덧붙여요. 억지로 엮지 않아요.", Text.CAPTION, muted))
         val favourites = FavouriteTopic.entries.map { topic ->
-            CheckBox(this).apply { text = FAVOURITE_LABELS.getValue(topic); textSize = 21f; isChecked = topic in saved.favourites }
+            CheckBox(this).apply { text = FAVOURITE_LABELS.getValue(topic); textSize = Text.ACTION; isChecked = topic in saved.favourites }
                 .also(column::addView)
         }
         show(AlertDialog.Builder(this).setTitle("아이 설정").setView(ScrollView(this).apply { addView(column) })
@@ -858,22 +958,22 @@ class MainActivity : Activity() {
                 .setPositiveButton("닫기",null).create());return
         }
         val column=LinearLayout(this).apply { orientation=LinearLayout.VERTICAL;setPadding(dp(24),dp(12),dp(24),0) }
-        column.addView(label("지금 차가 서 있는 곳을 우리 가족의 장소로 저장해요. 위치는 차 안에만 남아요.",19f,muted))
+        column.addView(label("지금 차가 서 있는 곳을 우리 가족의 장소로 저장해요. 위치는 차 안에만 남아요.",Text.CAPTION,muted))
         val name=EditText(this).apply {
             hint="이곳을 뭐라고 부를까요. 예: 할머니 집"
-            textSize=21f
+            textSize=Text.ACTION
             filters=arrayOf(android.text.InputFilter.LengthFilter(FamilyVisit.MAX_NAME))
             importantForAutofill=View.IMPORTANT_FOR_AUTOFILL_NO
         }
         column.addView(name)
         val choices=RadioGroup(this).apply { orientation=LinearLayout.VERTICAL }
         whenChoices().forEachIndexed { index,choice ->
-            choices.addView(RadioButton(this).apply { id=index+1;text=choice;textSize=21f;isChecked=index==0 })
+            choices.addView(RadioButton(this).apply { id=index+1;text=choice;textSize=Text.ACTION;isChecked=index==0 })
         }
         column.addView(choices)
         val note=EditText(this).apply {
             hint="같이 무엇을 했는지 한 줄로 적어도 좋아요"
-            textSize=21f
+            textSize=Text.ACTION
             filters=arrayOf(android.text.InputFilter.LengthFilter(FamilyVisit.MAX_NOTE))
             importantForAutofill=View.IMPORTANT_FOR_AUTOFILL_NO
         }
@@ -908,18 +1008,18 @@ class MainActivity : Activity() {
             orientation=LinearLayout.VERTICAL
             setPadding(dp(24),dp(12),dp(24),0)
         }
-        column.addView(label("언제 갔는지 골라 주세요. 아이에게 그대로 말해 줄 표현이에요.",19f,muted))
+        column.addView(label("언제 갔는지 골라 주세요. 아이에게 그대로 말해 줄 표현이에요.",Text.CAPTION,muted))
         val choices=RadioGroup(this).apply { orientation=LinearLayout.VERTICAL }
         whenChoices().forEachIndexed { index,choice ->
             choices.addView(RadioButton(this).apply {
-                id=index+1; text=choice; textSize=21f
+                id=index+1; text=choice; textSize=Text.ACTION
                 isChecked=existing?.whenLabel==choice || (existing==null && index==0)
             })
         }
         column.addView(choices)
         val note=EditText(this).apply {
             hint="같이 무엇을 했는지 한 줄로 적어도 좋아요"
-            textSize=21f; setText(existing?.note.orEmpty())
+            textSize=Text.ACTION; setText(existing?.note.orEmpty())
             filters=arrayOf(android.text.InputFilter.LengthFilter(FamilyVisit.MAX_NOTE))
             importantForAutofill=View.IMPORTANT_FOR_AUTOFILL_NO
         }
@@ -939,7 +1039,7 @@ class MainActivity : Activity() {
     }
     private fun textInput() {
         playing=false
-        val field=EditText(this).apply { hint="아이가 말할 법한 생각을 입력해 보세요"; textSize=23f; filters=arrayOf(android.text.InputFilter.LengthFilter(160)); importantForAutofill=View.IMPORTANT_FOR_AUTOFILL_NO }
+        val field=EditText(this).apply { hint="아이가 말할 법한 생각을 입력해 보세요"; textSize=Text.ACTION; filters=arrayOf(android.text.InputFilter.LengthFilter(160)); importantForAutofill=View.IMPORTANT_FOR_AUTOFILL_NO }
         show(AlertDialog.Builder(this).setTitle("말 대신 입력하기").setView(field).setNegativeButton("닫기",null)
             .setPositiveButton("전하기") { _,_ -> menuAction { accept(field.text.toString()) } }.create())
     }
