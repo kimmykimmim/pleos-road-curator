@@ -122,6 +122,8 @@ class MainActivity : Activity() {
     private lateinit var heroCaption: View
     /** Sits behind both columns and comes forward only while a picture is filling the screen. */
     private lateinit var backdrop: View
+    private lateinit var meetingChip: TextView
+    private lateinit var tagline: TextView
     /** Whether the picture is currently filling the screen for an explanation. */
     private var zoomed = false
     private lateinit var scene: CuratorMediaPanel
@@ -131,14 +133,28 @@ class MainActivity : Activity() {
     private lateinit var subline: TextView
     private var statusLabel: TextView? = null
     private val ink = Color.rgb(11,45,63)
-    private val muted = Color.rgb(104,130,151)
+    /**
+     * Secondary type.
+     *
+     * It was #688297, which gives 4.0:1 on white and 3.3:1 on the page — under the 4.5:1 that
+     * small text needs, and the notes at caption size are small text. Darkened until both
+     * surfaces clear it, which in a moving car is worth more than the lighter grey looked.
+     */
+    private val muted = Color.rgb(70,96,111)
     private val accent = Color.rgb(8,98,136)
-    /** The page sits on warm paper rather than white, so the two panels read as cards on it. */
-    private val ground = Color.rgb(251,245,233)
-    /** The deep end of the hero. The panel darkens downward so white type sits on its heaviest part. */
-    private val deep = Color.rgb(6,66,94)
+    /**
+     * Daylight. What the page is made of.
+     *
+     * This was a warm cream, which is both the most common background in generated design and
+     * the wrong story for this app: a child in a car is looking at sky and city, not at paper.
+     * The tint is the palette's own sky, lightened until type sits on it comfortably.
+     */
+    private val ground = Color.rgb(219,234,244)
+    /** The window. One flat colour, because it is one thing you look through. */
+    private val deep = Color.rgb(8,78,110)
     private val pale = Color.rgb(234,243,250)
     private val sky = Color.rgb(151,215,255)
+    /** The palette's cream, kept as a mark rather than a mood. See [chipMark]. */
     private val cream = Color.rgb(255,239,196)
     /** White at low alpha, for a chip that has to sit on the illustration without boxing it in. */
     private val onHero = Color.argb(48,255,255,255)
@@ -407,14 +423,26 @@ class MainActivity : Activity() {
     private fun pill(color: Int) = GradientDrawable().apply { setColor(color); cornerRadius = dp(999).toFloat() }
 
     /**
-     * The hero's fill: one colour deepening downward.
+     * A shape's corner says what the thing is.
      *
-     * The illustration sits at the top of this panel and the place's name sits below it in
-     * white, so the panel has to be at its darkest exactly where the type lands.
+     * One radius on everything is the house style of generated interfaces, and it throws away a
+     * free channel: here the window is the softest shape on screen, paper is nearly square, and
+     * anything you press is a pill. You can tell what a thing is before you read it.
      */
-    private fun heroFill() = GradientDrawable(
-        GradientDrawable.Orientation.TOP_BOTTOM, intArrayOf(accent, deep)
-    ).apply { cornerRadius = dp(36).toFloat() }
+    private object Corner {
+        /** The window. Only the hero gets this. */
+        const val WINDOW = 40
+        /** Paper: the card, and the sheets the guardian types on. */
+        const val PAPER = 10
+    }
+
+    /**
+     * The hero's fill: one flat colour.
+     *
+     * It was a gradient, which is decoration standing in for depth. The panel is a window — one
+     * surface you look through — and a flat field says that more plainly than a wash does.
+     */
+    private fun heroFill() = rounded(deep, Corner.WINDOW)
 
     /** A small round badge, the way the reference numbers its rows. */
     private fun chip(text: String, fill: Int, textColor: Int, size: Int = 46) = TextView(this).apply {
@@ -432,19 +460,15 @@ class MainActivity : Activity() {
     }
 
     /**
-     * The step heading, as a numbered badge beside its name.
+     * The step's name.
      *
-     * The phrase packs carry headings like "01  먼저 상상해 보기". Splitting the number out and
-     * drawing it in a circle is what makes a step feel like a step rather than a paragraph.
+     * The phrase packs carry headings like "01  먼저 상상해 보기", and this drew the number in
+     * a circle beside the name. The dots under the card already say which of four steps this
+     * is, so the circle was a second device for one fact; the number goes, the name stays.
      */
     private fun stepHeader(text: String): View {
-        val number = Regex("^(\\d{1,2})\\s+(.*)$").find(text.trim())
-            ?: return label(text, Text.LABEL, accent, true)
-        return row().apply {
-            addView(chip(number.groupValues[1], accent, Color.WHITE, 44))
-            addView(label(number.groupValues[2], Text.LABEL, accent, true),
-                LinearLayout.LayoutParams(-2,-2).apply { marginStart = dp(12) })
-        }
+        val named = Regex("^\\d{1,2}\\s+(.*)$").find(text.trim())
+        return label(named?.groupValues?.get(1) ?: text, Text.LABEL, accent, true)
     }
 
     /**
@@ -460,9 +484,24 @@ class MainActivity : Activity() {
                 LinearLayout.LayoutParams(dp(if (on) 30 else 11), dp(11)).apply { marginStart = if (index == 0) 0 else dp(8) })
         }
     }
+    /**
+     * The one typeface with a personality, kept for the one word that carries it.
+     *
+     * Two families, as far apart as two families can reasonably be: a rounded Korean display
+     * face for the largest thing on a panel, and the system sans for everything a child has to
+     * read while the car is moving. Personality belongs where the eye lands first; legibility
+     * belongs everywhere else. Loaded once, and the app falls back to the system face if the
+     * file is ever missing rather than failing to draw a place's name.
+     */
+    private val displayFace: Typeface? by lazy {
+        runCatching { Typeface.createFromAsset(assets, "fonts/Jua.ttf") }.getOrNull()
+    }
+
     private fun label(text: String, size: Float, color: Int = ink, bold: Boolean = false) = TextView(this).apply {
         this.text = text; textSize = sp(size); setTextColor(color); includeFontPadding = false; setLineSpacing(dp(5).toFloat(),1f)
         if (bold) typeface = Typeface.create("sans-serif-medium",Typeface.NORMAL)
+        // The display tier, and only the display tier, gets the display face.
+        if (size >= Text.DISPLAY) displayFace?.let { typeface = it }
     }
     private fun button(text: String, primary: Boolean = false, action: () -> Unit) = Button(this).apply {
         this.text = text; textSize = sp(Text.ACTION); isAllCaps = false; setTextColor(if (primary) Color.WHITE else ink)
@@ -487,7 +526,10 @@ class MainActivity : Activity() {
     private fun buildLayout() {
         val root = column().apply { setBackgroundColor(ground); setPadding(dp(30),dp(22),dp(30),dp(24)) }
         val header = row(); val titles = column()
-        titles.addView(label(say.tagline,Text.CAPTION,muted)); gap(titles,4)
+        // Shown only before a journey starts. An eyebrow line above a heading is template
+        // chrome, and mid-drive it is a tagline competing with a place for a child's attention.
+        tagline = label(say.tagline,Text.CAPTION,muted).also { titles.addView(it) }
+        gap(titles,4)
         titles.addView(label("길 위의 큐레이터",Text.ACTION,ink,true))
         header.addView(titles,LinearLayout.LayoutParams(0,-2,1f))
         badge = label("시연 경로",Text.CAPTION,accent,true).apply {
@@ -507,9 +549,17 @@ class MainActivity : Activity() {
         val caption = column().apply {
             setPadding(dp(30),dp(22),dp(30),dp(30)); gravity = Gravity.BOTTOM
         }
+        // Two facts, two chips. Joining them with a middle dot would be the template chrome
+        // that turns every unrelated pair into "A · B"; they are separate things and the layout
+        // can say so for free.
+        val facts = row()
         subline = label("경로에서 만나는 발견",Text.CAPTION,Color.WHITE,true).apply {
             background = pill(onHero); setPadding(dp(18),dp(8),dp(18),dp(9))
-        }.also { caption.addView(it,LinearLayout.LayoutParams(-2,-2)) }
+        }.also { facts.addView(it,LinearLayout.LayoutParams(-2,-2)) }
+        meetingChip = label("",Text.CAPTION,Color.WHITE,true).apply {
+            background = pill(onHero); setPadding(dp(18),dp(8),dp(18),dp(9)); visibility = View.GONE
+        }.also { facts.addView(it,LinearLayout.LayoutParams(-2,-2).apply { marginStart = dp(8) }) }
+        caption.addView(facts,LinearLayout.LayoutParams(-2,-2))
         gap(caption,14)
         placeName = label("어떤 곳을 만나게 될까?",Text.DISPLAY,Color.WHITE,true).also { caption.addView(it) }
         mediaButton=button(say.replayFilm) { scene.replay() }.apply {
@@ -528,7 +578,7 @@ class MainActivity : Activity() {
         // The card scrolls inside itself. A long turn — a quiz with its answer, or a place with
         // a guardian's note — used to be cut off at both ends by the centring.
         val cardScroll = ScrollView(this).apply {
-            background = rounded(Color.WHITE,36); clipToOutline = true
+            background = rounded(Color.WHITE,Corner.PAPER); clipToOutline = true
             isFillViewport = true; isVerticalScrollBarEnabled = false
             addView(card,FrameLayout.LayoutParams(-1,-2))
         }
@@ -539,7 +589,7 @@ class MainActivity : Activity() {
         //
         // They sit on a stage so an explanation can bring its own ground forward: the backdrop
         // takes the deep colour of the hero, and the picture is the only thing left on it.
-        backdrop = View(this).apply { background = rounded(deep,36); alpha = 0f }
+        backdrop = View(this).apply { background = rounded(deep,Corner.PAPER); alpha = 0f }
         val stage = FrameLayout(this).apply {
             addView(backdrop, FrameLayout.LayoutParams(-1,-1))
             addView(body, FrameLayout.LayoutParams(-1,-1))
@@ -607,12 +657,15 @@ class MainActivity : Activity() {
             else if(demo) "${say.routeNames[selectedRoute.id] ?: selectedRoute.title} / 시간 10배" else "정차 시연"
         val place = engine.place(state)
         placeName.text = place?.name ?: say.noPlaceYet
+        tagline.visibility = if (state.phase==CuratorPhase.READY) View.VISIBLE else View.GONE
         val met = place?.let { prefs.rounds(it.id) } ?: 0
-        val where = if (state.phase==CuratorPhase.FINISHED) say.todaysRoute
+        subline.text = if (state.phase==CuratorPhase.FINISHED) say.todaysRoute
             else state.etaSeconds?.let { if(it>0) say.minutesAway((it+59)/60) else say.passedHere } ?: say.routeDiscovery
-        // Saying which meeting this is explains, without a word of instruction, why the question
-        // changed since last time.
-        subline.text = if (met > 0 && state.phase !in setOf(CuratorPhase.FINISHED,CuratorPhase.READY)) "$where  ·  ${say.meeting(met+1)}" else where
+        // Which meeting this is explains, without a word of instruction, why the question
+        // changed since last time. It is its own fact, so it gets its own chip.
+        val showMeeting = met > 0 && state.phase !in setOf(CuratorPhase.FINISHED,CuratorPhase.READY)
+        meetingChip.text = if (showMeeting) say.meeting(met+1) else ""
+        meetingChip.visibility = if (showMeeting) View.VISIBLE else View.GONE
         scene.visibility=if(restricted) View.INVISIBLE else View.VISIBLE
         scene.present(state, !restricted && foreground && dialog==null)
         // The explanation is the one beat that is about the picture rather than the window.
@@ -778,13 +831,13 @@ class MainActivity : Activity() {
         next.setOnDismissListener { if(dialog===next) { dialog=null;drive?.suppress(false);render();armRoleIdle() } }
         // Every panel on the screen behind this is rounded. A square sheet on top of them reads
         // as a system window that wandered in rather than part of the app.
-        next.window?.setBackgroundDrawable(InsetDrawable(rounded(Color.WHITE,28),dp(26),dp(18),dp(26),dp(18)))
+        next.window?.setBackgroundDrawable(InsetDrawable(rounded(Color.WHITE,Corner.PAPER),dp(26),dp(18),dp(26),dp(18)))
         next.show()
     }
     private fun parentMenu() {
         val items=arrayOf(if(playing) "이야기 잠깐 멈추기" else "이야기 이어서 재생", "시점 이동해서 확인", "말 대신 입력", "가족이 함께 갔던 곳 기록", "오늘 이야기 마치기", "설명 출처", "지난 시연 기억", "실제 내비 음성 여행 시작", "다른 시연 경로 선택",
-            "뒷자리 말하기  ·  ${if(prefs.backSeatVoice) "켜짐" else "꺼짐"}", "질문을 처음 만남으로 되돌리기",
-            "아이 설정  ·  ${profileSummary()}")
+            "뒷자리 말하기     ${if(prefs.backSeatVoice) "켜짐" else "꺼짐"}", "질문을 처음 만남으로 되돌리기",
+            "아이 설정     ${profileSummary()}")
         show(AlertDialog.Builder(this).setTitle("보호자 / 정차 시연").setItems(items) { _,i -> menuAction {
             when(i) {
                 0 -> { if(live) drive?.setPaused(!drive!!.paused) else if(demo) { playing=!playing;render() } }
@@ -809,7 +862,7 @@ class MainActivity : Activity() {
     private fun profileSummary(): String {
         val saved = prefs.profile
         val fields = saved.fields.joinToString(" ") { FIELD_LABELS.getValue(it) }
-        return LANGUAGE_LABELS.getValue(saved.language) + " · " + fields.ifBlank { "관심사 없음" }
+        return LANGUAGE_LABELS.getValue(saved.language) + "   " + fields.ifBlank { "관심사 없음" }
     }
 
     /**
@@ -839,7 +892,7 @@ class MainActivity : Activity() {
             CheckBox(this).apply { text = FIELD_LABELS.getValue(field); textSize = Text.ACTION; isChecked = field in saved.fields }
                 .also(column::addView)
         }
-        column.addView(label("요즘 좋아하는 것  ·  최대 ${ChildProfile.MAX_FAVOURITES}개", Text.LABEL, accent, true))
+        column.addView(label("요즘 좋아하는 것 (최대 ${ChildProfile.MAX_FAVOURITES}개)", Text.LABEL, accent, true))
         column.addView(label("정말로 이어지는 장소에서만 한마디 덧붙여요. 억지로 엮지 않아요.", Text.CAPTION, muted))
         val favourites = FavouriteTopic.entries.map { topic ->
             CheckBox(this).apply { text = FAVOURITE_LABELS.getValue(topic); textSize = Text.ACTION; isChecked = topic in saved.favourites }
@@ -929,7 +982,7 @@ class MainActivity : Activity() {
         val saved=album.load()
         val places=saved.ownCuratorPlaces()+CuratorCatalog.places
         val labels=(listOf("지금 여기를 기억해 두기")+places.map { place ->
-            saved.of(place.id)?.let { "${place.name}  ·  ${it.whenLabel}" } ?: place.name
+            saved.of(place.id)?.let { "${place.name}     ${it.whenLabel}" } ?: place.name
         }).toTypedArray()
         show(AlertDialog.Builder(this).setTitle("가족이 함께 갔던 곳")
             .setItems(labels) { _,index -> menuAction {

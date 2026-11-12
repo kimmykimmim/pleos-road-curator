@@ -17,6 +17,11 @@
   오른쪽은 흰 라운드 카드입니다. 바탕은 크림색, 버튼은 알약 모양, 모서리는 전부 둥급니다.
   네모난 면을 새로 만들지 마세요. 대화상자도 둥근 배경을 씁니다.
 - 네 단계 표시는 카드 아래 점으로만 보여 줍니다. 그림 안에 다시 그리지 마세요.
+- 화면을 고치기 전에 `docs/화면설계.md`를 읽으세요. 색, 서체, 반지름, 일부러 피한 것이
+  적혀 있습니다. 바탕을 크림색으로 되돌리거나 모든 모서리를 같은 반지름으로 만들지 마세요.
+- 반지름은 셋뿐입니다. 창 40 / 종이 10 / 알약. 모양이 그게 무엇인지 말합니다.
+- 가장 큰 글자에만 번들 서체 Jua를 씁니다[OFL, `assets/fonts/`]. 나머지는 시스템 서체입니다.
+- `A · B · C` 식으로 사실을 가운뎃점으로 잇지 마세요. 칩을 나누면 구조가 대신 말합니다.
 - 글자 크기는 `MainActivity.Text`의 여섯 단계만 씁니다. 새 숫자를 쓰지 마세요.
   DISPLAY 30 / TITLE 24 / ACTION 21 / BODY 19 / LABEL 17 / CAPTION 14.
   한 패널에 DISPLAY는 하나뿐입니다. 한 문장이 세 줄로 넘어가면 크기가 아니라 글을 줄입니다.
@@ -50,7 +55,7 @@
 
 - 프로젝트: `native-app`
 - 패키지: `dev.changbak.explorer`
-- 버전: `0.22.0`, versionCode `24`
+- 버전: `0.23.0`, versionCode `25`
 - 저장소: 비공개 깃허브 `kimmykimmim/pleos-road-curator`. 작업 사본은 Drive 밖 로컬에 둡니다.
 - API 34, minSdk 28, Kotlin, Android 기본 View 및 Canvas
 - SDK: NaviHelper 3.0.5, Vehicle 2.3.2, TextToSpeech 3.3.1, SpeechToText 3.3.1
