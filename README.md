@@ -7,7 +7,7 @@
 - 참가자: 김규범
 - 앱 이름: 길 위의 큐레이터
 - 패키지: `dev.changbak.explorer`
-- 버전: 0.20.0, versionCode 22
+- 버전: 0.21.0, versionCode 23
 
 ## 앱 설명
 

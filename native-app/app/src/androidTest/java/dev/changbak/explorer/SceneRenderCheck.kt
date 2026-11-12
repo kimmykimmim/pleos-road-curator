@@ -164,8 +164,18 @@ class SceneRenderCheck : Instrumentation() {
             File(output,"stage-%02d.png".format(index)).outputStream().use { check(bitmap.compress(Bitmap.CompressFormat.PNG,100,it)) }
             bitmap.recycle()
         }
-        check(samples[0].indices.count { samples[0][it]!=samples[1][it] }>3000)
-        check(samples[1].indices.count { samples[1][it]!=samples[4][it] }>1000)
+        check(samples[0].indices.count { samples[0][it]!=samples[1][it] }>3000) {
+            "The mystery scene and the place's scene look the same"
+        }
+        // Before and after passing the place. The scene used to carry a labelled step strip as
+        // well, which made every phase differ from every other by the strip alone; now that the
+        // steps are shown as dots beside the turn, this compares the two states whose artwork
+        // actually differs — the place as a thing to look for, and the place as a thing
+        // explained. At a gate the role-play pose is almost the same drawing, so comparing
+        // against that was measuring the strip rather than the scene.
+        check(samples[1].indices.count { samples[1][it]!=samples[3][it] }>1000) {
+            "The scene does not change between looking for the place and hearing about it"
+        }
         report.putString("result","PASS: five-minute question, prediction, unseen encounter, automatic passage explanation, role play, six production Canvas renders")
         report.putString("artifacts",output.absolutePath)
     }

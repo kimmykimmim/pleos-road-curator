@@ -12,6 +12,7 @@ import android.car.drivingstate.CarUxRestrictionsManager
 import android.graphics.Color
 import android.graphics.Typeface
 import android.graphics.drawable.GradientDrawable
+import android.graphics.drawable.InsetDrawable
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
@@ -123,6 +124,15 @@ class MainActivity : Activity() {
     private val ink = Color.rgb(11,45,63)
     private val muted = Color.rgb(104,130,151)
     private val accent = Color.rgb(8,98,136)
+    /** The page sits on warm paper rather than white, so the two panels read as cards on it. */
+    private val ground = Color.rgb(251,245,233)
+    /** The deep end of the hero. The panel darkens downward so white type sits on its heaviest part. */
+    private val deep = Color.rgb(6,66,94)
+    private val pale = Color.rgb(234,243,250)
+    private val sky = Color.rgb(151,215,255)
+    private val cream = Color.rgb(255,239,196)
+    /** White at low alpha, for a chip that has to sit on the illustration without boxing it in. */
+    private val onHero = Color.argb(48,255,255,255)
     private val timer = object : Runnable {
         override fun run() {
             if (foreground && demo && playing && !restricted && dialog == null) {
@@ -357,53 +367,141 @@ class MainActivity : Activity() {
     private fun sp(n: Float) = n*uiScale
     private fun column() = LinearLayout(this).apply { orientation = LinearLayout.VERTICAL }
     private fun row() = LinearLayout(this).apply { orientation = LinearLayout.HORIZONTAL; gravity = Gravity.CENTER_VERTICAL }
-    private fun rounded(color: Int) = GradientDrawable().apply { setColor(color); cornerRadius = dp(28).toFloat() }
+    private fun rounded(color: Int, radius: Int = 28) =
+        GradientDrawable().apply { setColor(color); cornerRadius = dp(radius).toFloat() }
+
+    /** A shape with no straight run long enough to read as a box. Buttons and chips use it. */
+    private fun pill(color: Int) = GradientDrawable().apply { setColor(color); cornerRadius = dp(999).toFloat() }
+
+    /**
+     * The hero's fill: one colour deepening downward.
+     *
+     * The illustration sits at the top of this panel and the place's name sits below it in
+     * white, so the panel has to be at its darkest exactly where the type lands.
+     */
+    private fun heroFill() = GradientDrawable(
+        GradientDrawable.Orientation.TOP_BOTTOM, intArrayOf(accent, deep)
+    ).apply { cornerRadius = dp(36).toFloat() }
+
+    /** A small round badge, the way the reference numbers its rows. */
+    private fun chip(text: String, fill: Int, textColor: Int, size: Int = 46) = TextView(this).apply {
+        this.text = text; textSize = sp(17f); setTextColor(textColor)
+        typeface = Typeface.create("sans-serif-medium", Typeface.NORMAL)
+        gravity = Gravity.CENTER; background = pill(fill)
+        minWidth = dp(size); minHeight = dp(size); includeFontPadding = false
+    }
+
+    /** A label on the illustration: pale type inside a translucent pill, never a hard box. */
+    private fun heroChip(text: String) = TextView(this).apply {
+        this.text = text; textSize = sp(17f); setTextColor(Color.WHITE)
+        typeface = Typeface.create("sans-serif-medium", Typeface.NORMAL)
+        background = pill(onHero); setPadding(dp(18),dp(8),dp(18),dp(9)); includeFontPadding = false
+    }
+
+    /**
+     * The step heading, as a numbered badge beside its name.
+     *
+     * The phrase packs carry headings like "01  먼저 상상해 보기". Splitting the number out and
+     * drawing it in a circle is what makes a step feel like a step rather than a paragraph.
+     */
+    private fun stepHeader(text: String): View {
+        val number = Regex("^(\\d{1,2})\\s+(.*)$").find(text.trim())
+            ?: return label(text, 21f, accent, true)
+        return row().apply {
+            addView(chip(number.groupValues[1], accent, Color.WHITE, 44))
+            addView(label(number.groupValues[2], 21f, accent, true),
+                LinearLayout.LayoutParams(-2,-2).apply { marginStart = dp(12) })
+        }
+    }
+
+    /**
+     * Where this place is in its four steps, as dots.
+     *
+     * The same four beats the scene draws, said once more where the child's eyes already are.
+     */
+    private fun stepDots(active: Int): View = row().apply {
+        gravity = Gravity.CENTER
+        (0..3).forEach { index ->
+            val on = index == active
+            addView(View(this@MainActivity).apply { background = pill(if (on) accent else Color.rgb(214,228,238)) },
+                LinearLayout.LayoutParams(dp(if (on) 30 else 11), dp(11)).apply { marginStart = if (index == 0) 0 else dp(8) })
+        }
+    }
     private fun label(text: String, size: Float, color: Int = ink, bold: Boolean = false) = TextView(this).apply {
         this.text = text; textSize = sp(size); setTextColor(color); includeFontPadding = false; setLineSpacing(dp(5).toFloat(),1f)
         if (bold) typeface = Typeface.create("sans-serif-medium",Typeface.NORMAL)
     }
     private fun button(text: String, primary: Boolean = false, action: () -> Unit) = Button(this).apply {
         this.text = text; textSize = sp(24f); isAllCaps = false; setTextColor(if (primary) Color.WHITE else ink)
-        background = rounded(if(primary) accent else Color.rgb(231,241,250)); minHeight = dp(72)
+        if (primary) typeface = Typeface.create("sans-serif-medium", Typeface.NORMAL)
+        // Fully rounded. A pill reads as something to press from across the back seat in a way
+        // a softened rectangle does not.
+        background = pill(if(primary) accent else pale); minHeight = dp(72)
         setPadding(dp(16),dp(12),dp(16),dp(12)); setOnClickListener { if (usable()) action() }
     }
     private fun action(text: String, primary: Boolean = false, fn: () -> Unit) {
         card.addView(button(text,primary,fn),LinearLayout.LayoutParams(-1,dp(74)).apply { topMargin = dp(10) })
     }
     private fun gap(parent: LinearLayout,n: Int) { parent.addView(View(this),LinearLayout.LayoutParams(1,dp(n))) }
+    /**
+     * Two panels on warm paper: a deep hero holding the picture, and a white card holding the
+     * turn.
+     *
+     * The hero is the whole left column rather than a light box with a picture inside it. The
+     * illustration runs to its edges and the place's name sits on the dark part underneath, so
+     * a glance from the back seat lands on the picture first and the words second.
+     */
     private fun buildLayout() {
-        val root = column().apply { setBackgroundColor(Color.rgb(242,247,251)); setPadding(dp(30),dp(24),dp(30),dp(24)) }
+        val root = column().apply { setBackgroundColor(ground); setPadding(dp(30),dp(22),dp(30),dp(24)) }
         val header = row(); val titles = column()
-        titles.addView(label(say.tagline,17f,muted)); gap(titles,6)
+        titles.addView(label(say.tagline,17f,muted)); gap(titles,4)
         titles.addView(label("길 위의 큐레이터",29f,ink,true))
         header.addView(titles,LinearLayout.LayoutParams(0,-2,1f))
-        badge = label("시연 경로",18f,accent,true).also { header.addView(it,LinearLayout.LayoutParams(-2,-2).apply { marginEnd=dp(22) }) }
-        header.addView(button("보호자") { parentMenu() },LinearLayout.LayoutParams(-2,dp(68)))
-        root.addView(header); gap(root,24)
-        val scroll = ScrollView(this).apply { isFillViewport = true }
+        badge = label("시연 경로",17f,accent,true).apply {
+            background = pill(pale); setPadding(dp(18),dp(9),dp(18),dp(10))
+        }.also { header.addView(it,LinearLayout.LayoutParams(-2,-2).apply { marginEnd=dp(16) }) }
+        header.addView(button("보호자") { parentMenu() }.apply { textSize=sp(20f) },
+            LinearLayout.LayoutParams(-2,dp(64)))
+        root.addView(header); gap(root,20)
         val body = row()
-        val left = column().apply { background = rounded(Color.rgb(223,238,249)); setPadding(dp(24),dp(24),dp(24),dp(28)); gravity=Gravity.CENTER }
-        subline = label("경로에서 만나는 발견",20f,accent,true).also { left.addView(it) }
-        // The drawing takes the leftover height instead of a fixed box, so the panel is full
-        // on a tall screen and still has room to breathe on a short one.
-        scene = CuratorMediaPanel(this).also {
-            left.addView(it,LinearLayout.LayoutParams(-1,-2).apply { topMargin=dp(14);bottomMargin=dp(16) })
-        }
-        placeName = label("어떤 곳을 만나게 될까?",31f,ink,true).also { left.addView(it) }
+        // clipToOutline is what lets the illustration run into the hero's rounded corners
+        // instead of sitting in a square of its own.
+        val left = column().apply { background = heroFill(); clipToOutline = true }
+        scene = CuratorMediaPanel(this).also { left.addView(it,LinearLayout.LayoutParams(-1,-2)) }
         scene.places={ catalog() }; scene.language=profile.language
-        mediaButton=button(say.replayFilm) { scene.replay() }.apply { textSize=sp(18f) }
-        left.addView(mediaButton,LinearLayout.LayoutParams(-1,dp(58)).apply { topMargin=dp(12) })
-        // The scene already draws the four step dots with their names, so the text version of
-        // the same list was saying it twice.
+        // Anchored to the bottom. The flat colour between the picture and the name is the
+        // breathing room the whole panel is built around, not a gap to be filled.
+        val caption = column().apply {
+            setPadding(dp(30),dp(22),dp(30),dp(30)); gravity = Gravity.BOTTOM
+        }
+        subline = label("경로에서 만나는 발견",17f,Color.WHITE,true).apply {
+            background = pill(onHero); setPadding(dp(18),dp(8),dp(18),dp(9))
+        }.also { caption.addView(it,LinearLayout.LayoutParams(-2,-2)) }
+        gap(caption,14)
+        placeName = label("어떤 곳을 만나게 될까?",33f,Color.WHITE,true).also { caption.addView(it) }
+        mediaButton=button(say.replayFilm) { scene.replay() }.apply {
+            textSize=sp(18f); setTextColor(Color.WHITE); background = pill(onHero)
+        }
+        caption.addView(mediaButton,LinearLayout.LayoutParams(-2,dp(56)).apply { topMargin=dp(16) })
+        // The caption block takes what is left under the picture, so the name sits low on the
+        // dark end of the gradient however tall the screen is.
+        left.addView(caption,LinearLayout.LayoutParams(-1,0,1f))
         body.addView(left,LinearLayout.LayoutParams(0,-1,.46f).apply { marginEnd=dp(22) })
         // Centred, so a short turn sits in the middle of the card rather than hugging the top.
         card = column().apply {
-            background = rounded(Color.WHITE); setPadding(dp(34),dp(30),dp(34),dp(30))
-            gravity = Gravity.CENTER_VERTICAL
+            setPadding(dp(38),dp(26),dp(38),dp(24)); gravity = Gravity.CENTER_VERTICAL
         }
-        body.addView(card,LinearLayout.LayoutParams(0,-1,.54f)); scroll.addView(body,
-            LinearLayout.LayoutParams(-1,-1))
-        root.addView(scroll,LinearLayout.LayoutParams(-1,0,1f)); setContentView(root)
+        // The card scrolls inside itself. A long turn — a quiz with its answer, or a place with
+        // a guardian's note — used to be cut off at both ends by the centring.
+        val cardScroll = ScrollView(this).apply {
+            background = rounded(Color.WHITE,36); clipToOutline = true
+            isFillViewport = true; isVerticalScrollBarEnabled = false
+            addView(card,FrameLayout.LayoutParams(-1,-2))
+        }
+        body.addView(cardScroll,LinearLayout.LayoutParams(0,-1,.54f))
+        // The two columns fill the screen exactly once. Wrapping them in a scroller of their
+        // own let a long turn stretch the whole page and push the picture off the bottom.
+        root.addView(body,LinearLayout.LayoutParams(-1,0,1f)); setContentView(root)
     }
     private fun render() {
         if (!::card.isInitialized || isDestroyed) return
@@ -465,7 +563,7 @@ class MainActivity : Activity() {
             else -> say.stepPredictImagine
         }
         val heading=when(state.phase) { CuratorPhase.PREDICT -> askHeading; CuratorPhase.WATCH -> say.stepWatch; CuratorPhase.EXPLAIN -> say.stepExplain; CuratorPhase.FAMILY -> say.stepFamily; CuratorPhase.PLAY -> say.stepPlayPrefix+(engine.place(state)?.activity?.role ?: ""); CuratorPhase.COMPARE -> say.stepPlayPrefix; CuratorPhase.MEMORY -> say.stepMemory; CuratorPhase.FINISHED -> say.stepFinished; else -> say.stepWaiting }
-        card.addView(label(heading,21f,accent,true)); gap(card,22)
+        card.addView(stepHeader(heading)); gap(card,20)
         // The hook is the half of the question that makes a six year old look up, so it belongs
         // on screen as well as in the speaker. On a later meeting it says what changed instead.
         if(state.phase==CuratorPhase.PREDICT) {
@@ -545,6 +643,13 @@ class MainActivity : Activity() {
             CuratorPhase.FINISHED -> { state.visits.forEach { memoryCard(it) }; action("새 시연 여행",true) { startDemo() } }
             else -> { action(if(playing) say.pause else say.resume,true) { playing=!playing; render() } }
         }
+        // Where this place is in its four beats. Nothing to press, just a place marker.
+        val step = when(state.phase) {
+            CuratorPhase.PREDICT -> 0; CuratorPhase.WATCH -> 1
+            CuratorPhase.EXPLAIN, CuratorPhase.FAMILY -> 2; CuratorPhase.PLAY -> 3
+            else -> -1
+        }
+        if(step >= 0) { gap(card,18); card.addView(stepDots(step),LinearLayout.LayoutParams(-1,-2)) }
         if(state.phase !in setOf(CuratorPhase.FINISHED,CuratorPhase.WAITING)) {
             gap(card,18); val small=row()
             small.addView(button(say.listenAgain) { if(live) drive?.repeat() else { quiet();voice.speak(state.message) } },LinearLayout.LayoutParams(0,dp(68),1f))
@@ -570,7 +675,11 @@ class MainActivity : Activity() {
         // Drop the old listener first: once it runs it would clear the dialog we just stored.
         dialog?.let { previous -> previous.setOnDismissListener(null); previous.dismiss() }
         quiet();drive?.suppress(true);handler.removeCallbacks(roleIdle);scene.stop();dialog=next
-        next.setOnDismissListener { if(dialog===next) { dialog=null;drive?.suppress(false);render();armRoleIdle() } }; next.show()
+        next.setOnDismissListener { if(dialog===next) { dialog=null;drive?.suppress(false);render();armRoleIdle() } }
+        // Every panel on the screen behind this is rounded. A square sheet on top of them reads
+        // as a system window that wandered in rather than part of the app.
+        next.window?.setBackgroundDrawable(InsetDrawable(rounded(Color.WHITE,28),dp(26),dp(18),dp(26),dp(18)))
+        next.show()
     }
     private fun parentMenu() {
         val items=arrayOf(if(playing) "이야기 잠깐 멈추기" else "이야기 이어서 재생", "시점 이동해서 확인", "말 대신 입력", "가족이 함께 갔던 곳 기록", "오늘 이야기 마치기", "설명 출처", "지난 시연 기억", "실제 내비 음성 여행 시작", "다른 시연 경로 선택",

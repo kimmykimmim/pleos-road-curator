@@ -43,10 +43,7 @@ class CuratorSceneView(context: Context): View(context) {
         fun drawScene(c: Canvas,w: Float,h: Float,state: CuratorState,
                       place: CuratorPlace? = CuratorCatalog.places.firstOrNull { it.id==state.currentId }) {
             val p=Paint(Paint.ANTI_ALIAS_FLAG)
-            fun line(x1:Float,y1:Float,x2:Float,y2:Float,color:Int,width:Float) {
-                p.color=color;p.strokeWidth=width;p.strokeCap=Paint.Cap.ROUND;c.drawLine(x1,y1,x2,y2,p)
-            }
-            val teal=Color.rgb(8,98,136);val dark=Color.rgb(11,45,63);val pale=Color.rgb(183,214,238)
+            val teal=Color.rgb(8,98,136)
             p.color=Color.rgb(205,225,240);c.drawOval(w*.06f,h*.22f,w*.94f,h*.82f,p)
             val mystery=state.phase in setOf(CuratorPhase.READY,CuratorPhase.WAITING)
             if(mystery) {
@@ -70,15 +67,10 @@ class CuratorSceneView(context: Context): View(context) {
                 c.restore()
             }
 
-            val stage=when(state.phase) { CuratorPhase.PREDICT -> 0;CuratorPhase.WATCH -> 1;CuratorPhase.EXPLAIN -> 2;CuratorPhase.PLAY,CuratorPhase.COMPARE,CuratorPhase.MEMORY,CuratorPhase.FINISHED -> 3;else -> -1 }
-            line(w*.16f,h*.9f,w*.84f,h*.9f,pale,w*.012f)
-            if(stage>0) line(w*.16f,h*.9f,w*(.16f+stage*.2267f),h*.9f,teal,w*.012f)
-            val names=listOf("예고","관찰","이야기","놀이")
-            repeat(4) { i ->
-                val x=w*(.16f+i*.2267f)
-                p.color=if(i<=stage) teal else pale;c.drawCircle(x,h*.9f,w*.023f,p)
-                p.textAlign=Paint.Align.CENTER;p.textSize=h*.043f;c.drawText(names[i],x,h*.985f,p)
-            }
+            // The four beats used to be drawn here as a labelled strip. The screen now shows
+            // them as dots under the turn, where the child is already reading, and the picture
+            // keeps the whole panel to itself. Two copies of the same thing was one too many,
+            // and on the deep panel the strip's own colours could not be read at all.
         }
     }
 }
