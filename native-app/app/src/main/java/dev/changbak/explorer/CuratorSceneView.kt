@@ -13,6 +13,29 @@ class CuratorSceneView(context: Context): View(context) {
      * falling back to the catalog would draw it with another place's artwork.
      */
     var places: () -> List<CuratorPlace> = { CuratorCatalog.places }
+
+    /**
+     * How much of the right edge is covered by the sheet holding this turn's question.
+     *
+     * A photograph is the ground of the whole screen and is happy to run underneath the sheet.
+     * A drawing is not: its labels sit at its edges, so it centres itself in the part of the
+     * screen that is actually visible. Animated when the sheet comes and goes, which is what
+     * makes an explanation feel like the picture growing into the room the sheet left.
+     */
+    var coveredRight = 0f
+        set(value) { if (field != value) { field = value; invalidate() } }
+
+    /**
+     * How much of the bottom edge belongs to the drive's own chrome.
+     *
+     * The route rule and the place's name sit over the view. A photograph wants them there; a
+     * drawing centred in the full height would have its lower labels sitting behind them, so it
+     * centres above that band instead.
+     */
+    var coveredBottom = 0f
+        set(value) { if (field != value) { field = value; invalidate() } }
+    /** Reused for the drawing's rounded edge; allocating one per frame would be per frame. */
+    private val page = Path()
     private var state = CuratorState()
     private var prior = state
     private var progress = 1f
@@ -42,12 +65,29 @@ class CuratorSceneView(context: Context): View(context) {
      * shape and the panel's own colour shows above and below it.
      */
     private fun letterboxed(canvas: Canvas, value: CuratorState) {
-        val w=width.toFloat(); val h=height.toFloat()
-        if(w<=0f || h<=0f) return
-        val artW=if(w/h>RATIO) h*RATIO else w
-        val artH=if(w/h>RATIO) h else w/RATIO
-        val x=(w-artW)/2f; val y=(h-artH)/2f
-        canvas.save(); canvas.clipRect(x,y,x+artW,y+artH); canvas.translate(x,y)
+        val w=width.toFloat()
+        if(w<=0f || height<=0) return
+        // A page has an edge. Without this margin the drawing runs from the screen's edge to
+        // the sheet's edge and the two read as the left and right halves of one split panel,
+        // which is the layout this composition exists to get away from.
+        val gap=20f*resources.displayMetrics.density
+        val free=(width-coveredRight-gap*2).coerceAtLeast(1f)
+        val room=(height-coveredBottom).coerceAtLeast(1f)
+        val artW=if(free/room>RATIO) room*RATIO else free
+        val artH=if(free/room>RATIO) room else free/RATIO
+        val x=gap+(free-artW)/2f
+        // Centred on the screen, and lifted only as far as the chrome at the bottom actually
+        // requires. A drawing that is already narrower than the room it has does not need to
+        // ride high just because there is a route rule somewhere beneath it.
+        val y=((height-artH)/2f).coerceAtMost(room-artH).coerceAtLeast(0f)
+        // A drawing is a sheet of paper, the same material the question arrives on. Rounding
+        // its corners is what separates it from the window behind it: without that it reads as
+        // a pale rectangle stuck to the screen rather than as something laid on top.
+        val radius=12f*resources.displayMetrics.density
+        canvas.save()
+        page.reset(); page.addRoundRect(x,y,x+artW,y+artH,radius,radius,Path.Direction.CW)
+        canvas.clipPath(page)
+        canvas.translate(x,y)
         drawScene(canvas,artW,artH,value,lookUp(value))
         canvas.restore()
     }

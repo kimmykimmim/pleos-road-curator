@@ -116,16 +116,17 @@ class MainActivity : Activity() {
     private var dialog: AlertDialog? = null
     private var lastCard: List<Any?>? = null
     private lateinit var card: LinearLayout
-    private lateinit var columns: LinearLayout
-    private lateinit var hero: LinearLayout
     private lateinit var cardPanel: View
+    private lateinit var scrim: View
+    private lateinit var rule: RouteRule
     private lateinit var heroCaption: View
-    /** Sits behind both columns and comes forward only while a picture is filling the screen. */
-    private lateinit var backdrop: View
+
     private lateinit var meetingChip: TextView
     private lateinit var tagline: TextView
-    /** Whether the picture is currently filling the screen for an explanation. */
-    private var zoomed = false
+    /** Whether the sheet is out. It leaves while the app is the one talking. */
+    private var sheetOut = true
+    /** The moment a tap asked for the sheet back, so the next redraw does not take it away. */
+    private var sheetByHand: Pair<CuratorPhase, String?>? = null
     private lateinit var scene: CuratorMediaPanel
     private lateinit var mediaButton: Button
     private lateinit var badge: TextView
@@ -152,6 +153,13 @@ class MainActivity : Activity() {
     private val ground = Color.rgb(219,234,244)
     /** The window. One flat colour, because it is one thing you look through. */
     private val deep = Color.rgb(8,78,110)
+    /**
+     * What lies behind the view when there is no picture filling it.
+     *
+     * Darker and greyer than the brand blue: it reads as the road at dusk rather than as a
+     * panel, which is the point — it is ground, not a surface.
+     */
+    private val road = Color.rgb(10,47,66)
     private val pale = Color.rgb(234,243,250)
     private val sky = Color.rgb(151,215,255)
     /** The palette's cream, kept as a mark rather than a mood. See [chipMark]. */
@@ -430,19 +438,11 @@ class MainActivity : Activity() {
      * anything you press is a pill. You can tell what a thing is before you read it.
      */
     private object Corner {
-        /** The window. Only the hero gets this. */
-        const val WINDOW = 40
-        /** Paper: the card, and the sheets the guardian types on. */
+        /** Paper: the sheet, and the ones the guardian types on. */
         const val PAPER = 10
     }
 
-    /**
-     * The hero's fill: one flat colour.
-     *
-     * It was a gradient, which is decoration standing in for depth. The panel is a window — one
-     * surface you look through — and a flat field says that more plainly than a wash does.
-     */
-    private fun heroFill() = rounded(deep, Corner.WINDOW)
+
 
     /** A small round badge, the way the reference numbers its rows. */
     private fun chip(text: String, fill: Int, textColor: Int, size: Int = 46) = TextView(this).apply {
@@ -516,136 +516,131 @@ class MainActivity : Activity() {
     }
     private fun gap(parent: LinearLayout,n: Int) { parent.addView(View(this),LinearLayout.LayoutParams(1,dp(n))) }
     /**
-     * Two panels on warm paper: a deep hero holding the picture, and a white card holding the
-     * turn.
+     * The view is the screen.
      *
-     * The hero is the whole left column rather than a light box with a picture inside it. The
-     * illustration runs to its edges and the place's name sits on the dark part underneath, so
-     * a glance from the back seat lands on the picture first and the words second.
+     * The picture is not in a panel; it is the ground everything else sits on, because the one
+     * thing this app is for is getting a child to look at a view. The turn being taken arrives
+     * as a sheet of paper laid over the lower right, and leaves again when the app is the one
+     * talking. Along the bottom runs the drive itself: today's places as marks, the leg to the
+     * next one filling as it comes up.
+     *
+     * Nothing here is a container for its own sake. The ground says what to look at, the sheet
+     * says it is your turn, and the rule says where we are — so the composition has told the
+     * child what kind of moment this is before they read a word of it.
      */
     private fun buildLayout() {
-        val root = column().apply { setBackgroundColor(ground); setPadding(dp(30),dp(22),dp(30),dp(24)) }
-        val header = row(); val titles = column()
-        // Shown only before a journey starts. An eyebrow line above a heading is template
-        // chrome, and mid-drive it is a tagline competing with a place for a child's attention.
-        tagline = label(say.tagline,Text.CAPTION,muted).also { titles.addView(it) }
-        gap(titles,4)
-        titles.addView(label("길 위의 큐레이터",Text.ACTION,ink,true))
-        header.addView(titles,LinearLayout.LayoutParams(0,-2,1f))
-        badge = label("시연 경로",Text.CAPTION,accent,true).apply {
-            background = pill(pale); setPadding(dp(18),dp(9),dp(18),dp(10))
-        }.also { header.addView(it,LinearLayout.LayoutParams(-2,-2).apply { marginEnd=dp(16) }) }
-        header.addView(button("보호자") { parentMenu() }.apply { textSize=sp(Text.LABEL) },
-            LinearLayout.LayoutParams(-2,dp(64)))
-        root.addView(header); gap(root,20)
-        val body = row(); columns = body
-        // clipToOutline is what lets the illustration run into the hero's rounded corners
-        // instead of sitting in a square of its own.
-        val left = column().apply { background = heroFill(); clipToOutline = true }; hero = left
-        // The picture takes the room, not a fixed slice of it. A 16:9 box in a tall panel left
-        // a band of empty colour between the picture and the name that read as a fault.
-        scene = CuratorMediaPanel(this).also { left.addView(it,LinearLayout.LayoutParams(-1,0,1f)) }
+        val stage = FrameLayout(this).apply { setBackgroundColor(road) }
+
+        scene = CuratorMediaPanel(this).also { stage.addView(it, FrameLayout.LayoutParams(-1,-1)) }
         scene.places={ catalog() }; scene.language=profile.language
-        // Sits under the picture at its own height. The picture above it has the rest.
-        val caption = column().apply { setPadding(dp(30),dp(20),dp(30),dp(28)) }
-        // Two facts, two chips. Joining them with a middle dot would be the template chrome
-        // that turns every unrelated pair into "A · B"; they are separate things and the layout
-        // can say so for free.
+
+        // The ground is a photograph as often as a flat colour, and the place's name has to be
+        // readable on both. One gradient along the bottom does that without a box.
+        scrim = View(this).apply {
+            background = GradientDrawable(GradientDrawable.Orientation.TOP_BOTTOM,
+                intArrayOf(Color.TRANSPARENT, Color.argb(120,4,32,46), Color.argb(232,4,32,46)))
+        }
+        stage.addView(scrim, FrameLayout.LayoutParams(-1, dp(360), Gravity.BOTTOM))
+
+        rule = RouteRule(this)
+        stage.addView(rule, FrameLayout.LayoutParams(-1, dp(74), Gravity.BOTTOM))
+
+        // The place's name is part of the picture, not a caption under it: set large, low, and
+        // over the view itself.
+        val nameBlock = column().apply { setPadding(dp(34),0,dp(34),dp(18)) }
         val facts = row()
-        subline = label("경로에서 만나는 발견",Text.CAPTION,Color.WHITE,true).apply {
-            background = pill(onHero); setPadding(dp(18),dp(8),dp(18),dp(9))
-        }.also { facts.addView(it,LinearLayout.LayoutParams(-2,-2)) }
-        meetingChip = label("",Text.CAPTION,Color.WHITE,true).apply {
-            background = pill(onHero); setPadding(dp(18),dp(8),dp(18),dp(9)); visibility = View.GONE
-        }.also { facts.addView(it,LinearLayout.LayoutParams(-2,-2).apply { marginStart = dp(8) }) }
-        caption.addView(facts,LinearLayout.LayoutParams(-2,-2))
-        gap(caption,14)
-        placeName = label("어떤 곳을 만나게 될까?",Text.DISPLAY,Color.WHITE,true).also { caption.addView(it) }
+        subline = heroChip("경로에서 만나는 발견").also { facts.addView(it,LinearLayout.LayoutParams(-2,-2)) }
+        meetingChip = heroChip("").apply { visibility = View.GONE }
+            .also { facts.addView(it,LinearLayout.LayoutParams(-2,-2).apply { marginStart = dp(8) }) }
+        nameBlock.addView(facts,LinearLayout.LayoutParams(-2,-2))
+        gap(nameBlock,12)
+        // Wrap, explicitly. A vertical LinearLayout re-measures a full-width child to the
+        // width of its widest sibling, so the name would otherwise be cut to the chip above it.
+        placeName = label("어떤 곳을 만나게 될까?",Text.DISPLAY,Color.WHITE,true).apply {
+            maxWidth = resources.displayMetrics.widthPixels - sheetWidth() - dp(96)
+        }
+        nameBlock.addView(placeName,LinearLayout.LayoutParams(-2,-2))
         mediaButton=button(say.replayFilm) { scene.replay() }.apply {
             textSize=sp(Text.LABEL); setTextColor(Color.WHITE); background = pill(onHero)
         }
-        caption.addView(mediaButton,LinearLayout.LayoutParams(-2,dp(56)).apply { topMargin=dp(16) })
-        heroCaption = caption
-        left.addView(caption,LinearLayout.LayoutParams(-1,-2))
-        body.addView(left,LinearLayout.LayoutParams(0,-1,.46f).apply { marginEnd=dp(22) })
-        // Centred, so a short turn sits in the middle of the card rather than hugging the top.
-        card = column().apply {
-            setPadding(dp(38),dp(26),dp(38),dp(24)); gravity = Gravity.CENTER_VERTICAL
-        }
-        // The card scrolls inside itself. A long turn — a quiz with its answer, or a place with
-        // a guardian's note — used to be cut off at both ends by the centring.
-        val cardScroll = ScrollView(this).apply {
+        nameBlock.addView(mediaButton,LinearLayout.LayoutParams(-2,dp(54)).apply { topMargin=dp(14) })
+        heroCaption = nameBlock
+        stage.addView(nameBlock, FrameLayout.LayoutParams(-2,-2,Gravity.BOTTOM or Gravity.START)
+            .apply { bottomMargin = dp(74) })
+
+        // The sheet. Paper laid on the view, not the other half of a split.
+        card = column().apply { setPadding(dp(34),dp(30),dp(34),dp(30)) }
+        val sheet = ScrollView(this).apply {
             background = rounded(Color.WHITE,Corner.PAPER); clipToOutline = true
             isFillViewport = true; isVerticalScrollBarEnabled = false
+            elevation = dp(10).toFloat()
             addView(card,FrameLayout.LayoutParams(-1,-2))
         }
-        cardPanel = cardScroll
-        body.addView(cardScroll,LinearLayout.LayoutParams(0,-1,.54f))
-        // The two columns fill the screen exactly once. Wrapping them in a scroller of their
-        // own let a long turn stretch the whole page and push the picture off the bottom.
-        //
-        // They sit on a stage so an explanation can bring its own ground forward: the backdrop
-        // takes the deep colour of the hero, and the picture is the only thing left on it.
-        backdrop = View(this).apply { background = rounded(deep,Corner.PAPER); alpha = 0f }
-        val stage = FrameLayout(this).apply {
-            addView(backdrop, FrameLayout.LayoutParams(-1,-1))
-            addView(body, FrameLayout.LayoutParams(-1,-1))
-        }
-        root.addView(stage,LinearLayout.LayoutParams(-1,0,1f)); setContentView(root)
+        cardPanel = sheet
+        // Sized by what is on it. A sheet of paper is as big as what is written on it; a panel
+        // that always runs floor to ceiling is a container, and the empty half of it says the
+        // app expected more to say than it had. Tall turns fill the room left and scroll.
+        stage.addView(sheet, FrameLayout.LayoutParams(sheetWidth(), -2, Gravity.END or Gravity.BOTTOM)
+            .apply { topMargin = dp(96); bottomMargin = dp(96); marginEnd = dp(26) })
+
+        // The header rides on the view as chips, since there is no bar for it to sit in.
+        val header = row().apply { setPadding(dp(30),dp(22),dp(26),0) }
+        val titles = column()
+        tagline = heroChip(say.tagline).also { titles.addView(it,LinearLayout.LayoutParams(-2,-2)) }
+        header.addView(titles,LinearLayout.LayoutParams(0,-2,1f))
+        badge = heroChip("시연 경로").also { header.addView(it,LinearLayout.LayoutParams(-2,-2).apply { marginEnd=dp(12) }) }
+        header.addView(button("보호자") { parentMenu() }.apply {
+            textSize=sp(Text.LABEL); setTextColor(Color.WHITE); background = pill(onHero)
+        }, LinearLayout.LayoutParams(-2,dp(58)))
+        stage.addView(header, FrameLayout.LayoutParams(-1,-2,Gravity.TOP))
+
+        setContentView(stage)
+        // The band exists before anything animates, so the first drawing drawn already clears it.
+        stage.post { if (sheetOut) scene.coveredBottom = (heroCaption.height + dp(74)).toFloat() }
+        scene.coveredRight = sheetWidth().toFloat()
     }
+
+    /** How much of the screen the question's sheet takes when it is out. */
+    private fun sheetWidth() = (resources.displayMetrics.widthPixels * .42f).toInt()
+
     /**
-     * The explanation fills the screen, then gives it back.
+     * The sheet comes and goes, and the picture takes the room it leaves.
      *
-     * Everything before this moment points at the window; the explanation is the one beat that
-     * is about the picture, so the picture takes the whole screen for as long as it lasts and
-     * then shrinks back into its panel. The view is scaled where it stands rather than moved
-     * into an overlay, so a film that is already playing keeps playing through the change.
-     *
-     * A tap on the enlarged picture puts it back early, so nobody is stuck looking at it.
+     * Every step before the explanation points at the window, so the question sits on a sheet
+     * over the lower right while the view carries on behind it. The explanation is the one beat
+     * that is about the picture itself, so the sheet slides off and a drawing re-centres and
+     * grows into the whole screen. A photograph was already filling it and simply loses the
+     * thing lying on top.
      */
-    private fun setExplainZoom(on: Boolean) {
-        if (!::columns.isInitialized || zoomed == on) return
-        zoomed = on
-        val duration = if (ValueAnimator.areAnimatorsEnabled()) 420L else 0L
-        if (on) {
-            // Both the hero and the row holding it have to stop clipping: a ViewGroup clips
-            // each child to that child's own bounds, so the row alone would still cut the
-            // picture off at the hero's edge. What remains clipping is the stage, which is
-            // exactly the area the picture is allowed to fill.
-            hero.clipToOutline = false; hero.clipChildren = false; hero.z = 20f
-            columns.clipChildren = false
-            columns.post {
-                if (!zoomed) return@post
-                val toCentreX = columns.width / 2f - (hero.x + scene.x + scene.width / 2f)
-                val toCentreY = columns.height / 2f - (hero.y + scene.y + scene.height / 2f)
-                // Fit, not fill. The drawing carries labels at its edges, and a picture that
-                // explains something must not have its explanation cropped off to look bigger.
-                val fit = minOf(
-                    columns.width.toFloat() / scene.width.coerceAtLeast(1),
-                    columns.height.toFloat() / scene.height.coerceAtLeast(1),
-                ) * .94f
-                scene.animate().scaleX(fit).scaleY(fit).translationX(toCentreX).translationY(toCentreY)
-                    .setDuration(duration).setInterpolator(DecelerateInterpolator()).start()
-                cardPanel.animate().alpha(0f).setDuration(duration).start()
-                heroCaption.animate().alpha(0f).setDuration(duration).start()
-                backdrop.animate().alpha(1f).setDuration(duration).start()
-            }
-            scene.setOnClickListener { setExplainZoom(false) }
-        } else {
-            scene.setOnClickListener(null); scene.isClickable = false
-            scene.animate().scaleX(1f).scaleY(1f).translationX(0f).translationY(0f)
-                .setDuration(duration).setInterpolator(DecelerateInterpolator())
-                .withEndAction {
-                    if (!zoomed) {
-                        hero.clipToOutline = true; hero.clipChildren = true; hero.z = 0f
-                        columns.clipChildren = true
-                    }
-                }
-                .start()
-            cardPanel.animate().alpha(1f).setDuration(duration).start()
-            heroCaption.animate().alpha(1f).setDuration(duration).start()
-            backdrop.animate().alpha(0f).setDuration(duration).start()
+    private fun setSheetOut(out: Boolean) {
+        if (!::cardPanel.isInitialized || sheetOut == out) return
+        sheetOut = out
+        val span = if (ValueAnimator.areAnimatorsEnabled()) 420L else 0L
+        val width = sheetWidth().toFloat()
+        // The name and the route rule are the view's own chrome. The name goes with the sheet,
+        // since the explanation is about the picture and names it aloud anyway; the rule stays,
+        // because where we are on the drive is true in every beat.
+        heroCaption.animate().alpha(if (out) 1f else 0f).setDuration(span).start()
+        cardPanel.animate().alpha(if (out) 1f else 0f).translationX(if (out) 0f else width)
+            .setDuration(span).setInterpolator(DecelerateInterpolator()).start()
+        // A tap on the picture brings the sheet back, so nobody is left looking at a drawing
+        // with the buttons gone. Held for this place's explanation only.
+        if (out) { scene.setOnClickListener(null); scene.isClickable = false }
+        else scene.setOnClickListener {
+            sheetByHand = state.phase to state.currentId
+            setSheetOut(true)
         }
+        // The drawing's free area follows the sheet rather than snapping, so the picture is
+        // seen to grow into the space instead of jumping once the sheet has gone.
+        ValueAnimator.ofFloat(scene.coveredRight, if (out) width else 0f).apply {
+            duration = span; interpolator = DecelerateInterpolator()
+            addUpdateListener { scene.coveredRight = it.animatedValue as Float }
+        }.start()
+        val band = (if (out) heroCaption.height + dp(74) else dp(74)).toFloat()
+        ValueAnimator.ofFloat(scene.coveredBottom, band).apply {
+            duration = span; interpolator = DecelerateInterpolator()
+            addUpdateListener { scene.coveredBottom = it.animatedValue as Float }
+        }.start()
     }
 
     private fun render() {
@@ -666,7 +661,9 @@ class MainActivity : Activity() {
         scene.visibility=if(restricted) View.INVISIBLE else View.VISIBLE
         scene.present(state, !restricted && foreground && dialog==null)
         // The explanation is the one beat that is about the picture rather than the window.
-        setExplainZoom(state.phase==CuratorPhase.EXPLAIN && !restricted && foreground)
+        val talking = state.phase==CuratorPhase.EXPLAIN && !restricted && foreground
+        setSheetOut(!talking || sheetByHand == state.phase to state.currentId)
+        showRoute()
         // A guardian's own place has no bundled film, so the button must not promise one.
         val hasFilm=engine.place(state)?.mediaKey?.isNotBlank()==true
         mediaButton.visibility=if(hasFilm && state.phase in setOf(CuratorPhase.EXPLAIN,CuratorPhase.PLAY,CuratorPhase.MEMORY)) View.VISIBLE else View.GONE
@@ -680,6 +677,34 @@ class MainActivity : Activity() {
             }.start()
         } else { card.alpha=1f; populate() }
     }
+    /**
+     * Today's drive along the bottom.
+     *
+     * A demo route knows its whole list of places, so the rule can show where we are among them.
+     * A real journey does not: the SDK gives the next place and its remaining time and nothing
+     * further, so the rule honestly shows only the leg we are on. Either way the filling part is
+     * the same fact — how close the place now coming up is.
+     */
+    private fun showRoute() {
+        val eta = state.etaSeconds
+        // 300 seconds is where this app starts talking about a place, so it is where the leg
+        // starts filling. Past the place it is full.
+        val approach = when {
+            state.currentId == null -> null
+            eta == null -> 1f
+            else -> (1f - eta / 300f).coerceIn(0f, 1f)
+        }
+        // Nothing to say before a journey starts, and nothing to say while the screen is
+        // resting. The rule hides itself when it is left with neither fact.
+        val quiet = restricted || state.phase == CuratorPhase.READY
+        val ids = if (demo && !quiet) selectedRoute.stops(album.load().ownPlaceIds) else emptyList()
+        val named = catalog()
+        val stops = ids.mapNotNull { id -> named.firstOrNull { it.id == id }?.name }
+        val passed = state.phase !in setOf(CuratorPhase.PREDICT, CuratorPhase.WATCH)
+        rule.show(if (stops.size == ids.size) stops else emptyList(),
+            ids.indexOf(state.currentId), if (quiet) null else approach, passed)
+    }
+
     private fun populate() {
         card.removeAllViews(); statusLabel=null
         if(!connected || restricted) {

@@ -22,6 +22,25 @@ class CuratorMediaPanel(context:Context): FrameLayout(context) {
     /** The photograph's caption is read by the child, so it follows their language. */
     var language: ChildLanguage = ChildLanguage.KOREAN
         set(value) { field=value; photos.language=value }
+
+    /**
+     * How much of the right edge the question's sheet is covering.
+     *
+     * Only the drawings move out of the way. A photograph is the ground of the screen and runs
+     * on under the sheet, which is what makes the sheet read as laid on top of the view rather
+     * than as the other half of a split.
+     */
+    var coveredRight: Float = 0f
+        set(value) { field=value; scene.coveredRight=value; photos.captionInset=value }
+
+    /**
+     * The band at the bottom holding the route and the place's name.
+     *
+     * A drawing centres itself above it; a photograph still fills the screen and only lifts its
+     * caption clear of it.
+     */
+    var coveredBottom: Float = 0f
+        set(value) { field=value; scene.coveredBottom=value; photos.captionBottom=value }
     private var photoPlaceId:String?=null
     private var current=CuratorState()
     private var permitted=false
@@ -32,11 +51,6 @@ class CuratorMediaPanel(context:Context): FrameLayout(context) {
         addView(photos,LayoutParams(-1,-1))
     }
 
-    /**
-     * The artwork is drawn on a 960x540 field and centred, so a box taller than that ratio just
-     * adds empty margin above and below the drawing. Keeping the panel at the drawing's own
-     * shape puts that space back into the layout, where it reads as breathing room.
-     */
     /**
      * Takes the height it is given, and only falls back to 16:9 when nobody has decided one.
      *

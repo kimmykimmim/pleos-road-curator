@@ -37,6 +37,21 @@ class PhotoSequenceView(context: Context) : View(context) {
     /** The caption is read by the child, so it follows the language they are spoken to in. */
     var language: ChildLanguage = ChildLanguage.KOREAN
 
+    /** Keeps the caption clear of the sheet laid over the right of the screen. */
+    var captionInset: Float = 0f
+        set(value) { if (field != value) { field = value; invalidate() } }
+
+    /**
+     * How much of the bottom edge belongs to the drive's own chrome.
+     *
+     * The photograph still runs to the bottom of the screen — it is the view, and cropping it
+     * to make room would waste the thing the child is being asked to look at. Its caption and
+     * its credit move up instead, so the one line that legally has to be readable is not sitting
+     * underneath the route.
+     */
+    var captionBottom: Float = 0f
+        set(value) { if (field != value) { field = value; invalidate() } }
+
     /** How long one photograph is held before it starts dissolving into the next. */
     private val holdMs = 2600L
     private val fadeMs = 900L
@@ -132,7 +147,9 @@ class PhotoSequenceView(context: Context) : View(context) {
         paint.alpha = 255
     }
 
-    private fun caption(canvas: Canvas, stage: PhotoStage, w: Float, h: Float) {
+    private fun caption(canvas: Canvas, stage: PhotoStage, full: Float, height: Float) {
+        val w = (full - captionInset).coerceAtLeast(1f)
+        val h = (height - captionBottom).coerceAtLeast(1f)
         // Sized against the frame's width, not its height.
         //
         // These were fractions of the height, which was fine while the view was always 16:9.
