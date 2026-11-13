@@ -7,6 +7,7 @@ import android.view.View
 import dev.changbak.explorer.domain.ChildLanguage
 import dev.changbak.explorer.domain.PhotoStage
 import kotlin.math.max
+import kotlin.math.min
 
 /**
  * Real photographs of one place, laid over each other in the order the change happened.
@@ -37,8 +38,16 @@ class PhotoSequenceView(context: Context) : View(context) {
     /** The caption is read by the child, so it follows the language they are spoken to in. */
     var language: ChildLanguage = ChildLanguage.KOREAN
 
-    /** Keeps the caption clear of the sheet laid over the right of the screen. */
-    var captionInset: Float = 0f
+    /**
+     * How much of the right edge the question's sheet is covering.
+     *
+     * The photograph still runs to every edge — it is the view, and a photograph that stopped
+     * at the sheet would read as the other half of a split screen. What moves is the framing:
+     * the thing the photograph is *of* is pushed into the part of the screen that is actually
+     * visible, because a child being asked to find a building cannot find it behind a sheet
+     * of paper.
+     */
+    var coveredRight: Float = 0f
         set(value) { if (field != value) { field = value; invalidate() } }
 
     /**
@@ -130,25 +139,46 @@ class PhotoSequenceView(context: Context) : View(context) {
         canvas.drawColor(Color.rgb(238, 246, 252))
         val from = frames[index.coerceIn(0, frames.lastIndex)]
         val to = frames.getOrNull(index + 1)
-        draw(canvas, from.image, w, h, 1f)
-        if (to != null && fade > 0f) draw(canvas, to.image, w, h, fade)
+        draw(canvas, from, w, h, 1f)
+        if (to != null && fade > 0f) draw(canvas, to, w, h, fade)
         caption(canvas, if (to != null && fade > .5f) to.stage else from.stage, w, h)
     }
 
-    /** Fills the frame and crops the overflow, so every stage sits in the same place. */
-    private fun draw(canvas: Canvas, image: Bitmap, w: Float, h: Float, alpha: Float) {
-        val scale = max(w / image.width, h / image.height)
+    /**
+     * Fills the screen, and puts the building where the child can actually see it.
+     *
+     * Filling alone is not enough once a sheet of paper covers two fifths of the screen: the
+     * middle of the file lands behind the sheet, and the middle of the file is usually the
+     * thing the child has been asked to find. So the picture is scaled up until the subject
+     * can sit in the middle of the free area while the frame is still covered edge to edge,
+     * then slid across until it does.
+     *
+     * Two limits keep this honest. The extra zoom stops at half again, because a photograph
+     * cropped past that stops being the view out of the window. And the slide is clamped to
+     * what still covers the screen, so a bare strip never appears beside the sheet — if the
+     * subject cannot reach the middle of the free area it goes as far as it can.
+     */
+    private fun draw(canvas: Canvas, frame: Frame, w: Float, h: Float, alpha: Float) {
+        val image = frame.image
+        val fx = frame.stage.focusX.coerceIn(.05f, .95f)
+        val fy = frame.stage.focusY.coerceIn(.05f, .95f)
+        val fill = max(w / image.width, h / image.height)
+        val free = (w - coveredRight).coerceAtLeast(1f)
+        val wanted = (w - free / 2f) / (1f - fx) / image.width
+        val scale = max(fill, min(wanted, fill * 1.5f))
         val drawnW = image.width * scale
         val drawnH = image.height * scale
+        val left = (free / 2f - fx * drawnW).coerceIn(w - drawnW, 0f)
+        val top = (h / 2f - fy * drawnH).coerceIn(h - drawnH, 0f)
         source.set(0, 0, image.width, image.height)
-        target.set((w - drawnW) / 2, (h - drawnH) / 2, (w + drawnW) / 2, (h + drawnH) / 2)
+        target.set(left, top, left + drawnW, top + drawnH)
         paint.alpha = (255 * alpha).toInt().coerceIn(0, 255)
         canvas.drawBitmap(image, source, target, paint)
         paint.alpha = 255
     }
 
     private fun caption(canvas: Canvas, stage: PhotoStage, full: Float, height: Float) {
-        val w = (full - captionInset).coerceAtLeast(1f)
+        val w = (full - coveredRight).coerceAtLeast(1f)
         val h = (height - captionBottom).coerceAtLeast(1f)
         // Sized against the frame's width, not its height.
         //

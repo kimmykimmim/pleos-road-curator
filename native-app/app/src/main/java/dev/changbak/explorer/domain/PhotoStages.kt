@@ -29,6 +29,19 @@ data class PhotoStage(
     /** The same two lines for a child who reads English. */
     val yearEn: String = "",
     val captionEn: String = "",
+    /**
+     * Where the thing itself is in this photograph, across and down, as a fraction.
+     *
+     * The screen is not the shape of the photograph and the question's sheet covers part of
+     * it, so something has to be cropped and something has to be chosen. This says what not to
+     * lose. Without it the app centres the file, and the file is centred on whatever the
+     * photographer framed — in the 63빌딩 shot that is a stretch of river, with the building
+     * itself a quarter of the way in.
+     *
+     * Eyeballed from the files and nothing more. Half means "wherever the middle is".
+     */
+    val focusX: Float = .5f,
+    val focusY: Float = .5f,
 ) {
     /** What the caption says, in the language the child is being spoken to in. */
     fun yearIn(language: ChildLanguage) =
@@ -65,6 +78,7 @@ object PhotoStages {
         "lotte" to listOf(
             PhotoStage(
                 asset = "lotte-now.jpg", year = "지금", caption = "한강 건너에서 보면 이렇게 뾰족해",
+                focusX = .56f,
                 yearEn = "Now", captionEn = "From across the river it looks this pointy",
                 author = "Ox1997cow", license = CC_BY_3,
                 page = "https://commons.wikimedia.org/wiki/File:Lotte_World_Tower_near_Cheongdam_Bridge.jpg",
@@ -73,6 +87,7 @@ object PhotoStages {
         "building63" to listOf(
             PhotoStage(
                 asset = "building63-now.jpg", year = "지금", caption = "금빛으로 반짝이는 벽을 찾아봐",
+                focusX = .27f,
                 yearEn = "Now", captionEn = "Look for the wall that shines gold",
                 author = "Sebastian Hoering", license = CC_BY_SA_4,
                 page = "https://commons.wikimedia.org/wiki/File:63_Building.jpg",
@@ -81,6 +96,7 @@ object PhotoStages {
         "yeouido" to listOf(
             PhotoStage(
                 asset = "yeouido-now.jpg", year = "지금", caption = "강 가운데 섬에 높은 건물이 가득해",
+                focusX = .55f,
                 yearEn = "Now", captionEn = "An island in the river, full of tall buildings",
                 author = "Ox1997cow", license = CC_BY_SA_3,
                 page = "https://commons.wikimedia.org/wiki/File:%EB%8F%99%EC%9E%91%EB%8C%80%EA%B5%90%EC%97%90%EC%84%9C_%EB%B3%B8_%EC%97%AC%EC%9D%98%EB%8F%84%EC%9D%98_%EB%A7%88%EC%B2%9C%EB%A3%A8%EB%93%A4.jpg",

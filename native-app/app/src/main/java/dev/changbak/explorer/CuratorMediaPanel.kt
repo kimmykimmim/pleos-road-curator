@@ -26,12 +26,12 @@ class CuratorMediaPanel(context:Context): FrameLayout(context) {
     /**
      * How much of the right edge the question's sheet is covering.
      *
-     * Only the drawings move out of the way. A photograph is the ground of the screen and runs
-     * on under the sheet, which is what makes the sheet read as laid on top of the view rather
-     * than as the other half of a split.
+     * A drawing moves out of the way; a photograph stays full bleed and re-frames instead, so
+     * the sheet still reads as laid on top of the view rather than as the other half of a
+     * split — but the building the child is being asked to find is never behind it.
      */
     var coveredRight: Float = 0f
-        set(value) { field=value; scene.coveredRight=value; photos.captionInset=value; fitFilm() }
+        set(value) { field=value; scene.coveredRight=value; photos.coveredRight=value; fitFilm() }
 
     /**
      * The band at the bottom holding the route and the place's name.

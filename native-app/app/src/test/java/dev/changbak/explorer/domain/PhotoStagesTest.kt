@@ -80,6 +80,17 @@ class PhotoStagesTest {
     }
 
     @Test
+    fun `the focus point names a place inside the picture`() {
+        all.forEach { stage ->
+            // Outside this range the view would clamp it back anyway, which would quietly
+            // undo a typo instead of showing it. A photograph framed on nothing is the whole
+            // problem this field exists to fix.
+            assertTrue(stage.focusX in 0f..1f)
+            assertTrue(stage.focusY in 0f..1f)
+        }
+    }
+
+    @Test
     fun `captions speak to a child looking out of a moving window`() {
         all.forEach { stage ->
             assertTrue(stage.year.isNotBlank())
