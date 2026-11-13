@@ -573,6 +573,9 @@ class MainActivity : Activity() {
         val sheet = ScrollView(this).apply {
             background = rounded(Color.WHITE,Corner.PAPER); clipToOutline = true
             isFillViewport = true; isVerticalScrollBarEnabled = false
+            // A long turn gets cut by the sheet's own edge, and a button sliced in half reads
+            // as a fault. Fading the cut says what it is: there is more of this below.
+            isVerticalFadingEdgeEnabled = true; setFadingEdgeLength(dp(28))
             elevation = dp(10).toFloat()
             addView(card,FrameLayout.LayoutParams(-1,-2))
         }
@@ -581,7 +584,7 @@ class MainActivity : Activity() {
         // that always runs floor to ceiling is a container, and the empty half of it says the
         // app expected more to say than it had. Tall turns fill the room left and scroll.
         stage.addView(sheet, FrameLayout.LayoutParams(sheetWidth(), -2, Gravity.END or Gravity.BOTTOM)
-            .apply { topMargin = dp(96); bottomMargin = dp(96); marginEnd = dp(26) })
+            .apply { topMargin = dp(64); bottomMargin = dp(88); marginEnd = dp(26) })
 
         // The header rides on the view as chips, since there is no bar for it to sit in.
         val header = row().apply { setPadding(dp(30),dp(22),dp(26),0) }
@@ -661,8 +664,8 @@ class MainActivity : Activity() {
         scene.visibility=if(restricted) View.INVISIBLE else View.VISIBLE
         scene.present(state, !restricted && foreground && dialog==null)
         // The explanation is the one beat that is about the picture rather than the window.
-        val talking = state.phase==CuratorPhase.EXPLAIN && !restricted && foreground
-        setSheetOut(!talking || sheetByHand == state.phase to state.currentId)
+        val explaining = state.phase==CuratorPhase.EXPLAIN && !restricted && foreground
+        setSheetOut(!explaining || sheetByHand == state.phase to state.currentId)
         showRoute()
         // A guardian's own place has no bundled film, so the button must not promise one.
         val hasFilm=engine.place(state)?.mediaKey?.isNotBlank()==true
@@ -780,10 +783,12 @@ class MainActivity : Activity() {
                     gap(card,16)
                     action(say.askAgain) { quiet(); voice.speak(state.message) { heardNothing() } }
                     action(say.useTheScreen) { showChoices = true; lastCard = null; render() }
+                } else if (engine.memory(state)?.guess != null) {
+                    // Already answered. A quiz owes the answer to the eyes as well as the ears,
+                    // and then the turn is over: leaving the choices up asks the child to pick
+                    // between two answers we have just finished telling them the answer to.
+                    round?.reveal?.let { card.addView(label(it,Text.BODY,ink)) }
                 } else {
-                    // A quiz owes the answer to the eyes as well as the ears.
-                    round?.reveal?.takeIf { engine.memory(state)?.guess != null }
-                        ?.let { card.addView(label(it,Text.BODY,ink)); gap(card,12) }
                     engine.prompt(state)?.choices?.forEach { guess -> action(guess) { apply(engine.predict(state,guess)) } }
                     action(say.sayItMyself,true) { listen() }
                 }

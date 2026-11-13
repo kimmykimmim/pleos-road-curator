@@ -31,7 +31,7 @@ class CuratorMediaPanel(context:Context): FrameLayout(context) {
      * than as the other half of a split.
      */
     var coveredRight: Float = 0f
-        set(value) { field=value; scene.coveredRight=value; photos.captionInset=value }
+        set(value) { field=value; scene.coveredRight=value; photos.captionInset=value; fitFilm() }
 
     /**
      * The band at the bottom holding the route and the place's name.
@@ -40,14 +40,39 @@ class CuratorMediaPanel(context:Context): FrameLayout(context) {
      * caption clear of it.
      */
     var coveredBottom: Float = 0f
-        set(value) { field=value; scene.coveredBottom=value; photos.captionBottom=value }
+        set(value) { field=value; scene.coveredBottom=value; photos.captionBottom=value; fitFilm() }
+    /**
+     * The film keeps clear of the sheet, the same as the drawings do.
+     *
+     * A VideoView is a surface, not a canvas: it knows nothing about what is laid over it, so
+     * the box it is given has to be the box it may use. Margins rather than a smaller view, so
+     * the film stays centred in the free area and VideoView keeps its own 16:9.
+     */
+    private fun fitFilm() {
+        val had=filmBox.layoutParams as? LayoutParams ?: return
+        val right=coveredRight.toInt(); val bottom=coveredBottom.toInt()
+        if (had.rightMargin==right && had.bottomMargin==bottom) return
+        filmBox.layoutParams=LayoutParams(-1,-1,Gravity.TOP or Gravity.START).apply {
+            rightMargin=right; bottomMargin=bottom
+        }
+    }
+
+    /**
+     * The box the film may use.
+     *
+     * The margins go here rather than on the VideoView itself: a FrameLayout child laid out
+     * with CENTER counts its own margins twice, once in the room it is given and once in where
+     * it is placed, so a centred film would drift off the left edge as the sheet came back.
+     */
+    private val filmBox=FrameLayout(context)
     private var photoPlaceId:String?=null
     private var current=CuratorState()
     private var permitted=false
     private var playingKey:String?=null
     private var generation=0L
     init {
-        addView(video,LayoutParams(-1,-1,Gravity.CENTER));addView(scene,LayoutParams(-1,-1))
+        filmBox.addView(video,LayoutParams(-1,-1,Gravity.CENTER))
+        addView(filmBox,LayoutParams(-1,-1));addView(scene,LayoutParams(-1,-1))
         addView(photos,LayoutParams(-1,-1))
     }
 
