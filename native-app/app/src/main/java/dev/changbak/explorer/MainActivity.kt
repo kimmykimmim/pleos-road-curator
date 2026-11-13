@@ -135,6 +135,8 @@ class MainActivity : Activity() {
     private lateinit var badge: TextView
     private lateinit var placeName: TextView
     /** The photograph's year, its one line, and who it belongs to. */
+    /** The small picture that appears while a question arrives. */
+    private lateinit var sticker: TopicStickerView
     private lateinit var photoYear: TextView
     private lateinit var photoLine: TextView
     private lateinit var photoCredit: TextView
@@ -580,6 +582,13 @@ class MainActivity : Activity() {
         rule = RouteRule(this)
         stage.addView(rule, FrameLayout.LayoutParams(-1, dp(74), Gravity.BOTTOM))
 
+        // Top left, and small. Every photograph in this app is of something tall with sky
+        // around it, so that corner is empty in all of them; the picture the child is being
+        // asked to find is in the middle, and the sheet is on the right.
+        sticker = TopicStickerView(this)
+        stage.addView(sticker, FrameLayout.LayoutParams(dp(104), dp(104), Gravity.TOP or Gravity.START)
+            .apply { leftMargin = dp(26); topMargin = dp(20) })
+
         // The place's name is part of the picture, not a caption under it: set large, low, and
         // over the view itself.
         val nameBlock = column().apply { setPadding(dp(34),0,dp(34),dp(18)) }
@@ -725,6 +734,7 @@ class MainActivity : Activity() {
         scene.visibility=if(restricted) View.INVISIBLE else View.VISIBLE
         scene.present(state, !restricted && foreground && dialog==null)
         // The explanation is the one beat that is about the picture rather than the window.
+        showSticker()
         val explaining = state.phase==CuratorPhase.EXPLAIN && !restricted && foreground
         setSheetOut(!explaining || sheetByHand == state.phase to state.currentId)
         showRoute()
@@ -741,6 +751,24 @@ class MainActivity : Activity() {
             }.start()
         } else { card.alpha=1f; populate() }
     }
+    /**
+     * The small picture for this turn.
+     *
+     * It belongs to the question being asked, so it comes and goes with the place and the
+     * round rather than with every redraw. Only the two steps where something is actually
+     * being asked get one: the explanation is about the picture that is already filling the
+     * screen, and a sticker over that would be a second drawing arguing with the first.
+     */
+    private fun showSticker() {
+        if (!::sticker.isInitialized) return
+        val asking = state.phase in setOf(CuratorPhase.PREDICT, CuratorPhase.PLAY)
+        val place = engine.place(state)
+        if (!asking || place == null || restricted || !foreground) { sticker.show(null); return }
+        // The favourite only counts while its line is on screen, which is the predict step.
+        val spoken = if (state.phase == CuratorPhase.PREDICT) engine.favouriteFor(place) else null
+        sticker.show(TopicPicture.pick(spoken, engine.prompt(state)?.field))
+    }
+
     /**
      * Today's drive along the bottom.
      *

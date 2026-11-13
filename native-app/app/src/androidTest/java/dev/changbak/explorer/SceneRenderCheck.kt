@@ -36,6 +36,9 @@ class SceneRenderCheck : Instrumentation() {
             if (requestedCheck == "curator-media") {
                 checkCuratorMedia(report); finish(Activity.RESULT_OK, report); return
             }
+            if (requestedCheck == "stickers") {
+                checkStickers(report); finish(Activity.RESULT_OK, report); return
+            }
             if (requestedCheck == "curator") {
                 checkCurator(report); finish(Activity.RESULT_OK, report); return
             }
@@ -135,6 +138,52 @@ class SceneRenderCheck : Instrumentation() {
         }
         report.putString("result","PASS: five bundled MP4s, six-second duration, 960x540 decoding, visible motion and distinct role scenes at all six places")
         report.putString("artifacts",output.absolutePath)
+    }
+
+    /**
+     * Every small picture draws something, and no two of them draw the same thing.
+     *
+     * These are hand-built paths. A typo in one of them leaves an empty square or, worse, a
+     * shape that reads as a different animal, and neither shows up anywhere else: the picture
+     * appears for three seconds in the corner of a screen nobody is supposed to be staring at.
+     * The contact sheet this leaves behind is how they get looked at on purpose.
+     */
+    private fun checkStickers(report: Bundle) {
+        val output = File(targetContext.filesDir, "sticker-check").apply { mkdirs() }
+        val side = 240
+        val pictures = TopicPicture.entries
+        val sheet = Bitmap.createBitmap(side * 4, side * 3, Bitmap.Config.ARGB_8888)
+        val sheetCanvas = android.graphics.Canvas(sheet)
+        sheetCanvas.drawColor(android.graphics.Color.rgb(150, 168, 182))
+        val drawn = ArrayList<IntArray>()
+        pictures.forEachIndexed { index, picture ->
+            val cell = Bitmap.createBitmap(side, side, Bitmap.Config.ARGB_8888)
+            val canvas = android.graphics.Canvas(cell)
+            canvas.drawColor(android.graphics.Color.rgb(150, 168, 182))
+            TopicStickerView.draw(canvas, side.toFloat(), picture)
+            val pixels = IntArray(side * side)
+            cell.getPixels(pixels, 0, side, 0, 0, side, side)
+            check(pixels.distinct().size > 8) { "$picture drew nothing" }
+            val inked = pixels.count { it != android.graphics.Color.rgb(150, 168, 182) }
+            check(inked > side * side / 12) { "$picture is too thin to read: $inked" }
+            drawn.add(pixels)
+            sheetCanvas.drawBitmap(cell, (index % 4 * side).toFloat(), (index / 4 * side).toFloat(), null)
+            cell.recycle()
+        }
+        drawn.indices.forEach { a ->
+            (a + 1 until drawn.size).forEach { b ->
+                val same = drawn[a].indices.count { drawn[a][it] == drawn[b][it] }
+                check(same < side * side * 95 / 100) {
+                    "${pictures[a]} and ${pictures[b]} look the same"
+                }
+            }
+        }
+        File(output, "stickers.png").outputStream().use {
+            check(sheet.compress(Bitmap.CompressFormat.PNG, 100, it))
+        }
+        sheet.recycle()
+        report.putString("artifacts", output.absolutePath)
+        report.putString("result", "PASS: ${pictures.size} topic pictures, each drawn and each different")
     }
 
     private fun checkCurator(report: Bundle) {

@@ -101,8 +101,16 @@ class RouteCurator(
     }
 
     /** The line about something the child loves, or null when this place has none for them. */
-    fun bridgeFor(place: CuratorPlace): String? =
-        profile.favourites.firstNotNullOfOrNull { place.bridges[it] }
+    fun bridgeFor(place: CuratorPlace): String? = favouriteFor(place)?.let { place.bridges[it] }
+
+    /**
+     * Which of the child's favourite things this place is about to mention, if any.
+     *
+     * The screen draws a small picture of it while the line is said. That is the only reason
+     * this is separate from [bridgeFor]: a picture needs to know which thing, not the sentence.
+     */
+    fun favouriteFor(place: CuratorPlace): FavouriteTopic? =
+        profile.favourites.firstOrNull { place.bridges.containsKey(it) }
 
     /** Today's round for the place being met now, for the screen to draw the same one. */
     fun prompt(state: CuratorState): RoundPrompt? = place(state)?.let(::promptFor)

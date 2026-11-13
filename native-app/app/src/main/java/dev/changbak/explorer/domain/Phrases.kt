@@ -42,6 +42,12 @@ data class Phrases(
     val rememberIt: String,
     val notSure: String,
     val pretendPlay: String,
+    /**
+     * The way out of the two answers on screen, and into the child's own.
+     *
+     * It read "내 말로 이야기하기" — a label for a feature. Said as the child would start the
+     * sentence, it is an invitation instead, and the bracket says plainly what pressing it does.
+     */
     val sayItMyself: String,
     val inMyOwnWords: String,
     val keepWatching: String,
@@ -106,8 +112,8 @@ data class Phrases(
             rememberIt = "기억나!",
             notSure = "잘 모르겠어",
             pretendPlay = "여기부터는 우리의 상상 놀이",
-            sayItMyself = "내 말로 이야기하기",
-            inMyOwnWords = "내 말로 바꿔 볼래",
+            sayItMyself = "내 생각엔… (직접 말하기)",
+            inMyOwnWords = "내 생각엔… (직접 말하기)",
             keepWatching = "계속 창밖 보기",
             listenAgain = "다시 듣기",
             skip = "넘어갈래",
@@ -163,8 +169,8 @@ data class Phrases(
             rememberIt = "I remember!",
             notSure = "I'm not sure",
             pretendPlay = "From here on we are pretending",
-            sayItMyself = "Say it in my own words",
-            inMyOwnWords = "Let me change it",
+            sayItMyself = "I think… (say it out loud)",
+            inMyOwnWords = "I think… (say it out loud)",
             keepWatching = "Keep watching outside",
             listenAgain = "Say it again",
             skip = "Move on",
