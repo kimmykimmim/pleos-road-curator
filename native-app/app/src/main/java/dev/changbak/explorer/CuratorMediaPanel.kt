@@ -23,6 +23,10 @@ class CuratorMediaPanel(context:Context): FrameLayout(context) {
     var language: ChildLanguage = ChildLanguage.KOREAN
         set(value) { field=value; photos.language=value }
 
+    /** Which photograph is showing. The host draws its words above the screen's own wash. */
+    var onPhotoStage: (PhotoStage?) -> Unit = {}
+        set(value) { field=value; photos.onStage=value }
+
     /**
      * How much of the right edge the question's sheet is covering.
      *
@@ -40,7 +44,7 @@ class CuratorMediaPanel(context:Context): FrameLayout(context) {
      * caption clear of it.
      */
     var coveredBottom: Float = 0f
-        set(value) { field=value; scene.coveredBottom=value; photos.captionBottom=value; fitFilm() }
+        set(value) { field=value; scene.coveredBottom=value; fitFilm() }
     /**
      * The film keeps clear of the sheet, the same as the drawings do.
      *

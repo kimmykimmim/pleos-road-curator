@@ -14,6 +14,9 @@ import android.graphics.Color
 import android.graphics.Typeface
 import android.graphics.drawable.GradientDrawable
 import android.graphics.drawable.InsetDrawable
+import android.graphics.text.LineBreakConfig
+import android.graphics.text.LineBreaker
+import android.os.Build
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
@@ -131,6 +134,10 @@ class MainActivity : Activity() {
     private lateinit var mediaButton: Button
     private lateinit var badge: TextView
     private lateinit var placeName: TextView
+    /** The photograph's year, its one line, and who it belongs to. */
+    private lateinit var photoYear: TextView
+    private lateinit var photoLine: TextView
+    private lateinit var photoCredit: TextView
     private lateinit var subline: TextView
     private var statusLabel: TextView? = null
     private val ink = Color.rgb(11,45,63)
@@ -166,6 +173,8 @@ class MainActivity : Activity() {
     private val cream = Color.rgb(255,239,196)
     /** White at low alpha, for a chip that has to sit on the illustration without boxing it in. */
     private val onHero = Color.argb(48,255,255,255)
+    /** The credit line over a photograph: quieter than the caption, still plainly readable. */
+    private val onPhoto = Color.argb(222,255,255,255)
     private val timer = object : Runnable {
         override fun run() {
             if (foreground && demo && playing && !restricted && dialog == null) {
@@ -411,15 +420,15 @@ class MainActivity : Activity() {
         /** One per panel at most: the place's name, or the screen's one question. */
         const val DISPLAY = 30f
         /** The sentence this turn is about. */
-        const val TITLE = 24f
+        const val TITLE = 22f
         /** Anything you press. */
-        const val ACTION = 21f
+        const val ACTION = 20f
         /** Supporting sentences: the hook, the lead, the answer to a quiz. */
-        const val BODY = 19f
+        const val BODY = 18f
         /** Names of things: a step, a chip, a place in a list. */
-        const val LABEL = 17f
+        const val LABEL = 16f
         /** Notes about the app rather than the journey. */
-        const val CAPTION = 14f
+        const val CAPTION = 13f
     }
 
     private fun column() = LinearLayout(this).apply { orientation = LinearLayout.VERTICAL }
@@ -502,6 +511,26 @@ class MainActivity : Activity() {
         if (bold) typeface = Typeface.create("sans-serif-medium",Typeface.NORMAL)
         // The display tier, and only the display tier, gets the display face.
         if (size >= Text.DISPLAY) displayFace?.let { typeface = it }
+        wholeWords()
+    }
+
+    /**
+     * Break Korean lines between words, and across even lines.
+     *
+     * Android's default for Korean is to wrap wherever the line runs out, which splits a word
+     * down the middle: "달라지거 / 든." A six year old is sounding these out one syllable at a
+     * time, and half a word at the end of a line is a word they cannot read. Android 13 added
+     * phrase-aware breaking for exactly this; on anything older the default stands.
+     */
+    private fun TextView.wholeWords() {
+        // Even lines, not a greedy first one. Breaking at words alone fixes the split syllable
+        // and introduces a new fault: the first line fills up, one whole word drops to the
+        // next, and a short line sits above a nearly empty one. Balanced spreads the words
+        // over the lines it was going to use anyway, so neither line is a remnant.
+        breakStrategy = LineBreaker.BREAK_STRATEGY_BALANCED
+        if (Build.VERSION.SDK_INT >= 33) {
+            lineBreakWordStyle = LineBreakConfig.LINE_BREAK_WORD_STYLE_PHRASE
+        }
     }
     private fun button(text: String, primary: Boolean = false, action: () -> Unit) = Button(this).apply {
         this.text = text; textSize = sp(Text.ACTION); isAllCaps = false; setTextColor(if (primary) Color.WHITE else ink)
@@ -510,6 +539,7 @@ class MainActivity : Activity() {
         // a softened rectangle does not.
         background = pill(if(primary) accent else pale); minHeight = dp(72)
         setPadding(dp(16),dp(12),dp(16),dp(12)); setOnClickListener { if (usable()) action() }
+        wholeWords()
     }
     private fun action(text: String, primary: Boolean = false, fn: () -> Unit) {
         card.addView(button(text,primary,fn),LinearLayout.LayoutParams(-1,dp(74)).apply { topMargin = dp(10) })
@@ -533,14 +563,19 @@ class MainActivity : Activity() {
 
         scene = CuratorMediaPanel(this).also { stage.addView(it, FrameLayout.LayoutParams(-1,-1)) }
         scene.places={ catalog() }; scene.language=profile.language
+        scene.onPhotoStage = { stage -> showPhotoWords(stage) }
 
         // The ground is a photograph as often as a flat colour, and the place's name has to be
         // readable on both. One gradient along the bottom does that without a box.
         scrim = View(this).apply {
             background = GradientDrawable(GradientDrawable.Orientation.TOP_BOTTOM,
-                intArrayOf(Color.TRANSPARENT, Color.argb(120,4,32,46), Color.argb(232,4,32,46)))
+                intArrayOf(Color.TRANSPARENT, Color.argb(70,4,32,46), Color.argb(170,4,32,46),
+                    Color.argb(222,4,32,46), Color.argb(246,4,32,46)))
         }
-        stage.addView(scrim, FrameLayout.LayoutParams(-1, dp(360), Gravity.BOTTOM))
+        // Tall enough to reach the photograph's own caption. The caption used to carry a second
+        // gradient of its own, which ended in a hard line across the picture — two washes doing
+        // one job, and the seam between them read as a fault. One wash, long and slow.
+        stage.addView(scrim, FrameLayout.LayoutParams(-1, dp(440), Gravity.BOTTOM))
 
         rule = RouteRule(this)
         stage.addView(rule, FrameLayout.LayoutParams(-1, dp(74), Gravity.BOTTOM))
@@ -548,6 +583,14 @@ class MainActivity : Activity() {
         // The place's name is part of the picture, not a caption under it: set large, low, and
         // over the view itself.
         val nameBlock = column().apply { setPadding(dp(34),0,dp(34),dp(18)) }
+        // The photograph's own words. They used to be painted into the picture, where the
+        // screen's wash dimmed them to grey; here they sit in the same layer as the chips and
+        // the name, so white reads as white and the credit line stays legible.
+        photoYear = label("",Text.LABEL,cream,true).also { nameBlock.addView(it,LinearLayout.LayoutParams(-2,-2)) }
+        photoLine = label("",Text.BODY,Color.WHITE).also { nameBlock.addView(it,LinearLayout.LayoutParams(-2,-2)) }
+        photoCredit = label("",Text.CAPTION,onPhoto).also {
+            nameBlock.addView(it,LinearLayout.LayoutParams(-2,-2).apply { topMargin = dp(2); bottomMargin = dp(12) })
+        }
         val facts = row()
         subline = heroChip("경로에서 만나는 발견").also { facts.addView(it,LinearLayout.LayoutParams(-2,-2)) }
         meetingChip = heroChip("").apply { visibility = View.GONE }
@@ -601,6 +644,24 @@ class MainActivity : Activity() {
         // The band exists before anything animates, so the first drawing drawn already clears it.
         stage.post { if (sheetOut) scene.coveredBottom = (heroCaption.height + dp(74)).toFloat() }
         scene.coveredRight = sheetWidth().toFloat()
+    }
+
+    /**
+     * The three lines that belong to the photograph on screen, or none.
+     *
+     * A place with no freely licensed photograph keeps its drawing and these stay empty, which
+     * is the same rule the picture itself follows: nothing is said about a photograph that is
+     * not there.
+     */
+    private fun showPhotoWords(stage: PhotoStage?) {
+        if (!::photoYear.isInitialized) return
+        val language = profile.language
+        photoYear.text = stage?.yearIn(language).orEmpty()
+        photoLine.text = stage?.captionIn(language).orEmpty()
+        photoCredit.text = stage?.credit.orEmpty()
+        listOf(photoYear, photoLine, photoCredit).forEach {
+            it.visibility = if (it.text.isNullOrBlank()) View.GONE else View.VISIBLE
+        }
     }
 
     /** How much of the screen the question's sheet takes when it is out. */

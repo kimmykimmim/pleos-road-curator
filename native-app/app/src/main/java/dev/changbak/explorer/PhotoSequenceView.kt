@@ -38,6 +38,10 @@ class PhotoSequenceView(context: Context) : View(context) {
     /** The caption is read by the child, so it follows the language they are spoken to in. */
     var language: ChildLanguage = ChildLanguage.KOREAN
 
+    /** Which photograph is showing, so the host can put its words above the wash. */
+    var onStage: (PhotoStage?) -> Unit = {}
+    private var shown: PhotoStage? = null
+
     /**
      * How much of the right edge the question's sheet is covering.
      *
@@ -48,17 +52,6 @@ class PhotoSequenceView(context: Context) : View(context) {
      * of paper.
      */
     var coveredRight: Float = 0f
-        set(value) { if (field != value) { field = value; invalidate() } }
-
-    /**
-     * How much of the bottom edge belongs to the drive's own chrome.
-     *
-     * The photograph still runs to the bottom of the screen — it is the view, and cropping it
-     * to make room would waste the thing the child is being asked to look at. Its caption and
-     * its credit move up instead, so the one line that legally has to be readable is not sitting
-     * underneath the route.
-     */
-    var captionBottom: Float = 0f
         set(value) { if (field != value) { field = value; invalidate() } }
 
     /** How long one photograph is held before it starts dissolving into the next. */
@@ -108,6 +101,7 @@ class PhotoSequenceView(context: Context) : View(context) {
 
     fun release() {
         stop()
+        announce(null)
         frames.forEach { it.image.recycle() }
         frames.clear()
     }
@@ -141,7 +135,23 @@ class PhotoSequenceView(context: Context) : View(context) {
         val to = frames.getOrNull(index + 1)
         draw(canvas, from, w, h, 1f)
         if (to != null && fade > 0f) draw(canvas, to, w, h, fade)
-        caption(canvas, if (to != null && fade > .5f) to.stage else from.stage, w, h)
+        announce(if (to != null && fade > .5f) to.stage else from.stage)
+    }
+
+    /**
+     * Tell the host which photograph is on screen.
+     *
+     * The year, the line about it and the credit used to be painted into this view. They are
+     * text over the lower part of the screen, which is exactly where the screen's own wash for
+     * the place name sits — so the wash dimmed them, and the one line that legally has to be
+     * readable came out grey. Text belongs in the layer above the wash, with the chips and the
+     * name, so the host draws it and this view says only what is showing.
+     */
+    private fun announce(stage: PhotoStage?) {
+        if (stage === shown) return
+        shown = stage
+        // Never from inside a draw: the host changes views when it hears this.
+        post { onStage(stage) }
     }
 
     /**
@@ -175,44 +185,6 @@ class PhotoSequenceView(context: Context) : View(context) {
         paint.alpha = (255 * alpha).toInt().coerceIn(0, 255)
         canvas.drawBitmap(image, source, target, paint)
         paint.alpha = 255
-    }
-
-    private fun caption(canvas: Canvas, stage: PhotoStage, full: Float, height: Float) {
-        val w = (full - coveredRight).coerceAtLeast(1f)
-        val h = (height - captionBottom).coerceAtLeast(1f)
-        // Sized against the frame's width, not its height.
-        //
-        // These were fractions of the height, which was fine while the view was always 16:9.
-        // Once the panel started taking whatever height it was given, a tall frame blew the
-        // caption up until it collided with the chips over it. The width is what the line has
-        // to fit across, so the width is what should set its size.
-        val base = minOf(h, w / 1.78f)
-        val pad = base * .045f
-        val barTop = h - base * .33f
-        paint.shader = LinearGradient(0f, barTop, 0f, h, Color.TRANSPARENT,
-            Color.argb(215, 11, 45, 63), Shader.TileMode.CLAMP)
-        canvas.drawRect(0f, barTop, w, h, paint)
-        paint.shader = null
-
-        text.typeface = Typeface.create("sans-serif-medium", Typeface.NORMAL)
-        text.textSize = base * .085f
-        text.color = cream
-        canvas.drawText(stage.yearIn(language), pad, h - pad * 3.4f, text)
-
-        text.typeface = Typeface.create("sans-serif", Typeface.NORMAL)
-        text.textSize = base * .062f
-        text.color = Color.WHITE
-        canvas.drawText(stage.captionIn(language), pad, h - pad * 1.8f, text)
-
-        // The source rides with the photograph. A picture with no stated origin is the one
-        // thing this app must never put in front of a child as if it were the place.
-        //
-        // On its own line under the caption. It used to be right-aligned on almost the same
-        // baseline, so a long caption ran straight into the attribution and neither could be
-        // read — the one line that legally has to be legible.
-        text.textSize = base * .042f
-        text.color = Color.argb(205, 255, 255, 255)
-        canvas.drawText(stage.credit, pad, h - pad * .6f, text)
     }
 
     init { setBackgroundColor(Color.rgb(238, 246, 252)) }
