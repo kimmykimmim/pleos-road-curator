@@ -31,7 +31,9 @@ import org.json.JSONObject
 /** The vehicle shell belongs to Pleos; only this app area is replaced. */
 class MainActivity : Activity() {
     private val handler = Handler(Looper.getMainLooper())
-    private val album by lazy { FamilyAlbumStore(this) }
+    // The frame the app puts around a guardian's record is the app talking to the child, so it
+    // follows the child's language. The guardian's own words inside it never do.
+    private val album by lazy { FamilyAlbumStore(this) { prefs.profile.language } }
     private val prefs by lazy { JourneyPrefs(this) }
     /**
      * Read through on every use, so a guardian who changes an interest sees it at the next
@@ -50,11 +52,39 @@ class MainActivity : Activity() {
     private lateinit var voice: VoiceGuide
     private var drive: CuratorDriveService? = null
     private var serviceBound = false
+    /** What the service had said by the time the screen last looked. */
+    private var answeredUpTo = 0L
+    private var livePhase: CuratorPhase? = null
     private val driveObserver: () -> Unit = {
         drive?.let { service ->
             state=service.state;naviStatus=service.connectionStatus;playing=!service.paused
+            // A real journey runs its turns inside the service, so the screen has to notice a
+            // new step here. Without this the exchange counter kept climbing across places and
+            // the microphone stopped being offered after the first two answers of the drive.
+            if(livePhase!=state.phase) { livePhase=state.phase;talkTurn=0;showChoices=false }
             if(foreground) render()
+            if(service.waitingForAnswer!=answeredUpTo) {
+                answeredUpTo=service.waitingForAnswer
+                offerBackSeatTurn()
+            }
         }
+    }
+
+    /**
+     * The real journey has just finished asking something out loud.
+     *
+     * This is the back seat's turn on an actual drive. It used to exist only in the stopped-car
+     * demonstration: the live path handed every turn to the service, which speaks with a voice
+     * that cannot listen, so the one feature built for a child who cannot reach the screen
+     * worked everywhere except on the road. Every condition that governs the demonstration
+     * governs this too — the guardian's setting, the car's restrictions, one turn at a time.
+     */
+    private fun offerBackSeatTurn() {
+        if (!usable() || !talking) return
+        if (!engine.expectsAnswer(state, talkTurn)) return
+        if (!BackSeat.shouldListen(state.phase, prefs.backSeatVoice, foreground,
+                restricted, dialog != null, mic)) return
+        openMic()
     }
     private val serviceConnection=object:ServiceConnection {
         override fun onServiceConnected(name:ComponentName,binder:IBinder) {
@@ -108,6 +138,8 @@ class MainActivity : Activity() {
     private var showChoices = false
     /** Whether anything was actually said while the microphone was open this turn. */
     private var answered = false
+    /** Whether the journey was running when this turn's microphone was opened by hand. */
+    private var resumeAfterMic = false
     /** Voice is the way in whenever the guardian has turned it on and the engine can listen. */
     private val talking: Boolean get() = prefs.backSeatVoice && !showChoices &&
         ::voice.isInitialized && voice.canListen
@@ -204,6 +236,7 @@ class MainActivity : Activity() {
                 // The microphone closed. If nothing was said, the place still takes its turn:
                 // going silent here would read as the app having stopped working.
                 if(talking && !answered) handler.post(::heardNothing)
+                if(resumeAfterMic) { resumeAfterMic = false; handler.post { resumeAfterListening(true) } }
             }
             // The card shows whether it is listening, so it has to be redrawn when that changes.
             if(wasListening != mic) { lastCard = null; render() }
@@ -325,11 +358,11 @@ class MainActivity : Activity() {
     private fun accept(text: String) {
         if (!usable()) return
         drive?.suppress(false)
-        when (val said = SpokenReply.of(text, spokenChoices())) {
-            SpokenIntent.Rest -> { playing = false; drive?.setPaused(true); quiet(); status = "쉬는 중이에요"; render() }
+        when (val said = SpokenReply.of(text, spokenChoices(), profile.language)) {
+            SpokenIntent.Rest -> { playing = false; drive?.setPaused(true); quiet(); status = say.resting; render() }
             SpokenIntent.Skip -> apply(engine.skip(state))
             SpokenIntent.Repeat -> if (live) drive?.repeat() else { quiet(); voice.speak(state.message) }
-            SpokenIntent.Unclear -> { status = "다시 한 번 말해 줄래?"; statusLabel?.text = status }
+            SpokenIntent.Unclear -> { status = say.sayAgain; statusLabel?.text = status }
             is SpokenIntent.Choose -> when (state.phase) {
                 CuratorPhase.PREDICT -> engine.prompt(state)?.choices?.getOrNull(said.index)
                     ?.let { apply(engine.predict(state, it)) }
@@ -341,13 +374,15 @@ class MainActivity : Activity() {
                 val compact = SpokenReply.compact(said.text)
                 when (state.phase) {
                     CuratorPhase.PREDICT -> if (talking) converse(said.text) else apply(engine.predict(state, said.text))
-                    CuratorPhase.WATCH -> when {
-                        Regex("안보|못봤|못보|안봤").containsMatchIn(compact) -> apply(engine.seen(state, false))
-                        Regex("보여|봤어|보인다|찾았|있어").containsMatchIn(compact) -> apply(engine.seen(state, true))
-                        else -> { status = "보이면 ‘봤어’, 안 보이면 ‘안 보여’라고 알려줘"; statusLabel?.text = status }
+                    // Whether the child can see it is decided in the child's own language. The
+                    // screen asks an English child to say "I see it", so that is what has to work.
+                    CuratorPhase.WATCH -> when (SpokenReply.seen(said.text, profile.language)) {
+                        false -> apply(engine.seen(state, false))
+                        true -> apply(engine.seen(state, true))
+                        null -> { status = say.sayIfYouSee; statusLabel?.text = status }
                     }
                     CuratorPhase.PLAY -> apply(engine.respondToPlay(state, said.text))
-                    else -> { status = "지금은 편하게 듣고 있어도 좋아"; statusLabel?.text = status }
+                    else -> { status = say.justListening; statusLabel?.text = status }
                 }
             }
         }
@@ -360,8 +395,9 @@ class MainActivity : Activity() {
      * reach the screen. That is precisely what the back seat cannot do, so this path does not
      * stop to confirm. It still opens for one turn and closes itself.
      */
-    private fun openMic() {
-        if (!usable() || mic) return
+    private fun openMic(resumeWhenDone: Boolean = false) {
+        if (!usable() || mic) { if (resumeWhenDone) resumeAfterListening(true); return }
+        resumeAfterMic = resumeWhenDone
         answered = false
         drive?.suppress(true)
         mic = voice.enableCommands()
@@ -393,10 +429,26 @@ class MainActivity : Activity() {
     private fun listen() {
         if (!usable()) return
         if (mic) { quiet();drive?.suppress(false);render(); return }
+        // Pressing this is joining in, not stopping. The demonstration pauses only while the
+        // question is being asked, and whatever it was doing before carries on afterwards:
+        // a child who pressed a button to answer should not have to find a grown-up to
+        // restart the journey, and the only person who can reach that menu is driving.
+        val wasPlaying = playing
         quiet(); playing = false
-        show(AlertDialog.Builder(this).setTitle("네 생각을 들려줘")
+        show(AlertDialog.Builder(this).setTitle(say.sayItMyself)
             .setMessage("확인을 누르면 이번 답변을 듣기 시작해요. 음성은 기기 안에서 처리하고 외부 AI로 보내지 않아요.")
-            .setNegativeButton("나중에", null).setPositiveButton("이야기할게") { _, _ -> menuAction { openMic() } }.create())
+            .setNegativeButton("나중에") { _, _ -> resumeAfterListening(wasPlaying) }
+            .setPositiveButton("이야기할게") { _, _ -> menuAction { openMic(wasPlaying) } }
+            .setOnCancelListener { resumeAfterListening(wasPlaying) }
+            .create())
+    }
+
+    /** Puts the journey back the way the child found it, once their turn is over. */
+    private fun resumeAfterListening(wasPlaying: Boolean) {
+        if (!wasPlaying || playing || live) { render(); return }
+        playing = true
+        render()
+        if (demo) handler.postDelayed({ if (demo && playing) feedDemo() }, 600)
     }
     /**
      * Pleos gives this app about 1680dp of width; the reference screen this layout was drawn for
@@ -845,14 +897,10 @@ class MainActivity : Activity() {
         val text=when(state.phase) {
             CuratorPhase.PREDICT -> engine.prompt(state)?.question ?: state.message
             CuratorPhase.PLAY -> engine.place(state)?.activity?.prompt ?: state.message
-            CuratorPhase.EXPLAIN -> when(engine.place(state)?.visual) {
-                CuratorVisual.TOWER -> "몸통과 바깥 기둥이 힘을 나눠요."
-                CuratorVisual.GLASS -> "뼈대와 유리벽은 역할이 달라요."
-                CuratorVisual.ISLAND -> "모래섬 위에 도시가 자랐어요."
-                CuratorVisual.RECIPE -> "가게의 이야기가 다음 사람에게 이어져요."
+            CuratorPhase.EXPLAIN -> when(val visual = engine.place(state)?.visual) {
                 // A guardian's place has no headline of ours to give it. Theirs is the only true one.
-                CuratorVisual.FAMILY -> state.message
-                else -> "문을 지나면 어떤 세상이 펼쳐질까요?"
+                CuratorVisual.FAMILY, null -> state.message
+                else -> say.visualSummary[visual] ?: state.message
             }
             else -> state.message
         }

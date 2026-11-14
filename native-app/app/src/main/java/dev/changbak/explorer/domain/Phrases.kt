@@ -76,6 +76,20 @@ data class Phrases(
     val replayFilm: String,
     val nowSpeaking: String,
     val nowListening: String,
+
+    /**
+     * What the app says back when it could not act on what it heard.
+     *
+     * These lived in the screen as Korean literals, so an English child who said exactly what
+     * the screen asked them to say was answered in Korean. They are read by the child, so they
+     * belong in the pack with everything else the child reads.
+     */
+    val resting: String,
+    val sayAgain: String,
+    val sayIfYouSee: String,
+    val justListening: String,
+    /** One line of what the picture is showing, by what is drawn. */
+    val visualSummary: Map<CuratorVisual, String>,
 ) {
     companion object {
         fun of(language: ChildLanguage): Phrases = when (language) {
@@ -138,6 +152,17 @@ data class Phrases(
             replayFilm = "짧은 원리 영상 다시 보기",
             nowSpeaking = "이야기를 듣는 중",
             nowListening = "네 생각을 듣고 있어",
+            resting = "쉬는 중이에요",
+            sayAgain = "다시 한 번 말해 줄래?",
+            sayIfYouSee = "보이면 ‘봤어’, 안 보이면 ‘안 보여’라고 알려줘",
+            justListening = "지금은 편하게 듣고 있어도 좋아",
+            visualSummary = mapOf(
+                CuratorVisual.TOWER to "몸통과 바깥 기둥이 힘을 나눠요.",
+                CuratorVisual.GLASS to "뼈대와 유리벽은 역할이 달라요.",
+                CuratorVisual.ISLAND to "모래섬 위에 도시가 자랐어요.",
+                CuratorVisual.RECIPE to "가게의 이야기가 다음 사람에게 이어져요.",
+                CuratorVisual.GATE to "문을 지나면 어떤 세상이 펼쳐질까요?",
+            ),
         )
 
         private val english = Phrases(
@@ -204,6 +229,17 @@ data class Phrases(
             replayFilm = "Play the short clip again",
             nowSpeaking = "Telling the story",
             nowListening = "Listening to you",
+            resting = "Taking a break",
+            sayAgain = "Could you say that again?",
+            sayIfYouSee = "Say “I see it”, or “I can't see it”",
+            justListening = "You can just listen for now",
+            visualSummary = mapOf(
+                CuratorVisual.TOWER to "The middle and the outer columns share the push.",
+                CuratorVisual.GLASS to "The frame and the glass wall have different jobs.",
+                CuratorVisual.ISLAND to "A city grew on a sandy island.",
+                CuratorVisual.RECIPE to "One shop's story passed to the next person.",
+                CuratorVisual.GATE to "What kind of world is through the gate?",
+            ),
         )
     }
 }

@@ -33,6 +33,7 @@ data class CuratorPlace(val id: String, val name: String, val theme: String,
     val talk: PlaceTalk = PlaceTalk(
         topics = emptyList(),
         echo = "“${PlaceTalk.THEIR_WORDS}”라고 했구나. 그렇게 생각할 수도 있겠다.",
+        follow = "창밖에는 또 뭐가 보여?",
         unsure = "몰라도 괜찮아.",
         silence = "괜찮아. 생각만 해도 좋아.",
         closing = "이제 창밖을 봐.",
@@ -168,7 +169,10 @@ class RouteCurator(
         val clean = text.trim().take(160)
         // A quiz owes the answer to the first thing the child says, whatever that was. There is
         // nothing to draw out of them afterwards: they asked a question and it has an answer.
-        val line = promptFor(p).reveal ?: VoiceTalk.reply(p, clean, turn).line
+        // The round the child is answering decides where the exchange goes next, so an art
+        // question is followed up about art rather than about whatever the place usually says.
+        val round = promptFor(p)
+        val line = round.reveal ?: VoiceTalk.reply(p, clean, turn, profile.language, round.field).line
         val next = updateMemory(state) { it.copy(guess = it.guess ?: clean.ifBlank { null }) }
         return CuratorTurn(next.copy(message = line), line)
     }

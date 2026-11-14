@@ -2,6 +2,7 @@ package dev.changbak.explorer.domain
 
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
+import org.junit.Assert.assertNotNull
 import org.junit.Assert.assertNull
 import org.junit.Assert.assertTrue
 import org.junit.Test
@@ -143,5 +144,18 @@ class FamilyAlbumTest {
 
         assertTrue(said.contains("가".repeat(FamilyVisit.MAX_NOTE)))
         assertFalse(said.contains("가".repeat(FamilyVisit.MAX_NOTE + 1)))
+    }
+
+    @Test
+    fun `the app's frame around a family record follows the child's language`() {
+        // The album had a language all along and neither caller passed it, so an English
+        // journey recalled a Korean sentence. The guardian's own words stay as written.
+        val visit = FamilyVisit("lotte", "Last year", "we had ice cream")
+        val english = FamilyAlbum(listOf(visit), ChildLanguage.ENGLISH).recall(
+            CuratorCatalog.places(ChildLanguage.ENGLISH).first { it.id == "lotte" })
+
+        assertNotNull(english)
+        assertTrue(english!!.contains("our family came here together"))
+        assertTrue(english.contains("we had ice cream"))
     }
 }

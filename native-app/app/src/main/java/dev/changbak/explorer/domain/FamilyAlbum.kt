@@ -105,6 +105,9 @@ class FamilyAlbum(
             talk = PlaceTalk(
                 topics = emptyList(),
                 echo = "“${PlaceTalk.THEIR_WORDS}”라고 했구나. 그것도 우리 가족 이야기야.",
+                // A guardian's own place has no field and nothing written for one, so the
+                // follow-up asks about the family rather than about a subject.
+                follow = "그때 누구랑 같이 있었어?",
                 unsure = "기억나지 않아도 괜찮아.",
                 silence = "괜찮아. 오늘 다시 지나가는 것만으로도 좋아.",
                 closing = "창밖을 한번 봐.",

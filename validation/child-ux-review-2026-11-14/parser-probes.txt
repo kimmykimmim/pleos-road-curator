@@ -1,0 +1,9 @@
+stop => OwnWords(text=stop)
+again => OwnWords(text=again)
+next => OwnWords(text=next)
+I see it => OwnWords(text=I see it)
+다음에 또 보고 싶어 => Skip
+다시 지으면 좋겠어 => Repeat
+I don't know => TalkReply(line=You said “I don't know”. That is a way to look at it. So if the wind pushes it from the side, what happens to that building?, askAgain=true)
+wind => TalkReply(line=You brought up the wind. Up that high the wind really does blow hard. So should the building be allowed to sway a little, or not move at all?, askAgain=true)
+Wind => TalkReply(line=You said “Wind”. That is a way to look at it. So if the wind pushes it from the side, what happens to that building?, askAgain=true)

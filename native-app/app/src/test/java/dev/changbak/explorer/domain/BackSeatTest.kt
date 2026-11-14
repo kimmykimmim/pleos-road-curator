@@ -130,6 +130,59 @@ class SpokenReplyTest {
     }
 
     @Test
+    fun `a sentence that merely contains a command word is still an answer`() {
+        // Both of these were read as commands: the first skipped the place the child had just
+        // said they liked, the second replayed the narration at a child who was imagining.
+        // Found by running the app against a child's likely sentences rather than button text.
+        assertTrue(SpokenReply.of("다음에 또 보고 싶어", firstRound) is SpokenIntent.OwnWords)
+        assertTrue(SpokenReply.of("다시 지으면 좋겠어", firstRound) is SpokenIntent.OwnWords)
+        assertTrue(SpokenReply.of("그만큼 크다고?", firstRound) is SpokenIntent.OwnWords)
+    }
+
+    @Test
+    fun `short commands still work, with or without a polite word in front`() {
+        assertEquals(SpokenIntent.Skip, SpokenReply.of("다음", firstRound))
+        assertEquals(SpokenIntent.Skip, SpokenReply.of("다음으로 넘어가줘", firstRound))
+        assertEquals(SpokenIntent.Rest, SpokenReply.of("그만", firstRound))
+        assertEquals(SpokenIntent.Rest, SpokenReply.of("이제 그만할래", firstRound))
+        assertEquals(SpokenIntent.Repeat, SpokenReply.of("다시 들려줘", firstRound))
+        assertEquals(SpokenIntent.Repeat, SpokenReply.of("뭐라고?", firstRound))
+    }
+
+    @Test
+    fun `an english child can stop, repeat and move on`() {
+        val english = ChildLanguage.ENGLISH
+        assertEquals(SpokenIntent.Rest, SpokenReply.of("stop", emptyList(), english))
+        assertEquals(SpokenIntent.Rest, SpokenReply.of("Please stop.", emptyList(), english))
+        assertEquals(SpokenIntent.Repeat, SpokenReply.of("Again!", emptyList(), english))
+        assertEquals(SpokenIntent.Skip, SpokenReply.of("next", emptyList(), english))
+        // And a sentence that happens to end in one of those words is not a command.
+        assertTrue(SpokenReply.of("I like the bus stop", emptyList(), english) is SpokenIntent.OwnWords)
+    }
+
+    @Test
+    fun `a command in the other language is not a command`() {
+        // The app speaks one language at a time. A Korean word inside an English journey is a
+        // child playing with words, not an instruction.
+        assertTrue(SpokenReply.of("다음", emptyList(), ChildLanguage.ENGLISH) is SpokenIntent.OwnWords)
+    }
+
+    @Test
+    fun `the words the screen asks for are the words that work`() {
+        // The English screen says: Say "I see it". That sentence used to do nothing at all,
+        // and the app answered in Korean.
+        assertEquals(true, SpokenReply.seen("I see it!", ChildLanguage.ENGLISH))
+        assertEquals(true, SpokenReply.seen("I found it", ChildLanguage.ENGLISH))
+        assertEquals(false, SpokenReply.seen("I can't see it", ChildLanguage.ENGLISH))
+        assertEquals(false, SpokenReply.seen("no", ChildLanguage.ENGLISH))
+        assertNull(SpokenReply.seen("it is very tall", ChildLanguage.ENGLISH))
+
+        assertEquals(true, SpokenReply.seen("봤어!", ChildLanguage.KOREAN))
+        assertEquals(false, SpokenReply.seen("안 보여", ChildLanguage.KOREAN))
+        assertNull(SpokenReply.seen("엄청 크다", ChildLanguage.KOREAN))
+    }
+
+    @Test
     fun `a quiz is answered out loud the same way as any other round`() {
         val quiz = lotte.rounds.first { it.kind == RoundKind.QUIZ }
 

@@ -15,7 +15,9 @@ class CuratorDriveService:Service() {
     inner class LocalBinder:Binder() { val service get()=this@CuratorDriveService }
     private val binder=LocalBinder()
     private val main=Handler(Looper.getMainLooper())
-    private val album by lazy { FamilyAlbumStore(this) }
+    // The frame the app puts around a guardian's record is the app talking to the child, so it
+    // follows the child's language. The guardian's own words inside it never do.
+    private val album by lazy { FamilyAlbumStore(this) { prefs.profile.language } }
     private val prefs by lazy { JourneyPrefs(this) }
     // The catalog and the proximity list both grow when a guardian adds a place of their own.
     // The round count is read the same way the screen reads it, so a place asks the same
@@ -48,6 +50,15 @@ class CuratorDriveService:Service() {
     private var offeredFilmFor:String?=null
     var carStopped=false;private set
     /**
+     * Rises each time the journey has finished saying something and has not moved on by itself.
+     *
+     * That is the moment the app is waiting for the back seat, and on a real drive it is the
+     * only way the screen can know: the speaking happens here, in the service, so the question
+     * finishes being read where nothing can open a microphone. The screen watches this number
+     * and decides — it owns the guardian's setting, the car's restrictions and the microphone.
+     */
+    var waitingForAnswer=0L;private set
+    /**
      * Standing still is the one moment when looking at the screen costs the child nothing,
      * so the film is offered then instead of being nagged about on the move.
      */
@@ -68,6 +79,16 @@ class CuratorDriveService:Service() {
         main.removeCallbacks(explainWatchdog)
         perform(if(state.phase==CuratorPhase.FAMILY) engine.afterFamilyMemory(state)
                 else engine.afterExplanation(state,album.load()))
+    }
+    /**
+     * Say that the journey is now waiting.
+     *
+     * Only when this narration is still the current one: if the line that just ended moved the
+     * journey along, the next line is already being read and nobody is waiting for anything.
+     */
+    private fun awaitAnswer(token:Long) {
+        if(token!=generation || paused || suppressAudio) return
+        waitingForAnswer++;publish()
     }
     private val explainWatchdog=Runnable { advanceAfterNarration(explainToken) }
     fun observe(callback:()->Unit) { observers.add(callback);callback() }
@@ -158,7 +179,7 @@ class CuratorDriveService:Service() {
         // Backstop for a narration that neither finishes nor reports a failure, so one silent
         // engine cannot hold the journey on a single place for the rest of the drive.
         main.postDelayed(explainWatchdog,(12_000L+text.length*200L).coerceAtMost(60_000L))
-        val release:()->Unit={ advanceAfterNarration(token) }
+        val release:()->Unit={ advanceAfterNarration(token);awaitAnswer(token) }
         voice.speak(text,onAborted=release,onDone=release)
     }
     fun end() {

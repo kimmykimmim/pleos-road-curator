@@ -9,6 +9,63 @@ class VoiceTalkTest {
     private val places = CuratorCatalog.places
     private val lotte = places.first { it.id == "lotte" }
 
+    private val lotteEn = CuratorCatalog.places(ChildLanguage.ENGLISH).first { it.id == "lotte" }
+
+    @Test
+    fun `an english child who does not know is not asked again`() {
+        // This went to the echo instead: the child was read their own words back and asked the
+        // same question a second time, because the cues for not knowing were Korean only.
+        val reply = VoiceTalk.reply(lotteEn, "I don't know", 1, ChildLanguage.ENGLISH)
+
+        assertFalse(reply.askAgain)
+        assertTrue(reply.line.startsWith(lotteEn.talk.unsure))
+    }
+
+    @Test
+    fun `a capital letter does not lose the branch`() {
+        val lower = VoiceTalk.reply(lotteEn, "wind", 1, ChildLanguage.ENGLISH).line
+        val upper = VoiceTalk.reply(lotteEn, "Wind", 1, ChildLanguage.ENGLISH).line
+
+        assertEquals(lower, upper)
+    }
+
+    @Test
+    fun `an art answer is followed up about art, not about the wind`() {
+        val art = lotte.rounds.first { it.field == InterestField.ART }
+        val shape = VoiceTalk.reply(lotte, "동글동글한 모양", 1, field = art.field).line
+        val unknown = VoiceTalk.reply(lotte, "레고 같은 거", 1, field = art.field).line
+
+        // The place's general follow-up is about wind. An art question must not end there.
+        assertFalse(shape.contains("바람"))
+        assertFalse(unknown.contains("바람"))
+        assertTrue(unknown.contains(lotte.talk.byField.getValue(InterestField.ART).follow))
+        // With no field, the place's own follow-up still stands.
+        assertTrue(VoiceTalk.reply(lotte, "레고 같은 거", 1).line.contains(lotte.talk.follow))
+    }
+
+    @Test
+    fun `an idea that is not so is answered whatever the question was about`() {
+        // Gentle corrections come before the field: a misconception needs answering even when
+        // the child raised it during a question about something else.
+        val art = InterestField.ART
+        val reply = VoiceTalk.reply(lotte, "줄로 묶어 놨을 것 같아", 1, field = art).line
+
+        assertTrue(reply.contains("줄 대신"))
+    }
+
+    @Test
+    fun `every field with a question of its own has somewhere for the answer to go`() {
+        listOf(ChildLanguage.KOREAN, ChildLanguage.ENGLISH).forEach { language ->
+            CuratorCatalog.places(language).forEach { place ->
+                val fields = place.rounds.filter { it.kind != RoundKind.HOOK }.map { it.field }.toSet()
+                fields.forEach { field ->
+                    val line = VoiceTalk.reply(place, "저기 저거", 1, language, field).line
+                    assertTrue("${place.id} $field", line.isNotBlank())
+                }
+            }
+        }
+    }
+
     @Test
     fun `what the child brought up is named back to them`() {
         val reply = VoiceTalk.reply(lotte, "바람이 세게 불어서", 1)
