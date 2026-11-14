@@ -23,8 +23,9 @@ import dev.changbak.explorer.domain.TopicPicture
  * in the corner the photographs leave empty, because the thing a child is being asked to look
  * at is out of the window — a picture that covered the view would be arguing with the app.
  *
- * It leaves on its own. Something that stayed would become part of the furniture by the third
- * place and stop being noticed at all, which is the opposite of why it is here.
+ * It stays for the whole turn. It used to fade out after a few seconds, which meant a child
+ * who looked up a moment late found nothing there — the one thing on this screen aimed at a
+ * six year old, gone before they had turned their head. It leaves when the turn does.
  */
 class TopicStickerView(context: Context) : View(context) {
     private var picture: TopicPicture? = null
@@ -101,24 +102,11 @@ class TopicStickerView(context: Context) : View(context) {
             here = 1f; tilt = 0f; invalidate(); return
         }
         startRocking()
-        animator = ValueAnimator.ofFloat(0f, 1f).apply {
-            duration = ARRIVE + HOLD + LEAVE
-            interpolator = null
-            addUpdateListener {
-                val t = (it.animatedValue as Float) * duration
-                here = when {
-                    t < ARRIVE -> EASE.getInterpolation(t / ARRIVE)
-                    t < ARRIVE + HOLD -> 1f
-                    else -> 1f - EASE.getInterpolation((t - ARRIVE - HOLD) / LEAVE)
-                }
-                invalidate()
-            }
-            addListener(object : android.animation.AnimatorListenerAdapter() {
-                override fun onAnimationEnd(animation: android.animation.Animator) {
-                    if (animator !== animation) return
-                    stopRocking(); here = 0f; visibility = GONE; invalidate()
-                }
-            })
+        // Arrives, and then stays. The turn ending is what takes it away, not a timer.
+        animator = ValueAnimator.ofFloat(here, 1f).apply {
+            duration = ARRIVE
+            interpolator = EASE
+            addUpdateListener { here = it.animatedValue as Float; invalidate() }
             start()
         }
     }
@@ -234,8 +222,6 @@ class TopicStickerView(context: Context) : View(context) {
         private val sky = Color.rgb(151, 215, 255)
 
         const val ARRIVE = 420L
-        const val HOLD = 2400L
-        const val LEAVE = 600L
         /** How far the scrap swings to each side, in degrees. */
         const val SWING = 23f
         /** One sweep from one side to the other. Slow enough to read as hanging, not shaking. */

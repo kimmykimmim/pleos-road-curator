@@ -60,6 +60,13 @@ data class Phrases(
 
     val readyTitle: String,
     val readySubtitle: String,
+    /**
+     * The one who does the talking, by name.
+     *
+     * A child is being asked to answer out loud. Answering out loud to nobody is a strange
+     * thing to ask, so the voice has a name and a face.
+     */
+    val companionName: String,
     val startLive: String,
     /** Demo route names, by route id. The routes themselves are the same journey either way. */
     val routeNames: Map<String, String>,
@@ -135,7 +142,8 @@ data class Phrases(
             noNeedToSpeak = "말하지 않아도 괜찮아",
             meeting = { nth -> "${nth}번째 만남" },
             readyTitle = "지나칠 뻔한 곳에\n어떤 이야기가 있을까?",
-            readySubtitle = "약 5분 전 질문을 듣고,\n가까이 가면 직접 살펴봐요.",
+            readySubtitle = "두리가 약 5분 전에 물어볼 거야.\n가까이 가면 직접 살펴봐요.",
+            companionName = "두리",
             startLive = "실제 내비로 음성 여행 시작",
             routeNames = mapOf(
                 "hangang-science" to "한강의 과학 여행",
@@ -212,7 +220,8 @@ data class Phrases(
                 "$nth$suffix time here"
             },
             readyTitle = "What story is hiding\nin a place we drive past?",
-            readySubtitle = "Hear a question about five minutes ahead,\nthen look for it yourself.",
+            readySubtitle = "Doori asks about five minutes ahead,\nthen you look for it yourself.",
+            companionName = "Doori",
             startLive = "Start the trip with real navigation",
             routeNames = mapOf(
                 "hangang-science" to "Science along the Han River",

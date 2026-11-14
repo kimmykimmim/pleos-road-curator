@@ -49,6 +49,8 @@ class CuratorDriveService:Service() {
     /** The place whose short film was already offered, so a long red light does not repeat it. */
     private var offeredFilmFor:String?=null
     var carStopped=false;private set
+    /** Whether the journey is saying something right now, so the screen can show it being said. */
+    var speaking=false;private set
     /**
      * Rises each time the journey has finished saying something and has not moved on by itself.
      *
@@ -105,7 +107,11 @@ class CuratorDriveService:Service() {
                 override fun onStop() { end() }
             });isActive=true
         }
-        voice=VoiceGuide(this,onState={},onCommand={},onError={ connectionStatus=it;publish() },initializeListening=false,locale=profile.language.locale)
+        // The screen draws 두리 talking, and on a real drive the talking happens here.
+        voice=VoiceGuide(this,onState={ value ->
+            val now=value=="speaking"
+            if(now!=speaking) { speaking=now;publish() }
+        },onCommand={},onError={ connectionStatus=it;publish() },initializeListening=false,locale=profile.language.locale)
         stillness=VehicleStillness(this,::onStillnessChanged).also { it.start() }
         navi=CuratorNaviSource(this,status={ connectionStatus=it;publish() },onFrame={ frame ->
             if(started && !paused) {

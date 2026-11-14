@@ -63,6 +63,7 @@ class MainActivity : Activity() {
             // the microphone stopped being offered after the first two answers of the drive.
             if(livePhase!=state.phase) { livePhase=state.phase;talkTurn=0;showChoices=false }
             if(foreground) render()
+            showCompanion()
             if(service.waitingForAnswer!=answeredUpTo) {
                 answeredUpTo=service.waitingForAnswer
                 offerBackSeatTurn()
@@ -169,6 +170,10 @@ class MainActivity : Activity() {
     /** The photograph's year, its one line, and who it belongs to. */
     /** The small picture that appears while a question arrives. */
     private lateinit var sticker: TopicStickerView
+    /** 두리, who does the talking. */
+    private lateinit var companion: CompanionView
+    /** Whether this screen's own voice is mid-sentence. */
+    private var speaking = false
     private lateinit var photoYear: TextView
     private lateinit var photoLine: TextView
     private lateinit var photoCredit: TextView
@@ -230,6 +235,8 @@ class MainActivity : Activity() {
         voice = VoiceGuide(this, onState = { value -> runOnUiThread {
             val wasListening=mic
             status = when(value) { "speaking" -> say.nowSpeaking; "listening" -> say.nowListening; else -> say.noNeedToSpeak }
+            speaking = value == "speaking"
+            showCompanion()
             if (::voice.isInitialized && !voice.enabled) mic = false
             if(wasListening && !mic) {
                 drive?.suppress(false); armRoleIdle()
@@ -828,6 +835,21 @@ class MainActivity : Activity() {
         sticker.show(TopicPicture.pick(spoken, engine.prompt(state)?.field))
     }
 
+    /**
+     * What 두리 is doing: listening to the child, saying something, or waiting.
+     *
+     * On a real drive the service does the speaking, so its flag counts as much as this
+     * screen's own. Either way the child sees the same face move when words are coming out.
+     */
+    private fun showCompanion() {
+        if (!::companion.isInitialized) return
+        companion.setDoing(when {
+            mic -> CompanionView.Doing.LISTENING
+            speaking || drive?.speaking == true -> CompanionView.Doing.SPEAKING
+            else -> CompanionView.Doing.RESTING
+        })
+    }
+
     /** Clippings are small and few, so they are kept once rather than decoded per turn. */
     private val clippings = mutableMapOf<String, android.graphics.Bitmap?>()
 
@@ -898,7 +920,15 @@ class MainActivity : Activity() {
             else -> say.stepPredictImagine
         }
         val heading=when(state.phase) { CuratorPhase.PREDICT -> askHeading; CuratorPhase.WATCH -> say.stepWatch; CuratorPhase.EXPLAIN -> say.stepExplain; CuratorPhase.FAMILY -> say.stepFamily; CuratorPhase.PLAY -> say.stepPlayPrefix+(engine.place(state)?.activity?.role ?: ""); CuratorPhase.COMPARE -> say.stepPlayPrefix; CuratorPhase.MEMORY -> say.stepMemory; CuratorPhase.FINISHED -> say.stepFinished; else -> say.stepWaiting }
-        card.addView(stepHeader(heading)); gap(card,20)
+        // 두리 and the name of this step, side by side: the face belongs to the words, so it
+        // sits with them rather than floating somewhere else on the screen.
+        card.addView(row().apply {
+            companion = CompanionView(this@MainActivity)
+            addView(companion, LinearLayout.LayoutParams(dp(54), dp(54)).apply { marginEnd = dp(12) })
+            addView(stepHeader(heading))
+        })
+        gap(card,18)
+        showCompanion()
         // The hook is the half of the question that makes a six year old look up, so it belongs
         // on screen as well as in the speaker. On a later meeting it says what changed instead.
         if(state.phase==CuratorPhase.PREDICT) {

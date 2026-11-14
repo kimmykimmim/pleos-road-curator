@@ -152,7 +152,7 @@ class SceneRenderCheck : Instrumentation() {
         val output = File(targetContext.filesDir, "sticker-check").apply { mkdirs() }
         val side = 240
         val pictures = TopicPicture.entries
-        val sheet = Bitmap.createBitmap(side * 4, side * 3, Bitmap.Config.ARGB_8888)
+        val sheet = Bitmap.createBitmap(side * 4, side * 4, Bitmap.Config.ARGB_8888)
         val sheetCanvas = android.graphics.Canvas(sheet)
         sheetCanvas.drawColor(android.graphics.Color.rgb(150, 168, 182))
         val drawn = ArrayList<IntArray>()
@@ -194,13 +194,34 @@ class SceneRenderCheck : Instrumentation() {
             }
             bmp.recycle()
         }
+        // 두리 in each of the things it can be doing, so a face that stopped drawing or
+        // stopped changing shows up here rather than in front of a child.
+        val faces = CompanionView.Doing.entries.mapIndexed { index, doing ->
+            val cell = Bitmap.createBitmap(side, side, Bitmap.Config.ARGB_8888)
+            val canvas = android.graphics.Canvas(cell)
+            canvas.drawColor(android.graphics.Color.rgb(150, 168, 182))
+            CompanionView.draw(canvas, side.toFloat(), doing, 1f)
+            val pixels = IntArray(side * side)
+            cell.getPixels(pixels, 0, side, 0, 0, side, side)
+            check(pixels.distinct().size > 8) { "companion $doing drew nothing" }
+            sheetCanvas.drawBitmap(cell, (index * side).toFloat(), (3 * side).toFloat(), null)
+            cell.recycle()
+            pixels
+        }
+        check(faces[0].indices.count { faces[0][it] != faces[1][it] } > 200) {
+            "the companion looks the same resting as it does speaking"
+        }
+        check(faces[0].indices.count { faces[0][it] != faces[2][it] } > 200) {
+            "the companion looks the same resting as it does listening"
+        }
         File(output, "stickers.png").outputStream().use {
             check(sheet.compress(Bitmap.CompressFormat.PNG, 100, it))
         }
         sheet.recycle()
         report.putString("artifacts", output.absolutePath)
         report.putString("result", "PASS: ${pictures.size} topic pictures each drawn and different, " +
-            "${PlaceScrap.assets().size} photo clippings cut out and readable")
+            "${PlaceScrap.assets().size} photo clippings cut out and readable, " +
+            "the companion drawn differently in all ${CompanionView.Doing.entries.size} states")
     }
 
     private fun checkCurator(report: Bundle) {
