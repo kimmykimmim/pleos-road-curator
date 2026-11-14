@@ -178,12 +178,29 @@ class SceneRenderCheck : Instrumentation() {
                 }
             }
         }
+        // The real clippings too: these are files on disk, and a missing one would quietly
+        // fall back to a drawing without anyone noticing it had gone.
+        PlaceScrap.assets().forEach { asset ->
+            val bytes = targetContext.assets.open(asset).use { it.readBytes() }
+            val bmp = android.graphics.BitmapFactory.decodeByteArray(bytes, 0, bytes.size)
+            checkNotNull(bmp) { "$asset did not decode" }
+            check(bmp.hasAlpha()) { "$asset has no transparency, so it was never cut out" }
+            check(bmp.height >= 200) { "$asset is too small to read: ${bmp.width}x${bmp.height}" }
+            // A cut-out is mostly background. One that is fully opaque is the whole photograph.
+            val corners = listOf(0 to 0, bmp.width - 1 to 0, 0 to bmp.height - 1,
+                bmp.width - 1 to bmp.height - 1)
+            check(corners.any { (x, y) -> android.graphics.Color.alpha(bmp.getPixel(x, y)) == 0 }) {
+                "$asset keeps its background"
+            }
+            bmp.recycle()
+        }
         File(output, "stickers.png").outputStream().use {
             check(sheet.compress(Bitmap.CompressFormat.PNG, 100, it))
         }
         sheet.recycle()
         report.putString("artifacts", output.absolutePath)
-        report.putString("result", "PASS: ${pictures.size} topic pictures, each drawn and each different")
+        report.putString("result", "PASS: ${pictures.size} topic pictures each drawn and different, " +
+            "${PlaceScrap.assets().size} photo clippings cut out and readable")
     }
 
     private fun checkCurator(report: Bundle) {

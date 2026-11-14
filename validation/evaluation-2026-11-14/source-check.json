@@ -1,0 +1,48 @@
+{
+  "review_date": "2026-11-14",
+  "video": {
+    "id": "na6tSJ44pWc",
+    "title": "현대자동차그룹 차량용 앱 개발 공모전 통합 온라인 설명회",
+    "channel": "agency_",
+    "duration": 2560,
+    "upload_date": "20261030"
+  },
+  "video_review_method": "공개 수동 한국어 자막 전체 645개 구간 검토, 12:30 심사 장표 및 32:08 기술 설명 화면을 브라우저에서 대조. 원본 전체 프레임을 연속 재생한 것으로 표현하지 않는다.",
+  "local_commit": "957dc61e26d8fb8c6b47a5bf75611e00381650b5",
+  "remote_repo": {
+    "defaultBranchRef": {
+      "name": "main"
+    },
+    "url": "https://github.com/kimmykimmim/pleos-road-curator",
+    "visibility": "PRIVATE"
+  },
+  "test_results": {
+    "tests": 357,
+    "failures": 0,
+    "errors": 0,
+    "origin": "기존 testDebugUnitTest XML 확인. 이번 기준 대조에서 재실행하지 않음"
+  },
+  "apk": {
+    "path": "apk/김규범_길위의큐레이터_release.apk",
+    "package": "dev.changbak.explorer",
+    "versionName": "0.30.0",
+    "versionCode": 32,
+    "aapt_checked": true,
+    "apksigner_verify_exit_code": 0,
+    "sha256": "0c4d33bd96b1962ed62d7fdf9fcb61e21dcec820c872bcc7617c8e01e9283099"
+  },
+  "new_demo_files_untracked": [
+    "validation/clips/clip-16-history-flow.mp4",
+    "validation/clips/clip-19-variety.mp4",
+    "validation/clips/clip-17-palace-story.mp4",
+    "validation/clips/clip-18-living-history.mp4"
+  ],
+  "primary_sources": [
+    "https://www.youtube.com/watch?v=na6tSJ44pWc",
+    "https://appdevchallenge.auto-hmg.io/guide/judging-awards",
+    "https://appdevchallenge.auto-hmg.io/guide/submission",
+    "https://appdevchallenge.auto-hmg.io/notice/c0a1a000-2026-4923-8000-000000000007",
+    "https://appdevchallenge.auto-hmg.io/guide/development",
+    "https://appdevchallenge.auto-hmg.io/guide/rules"
+  ]
+}

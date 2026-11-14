@@ -2,7 +2,10 @@ package dev.changbak.explorer
 
 import android.animation.ValueAnimator
 import android.content.Context
+import android.graphics.Bitmap
 import android.graphics.Canvas
+import android.graphics.ColorMatrix
+import android.graphics.ColorMatrixColorFilter
 import android.graphics.Color
 import android.graphics.Matrix
 import android.graphics.Paint
@@ -25,10 +28,54 @@ import dev.changbak.explorer.domain.TopicPicture
  */
 class TopicStickerView(context: Context) : View(context) {
     private var picture: TopicPicture? = null
+    /** A real photograph of this place with its background taken away, when there is one. */
+    private var scrap: Bitmap? = null
     private var animator: ValueAnimator? = null
+    private var rock: ValueAnimator? = null
+
+    /** Where the rocking is, from -1 at one side to 1 at the other. */
+    private var tilt = 0f
+
+    /** The torn page behind a clipping, and the clipping's own printed ink. */
+    private val page = Path()
+    private val paper = Paint(Paint.ANTI_ALIAS_FLAG).apply {
+        color = Color.rgb(250, 246, 236)
+        setShadowLayer(10f, 0f, 4f, Color.argb(90, 4, 24, 36))
+    }
+    private val news = Paint(Paint.ANTI_ALIAS_FLAG or Paint.FILTER_BITMAP_FLAG).apply {
+        // Newsprint: most of the colour gone and the ink pushed, the way a photograph looks
+        // once it has been through a cheap press.
+        colorFilter = ColorMatrixColorFilter(ColorMatrix().apply {
+            setSaturation(.22f)
+            postConcat(ColorMatrix(floatArrayOf(
+                1.18f, 0f, 0f, 0f, -14f,
+                0f, 1.15f, 0f, 0f, -12f,
+                0f, 0f, 1.08f, 0f, -8f,
+                0f, 0f, 0f, 1f, 0f,
+            )))
+        })
+    }
 
     /** 0 while away, 1 while fully out. Drives both the fade and the small rise. */
     private var here = 0f
+
+    /**
+     * Show a photograph of the place instead of a drawing of its subject.
+     *
+     * Passing the same one again does nothing, so a card redrawing itself does not restart
+     * the arrival.
+     */
+    fun showScrap(next: Bitmap?, key: String?) {
+        if (key == scrapKey) return
+        scrapKey = key
+        scrap = next
+        picture = null
+        animator?.cancel()
+        if (next == null) { stopRocking(); here = 0f; visibility = GONE; invalidate(); return }
+        arrive()
+    }
+
+    private var scrapKey: String? = null
 
     /**
      * Show this picture for a moment, or clear what is showing.
@@ -37,16 +84,23 @@ class TopicStickerView(context: Context) : View(context) {
      * new thing to look at, and restarting the animation each time would make it flicker.
      */
     fun show(next: TopicPicture?) {
-        if (next == picture) return
+        if (next == picture && scrap == null) return
         picture = next
+        scrap = null
+        scrapKey = null
         animator?.cancel()
-        if (next == null) { here = 0f; visibility = GONE; invalidate(); return }
+        if (next == null) { stopRocking(); here = 0f; visibility = GONE; invalidate(); return }
+        arrive()
+    }
+
+    private fun arrive() {
         visibility = VISIBLE
         if (!ValueAnimator.areAnimatorsEnabled()) {
             // Reduced motion: the picture is still worth having, so it appears and stays for
-            // this turn rather than animating. The next turn replaces it.
-            here = 1f; invalidate(); return
+            // this turn rather than animating, and it does not rock at all.
+            here = 1f; tilt = 0f; invalidate(); return
         }
+        startRocking()
         animator = ValueAnimator.ofFloat(0f, 1f).apply {
             duration = ARRIVE + HOLD + LEAVE
             interpolator = null
@@ -62,24 +116,102 @@ class TopicStickerView(context: Context) : View(context) {
             addListener(object : android.animation.AnimatorListenerAdapter() {
                 override fun onAnimationEnd(animation: android.animation.Animator) {
                     if (animator !== animation) return
-                    here = 0f; visibility = GONE; invalidate()
+                    stopRocking(); here = 0f; visibility = GONE; invalidate()
                 }
             })
             start()
         }
     }
 
+    /**
+     * The slow sway, a scrap of paper held up in a moving car.
+     *
+     * It swings the whole span rather than settling, because the point of it is movement at
+     * the edge of a child's eye while they are being asked to look somewhere else.
+     */
+    private fun startRocking() {
+        rock?.cancel()
+        rock = ValueAnimator.ofFloat(-1f, 1f).apply {
+            duration = SWAY
+            repeatCount = ValueAnimator.INFINITE
+            repeatMode = ValueAnimator.REVERSE
+            interpolator = android.view.animation.AccelerateDecelerateInterpolator()
+            addUpdateListener { tilt = it.animatedValue as Float; invalidate() }
+            start()
+        }
+    }
+
+    private fun stopRocking() { rock?.cancel(); rock = null; tilt = 0f }
+
+    override fun onDetachedFromWindow() { stopRocking(); animator?.cancel(); super.onDetachedFromWindow() }
+
     override fun onDraw(canvas: Canvas) {
-        val shape = picture ?: return
         if (here <= 0f) return
-        val side = minOf(width, height).toFloat()
-        if (side <= 0f) return
+        val alpha = (255 * here).toInt().coerceIn(0, 255)
+        val photo = scrap
         canvas.save()
-        // Arrives a little low and settles, which is what makes it read as put down rather
-        // than switched on.
-        canvas.translate((width - side) / 2f, (height - side) / 2f + side * .12f * (1f - here))
-        draw(canvas, side, shape, (255 * here).toInt().coerceIn(0, 255))
+        // The sway turns about the middle of the bottom edge, the way something pinned at the
+        // top of a car would hang, rather than about its own centre.
+        canvas.rotate(SWING * tilt, width / 2f, height.toFloat())
+        if (photo != null) {
+            drawScrap(canvas, photo, alpha)
+        } else {
+            val shape = picture
+            val side = minOf(width, height).toFloat()
+            if (shape != null && side > 0f) {
+                // Arrives a little low and settles, which is what makes it read as put down
+                // rather than switched on.
+                canvas.translate((width - side) / 2f, (height - side) / 2f + side * .12f * (1f - here))
+                draw(canvas, side, shape, alpha)
+            }
+        }
         canvas.restore()
+    }
+
+    /**
+     * The photograph as a clipping: torn paper behind it, and the ink of cheap newsprint.
+     *
+     * Newspaper rather than a plain photograph because a plain one over a photograph of the
+     * same place is just the same picture twice. Printed and torn, it reads as something
+     * somebody kept, which is nearer what this app is doing with these places.
+     */
+    private fun drawScrap(canvas: Canvas, photo: Bitmap, alpha: Int) {
+        val pad = width * .07f
+        val room = RectF(pad, pad, width - pad, height - pad)
+        val scale = minOf(room.width() / photo.width, room.height() / photo.height)
+        val w = photo.width * scale
+        val h = photo.height * scale
+        val at = RectF(
+            room.centerX() - w / 2, room.centerY() - h / 2,
+            room.centerX() + w / 2, room.centerY() + h / 2,
+        )
+        torn(at, pad * .8f)
+        paper.alpha = alpha
+        canvas.drawPath(page, paper)
+        news.alpha = alpha
+        canvas.drawBitmap(photo, null, at, news)
+    }
+
+    /**
+     * A torn edge, the same every time.
+     *
+     * Built from a fixed sequence rather than a random one: a scrap that tore differently each
+     * time it appeared would be the app redrawing itself, which is exactly what a kept clipping
+     * is not.
+     */
+    private fun torn(at: RectF, bleed: Float) {
+        page.reset()
+        val steps = 11
+        var seed = 7
+        fun jitter(): Float { seed = (seed * 1103515245 + 12345) and 0x7fffffff; return (seed % 100) / 100f }
+        val left = at.left - bleed; val right = at.right + bleed
+        val top = at.top - bleed; val bottom = at.bottom + bleed
+        page.moveTo(left, top)
+        (1..steps).forEach { page.lineTo(left + (right - left) * it / steps, top + bleed * (jitter() - .5f)) }
+        (1..steps).forEach { page.lineTo(right + bleed * (jitter() - .5f), top + (bottom - top) * it / steps) }
+        (1..steps).forEach { page.lineTo(right - (right - left) * it / steps, bottom + bleed * (jitter() - .5f)) }
+        (1..steps).forEach { page.lineTo(left + bleed * (jitter() - .5f), bottom - (bottom - top) * it / steps) }
+        page.close()
     }
 
     /**
@@ -104,6 +236,10 @@ class TopicStickerView(context: Context) : View(context) {
         const val ARRIVE = 420L
         const val HOLD = 2400L
         const val LEAVE = 600L
+        /** How far the scrap swings to each side, in degrees. */
+        const val SWING = 23f
+        /** One sweep from one side to the other. Slow enough to read as hanging, not shaking. */
+        const val SWAY = 1500L
         val EASE = DecelerateInterpolator()
 
         /**

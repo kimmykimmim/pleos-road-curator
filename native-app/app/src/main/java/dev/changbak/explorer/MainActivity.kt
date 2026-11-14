@@ -638,8 +638,8 @@ class MainActivity : Activity() {
         // around it, so that corner is empty in all of them; the picture the child is being
         // asked to find is in the middle, and the sheet is on the right.
         sticker = TopicStickerView(this)
-        stage.addView(sticker, FrameLayout.LayoutParams(dp(104), dp(104), Gravity.TOP or Gravity.START)
-            .apply { leftMargin = dp(26); topMargin = dp(20) })
+        stage.addView(sticker, FrameLayout.LayoutParams(dp(164), dp(150), Gravity.TOP or Gravity.START)
+            .apply { leftMargin = dp(20); topMargin = dp(16) })
 
         // The place's name is part of the picture, not a caption under it: set large, low, and
         // over the view itself.
@@ -815,10 +815,26 @@ class MainActivity : Activity() {
         if (!::sticker.isInitialized) return
         val asking = state.phase in setOf(CuratorPhase.PREDICT, CuratorPhase.PLAY)
         val place = engine.place(state)
-        if (!asking || place == null || restricted || !foreground) { sticker.show(null); return }
+        if (!asking || place == null || restricted || !foreground) {
+            sticker.showScrap(null, null); sticker.show(null); return
+        }
+        // The real place beats a drawing of its subject. A photograph of the building the
+        // child is being asked to find is the most related picture there is, and the ones
+        // that cannot be lifted out of their background fall back to the drawing.
+        val clipping = scrapFor(place.id)
+        if (clipping != null) { sticker.showScrap(clipping, place.id); return }
         // The favourite only counts while its line is on screen, which is the predict step.
         val spoken = if (state.phase == CuratorPhase.PREDICT) engine.favouriteFor(place) else null
         sticker.show(TopicPicture.pick(spoken, engine.prompt(state)?.field))
+    }
+
+    /** Clippings are small and few, so they are kept once rather than decoded per turn. */
+    private val clippings = mutableMapOf<String, android.graphics.Bitmap?>()
+
+    private fun scrapFor(placeId: String): android.graphics.Bitmap? = clippings.getOrPut(placeId) {
+        PlaceScrap.of(placeId)?.let { asset ->
+            runCatching { assets.open(asset).use(android.graphics.BitmapFactory::decodeStream) }.getOrNull()
+        }
     }
 
     /**
@@ -999,7 +1015,7 @@ class MainActivity : Activity() {
         next.show()
     }
     private fun parentMenu() {
-        val items=arrayOf(if(playing) "이야기 잠깐 멈추기" else "이야기 이어서 재생", "시점 이동해서 확인", "말 대신 입력", "가족이 함께 갔던 곳 기록", "오늘 이야기 마치기", "설명 출처", "지난 시연 기억", "실제 내비 음성 여행 시작", "다른 시연 경로 선택",
+        val items=arrayOf(if(playing) "이야기 잠깐 멈추기" else "이야기 이어서 재생", "시점 이동해서 확인", "말 대신 입력", "가족이 함께 갔던 곳 기록", "오늘 이야기 마치기", "설명 출처", "지난 시연 기억", "실제 내비 음성 여행 시작", "오늘 길에서 들려줄 이야기",
             "뒷자리 말하기     ${if(prefs.backSeatVoice) "켜짐" else "꺼짐"}", "질문을 처음 만남으로 되돌리기",
             "아이 설정     ${profileSummary()}")
         show(AlertDialog.Builder(this).setTitle("보호자 / 정차 시연").setItems(items) { _,i -> menuAction {
@@ -1012,13 +1028,50 @@ class MainActivity : Activity() {
                 5 -> sources()
                 6 -> previousSummary()
                 7 -> startLive()
-                8 -> routeMenu()
+                8 -> todaysPlan()
                 9 -> backSeatSetting()
                 10 -> resetRounds()
                 11 -> childSetup()
             }
         } }.setNegativeButton("닫기",null).create())
     }
+    /**
+     * What this drive has time to tell, measured.
+     *
+     * The road is fixed, so its length is known, and each place's story can be timed from the
+     * words it is made of. A guardian can see before setting off which stories the drive will
+     * reach and which category each one will be told in — and, when the road is short, which
+     * ones it will not reach rather than hearing three of them cut off.
+     */
+    private fun todaysPlan() {
+        val route = CuratorRoutes.fixed
+        val own = album.load().ownPlaceIds
+        val drive = route.endSeconds(own)
+        val all = RoutePlan.segments(catalog(), route.stops(own), profile.language)
+        val plan = RoutePlan.fit(all, drive, profile.fields)
+        val told = RoutePlan.totalSeconds(plan)
+        val body = buildString {
+            append("${route.subtitle}\n")
+            append("길이 약 ${(drive + 59) / 60}분, 이야기가 약 ${(told + 59) / 60}분.\n\n")
+            plan.forEachIndexed { index, segment ->
+                append("${index + 1}. ${segment.placeName}  ·  ${FIELD_LABELS.getValue(segment.field)}")
+                append("  ·  약 ${(segment.seconds + 59) / 60}분\n")
+            }
+            val missed = all.map { it.placeId }.distinct() - plan.map { it.placeId }.toSet()
+            if (missed.isNotEmpty()) {
+                append("\n이 길에서는 여기까지예요. 시작한 이야기는 끝까지 들려주고,\n")
+                append("남는 곳은 다음에 같은 길을 지날 때 만나요.")
+            } else {
+                append("\n한 장소에 하나씩, 시작한 이야기는 끝까지 들려줘요.")
+            }
+            if (profile.fields.isEmpty()) {
+                append("\n\n아이 설정에서 분야를 고르면 그 분야의 이야기를 먼저 골라요.")
+            }
+        }
+        show(AlertDialog.Builder(this).setTitle("오늘 길에서 들려줄 이야기")
+            .setMessage(body).setPositiveButton("닫기", null).create())
+    }
+
     /** How a guardian may say when, in the language they are setting up in. */
     private fun whenChoices() = Narration.of(profile.language).whenChoices
 
@@ -1052,9 +1105,16 @@ class MainActivity : Activity() {
         column.addView(languages)
         column.addView(label("질문을 고를 관심 분야", Text.LABEL, accent, true))
         column.addView(label("고른 분야에 질문이 있는 장소에서는 그 질문을 먼저 해요. 없는 곳은 그 장소의 질문을 그대로 해요.", Text.CAPTION, muted))
+        // Which categories this road can actually answer. A guardian choosing one that no
+        // place on the route has a question for would be choosing nothing, so it says so.
+        val answerable = RoutePlan.segments(catalog(), CuratorRoutes.fixed.placeIds)
+            .map { it.field }.toSet()
         val fields = InterestField.entries.map { field ->
-            CheckBox(this).apply { text = FIELD_LABELS.getValue(field); textSize = Text.ACTION; isChecked = field in saved.fields }
-                .also(column::addView)
+            CheckBox(this).apply {
+                text = FIELD_LABELS.getValue(field) +
+                    if (field in answerable) "" else "     이 길에는 아직 없어요"
+                textSize = Text.ACTION; isChecked = field in saved.fields
+            }.also(column::addView)
         }
         column.addView(label("요즘 좋아하는 것 (최대 ${ChildProfile.MAX_FAVOURITES}개)", Text.LABEL, accent, true))
         column.addView(label("정말로 이어지는 장소에서만 한마디 덧붙여요. 억지로 엮지 않아요.", Text.CAPTION, muted))
@@ -1296,7 +1356,9 @@ class MainActivity : Activity() {
             InterestField.HISTORY to "역사",
             InterestField.ART to "예술",
             InterestField.NATURE to "자연",
-            InterestField.LIVING to "생활",
+            // Named for what it actually holds on this road: a 1937 shop's soup, and what the
+            // people shut outside a city gate did about dinner.
+            InterestField.LIVING to "음식과 생활",
         )
         val FAVOURITE_LABELS = mapOf(
             FavouriteTopic.DINOSAUR to "공룡",

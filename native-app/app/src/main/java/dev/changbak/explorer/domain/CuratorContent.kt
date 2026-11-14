@@ -533,8 +533,21 @@ data class CuratorDemoRoute(val id: String, val title: String, val subtitle: Str
             PlaceApproach(id, passageAt(index)-seconds, seconds>passageAt(index)) })
 }
 object CuratorRoutes {
-    val routes = listOf(
-        CuratorDemoRoute("hangang-science", "한강의 과학 여행", "잠실 → 여의도 / 가상 경로", listOf("lotte","building63","yeouido")),
-        CuratorDemoRoute("old-seoul", "도심의 오래된 이야기", "숭례문 → 광화문 → 청진옥 / 가상 경로", listOf("sungnyemun","gwanghwamun","cheongjinok"))
+    /**
+     * One road, fixed.
+     *
+     * Two demonstration routes meant the categories on offer were whatever the two had
+     * between them, and a child could be asked about the Han River's engineering on one drive
+     * and a gate's roofline on the next with nothing joining them. A journey is one road. The
+     * categories it can honestly answer are the ones this road passes.
+     *
+     * The other places stay in the catalogue: they are still met by GPS when a real drive goes
+     * near them. They are simply not a second demonstration.
+     */
+    val fixed = CuratorDemoRoute(
+        "old-seoul", "도심의 오래된 이야기", "숭례문 → 광화문 → 청진옥 / 가상 경로",
+        listOf("sungnyemun", "gwanghwamun", "cheongjinok"),
     )
+
+    val routes = listOf(fixed)
 }
