@@ -34,9 +34,11 @@ class FamilyAlbumTest {
 
         assertEquals(CuratorPhase.FAMILY, turn.state.phase)
         val said = turn.narration!!
-        assertTrue(said.contains("우리 가족이 함께 왔던 곳"))
-        assertTrue(said.contains(FamilyVisit.WHEN_CHOICES.first()))
+        // The guardian wrote something, so the guardian's sentence is what is said. The app's
+        // own "함께 왔던 곳" line would be talking over it, and is often not even true of what
+        // a parent writes.
         assertTrue(said.contains("전망대에서 한강을 봤어."))
+        assertFalse(said.contains("우리 가족이 함께 왔던 곳"))
         // The child is told it is fine not to remember, so there is nothing to get wrong.
         assertTrue(said.contains("기억나지 않아도 괜찮아"))
     }
@@ -155,7 +157,46 @@ class FamilyAlbumTest {
             CuratorCatalog.places(ChildLanguage.ENGLISH).first { it.id == "lotte" })
 
         assertNotNull(english)
-        assertTrue(english!!.contains("our family came here together"))
+        // The frame is the app's and follows the child; the story inside it is the guardian's
+        // and never changes.
+        assertTrue(english!!.contains("Someone at home left a story"))
         assertTrue(english.contains("we had ice cream"))
+    }
+
+    @Test
+    fun `a story the guardian wrote is what the child hears`() {
+        // The app used to wrap every record in "우리 가족이 함께 왔던 곳이야", which is not
+        // true of half of what a parent would write: the child was not at the place their
+        // parents first met. When there is a story, the story is the whole of it.
+        val visit = FamilyVisit("sungnyemun", "작년에", "엄마 아빠가 처음 만난 곳이야.")
+        val told = FamilyAlbum(listOf(visit)).recall(
+            CuratorCatalog.places.first { it.id == "sungnyemun" })
+
+        assertNotNull(told)
+        assertTrue(told!!.contains("엄마 아빠가 처음 만난 곳이야."))
+        assertFalse(told.contains("함께 왔던 곳"))
+        // And the time is not read out on top of it: the sentence carries its own.
+        assertFalse(told.contains("작년에"))
+    }
+
+    @Test
+    fun `with nothing written the app says only what it knows`() {
+        val visit = FamilyVisit("sungnyemun", "작년에")
+        val told = FamilyAlbum(listOf(visit)).recall(
+            CuratorCatalog.places.first { it.id == "sungnyemun" })
+
+        assertNotNull(told)
+        assertTrue(told!!.contains("작년에"))
+        assertTrue(told.contains("함께 왔던 곳"))
+    }
+
+    @Test
+    fun `a parent's sentence is long enough to be a sentence`() {
+        val real = "네가 다섯 살 때 여행 가기 전에 들렀던 가게야. 어찌나 울었는지 엄마가 혼났어."
+        assertTrue(real.length <= FamilyVisit.MAX_NOTE)
+
+        val told = FamilyAlbum(listOf(FamilyVisit("sungnyemun", "작년에", real))).recall(
+            CuratorCatalog.places.first { it.id == "sungnyemun" })
+        assertTrue(told!!.contains(real))
     }
 }

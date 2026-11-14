@@ -70,6 +70,14 @@ class CuratorMediaPanel(context:Context): FrameLayout(context) {
      */
     private val filmBox=FrameLayout(context)
     private var photoPlaceId:String?=null
+
+    /**
+     * Whether a real photograph is what is on screen right now.
+     *
+     * The host asks because its own small clipping is cut from this very photograph, and the
+     * same picture shown twice at once is one picture too many.
+     */
+    val showingPhoto: Boolean get() = photos.visibility==View.VISIBLE && photos.hasPhotos
     private var current=CuratorState()
     private var permitted=false
     private var playingKey:String?=null

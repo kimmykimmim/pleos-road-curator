@@ -13,7 +13,10 @@ import org.json.JSONObject
  * app inventing a single fact: every word of its story is the guardian's.
  *
  * @param whenLabel how the guardian wants the time said out loud, picked from [WHEN_CHOICES].
- * @param note one short line the guardian adds, such as what the family did there.
+ *   Only said aloud when there is no [note]: a written story usually carries its own when, and
+ *   the two together read as the app repeating itself.
+ * @param note the story itself, in the guardian's own words. This is the feature: a parent
+ *   writing "엄마 아빠가 처음 만난 곳이야" and the car saying it as the family drives past.
  */
 data class FamilyVisit(
     val placeId: String,
@@ -33,7 +36,14 @@ data class FamilyVisit(
             "작년에",
             "얼마 전에",
         )
-        const val MAX_NOTE = 60
+        /**
+         * Long enough for the kind of thing a parent actually writes.
+         *
+         * Sixty characters stopped them mid-sentence: "네가 다섯 살 때 여행 가기 전에 들렀던
+         * 가게야. 어찌나 울었는지 엄마가 혼났어." is longer than that, and it is exactly the
+         * sort of story this is for.
+         */
+        const val MAX_NOTE = 140
         const val MAX_NAME = 20
         /** Guardian places get their own id space so they can never shadow a catalog place. */
         const val OWN_PREFIX = "own:"
@@ -134,13 +144,22 @@ class FamilyAlbum(
         )
     }
 
+    /**
+     * What the child hears at a place somebody at home wrote about.
+     *
+     * A written story is the point of the whole feature, so when there is one it carries the
+     * place and the app only introduces it. The app's own sentence is used alone when nothing
+     * was written — and then it can say the one thing it does know, which is when.
+     *
+     * The guardian's words go in exactly as they wrote them: not translated, not trimmed into
+     * the app's voice, not rephrased. That sentence is a parent talking to their child, and
+     * the app is carrying it, not writing it.
+     */
     private fun story(visit: FamilyVisit): String {
         val note = visit.note?.trim()?.take(FamilyVisit.MAX_NOTE).orEmpty()
         return buildString {
-            append(say.familyRecall(visit.whenLabel))
-            // The guardian's own note goes in exactly as they wrote it. Translating a parent's
-            // sentence would be the app putting words in their mouth.
-            if (note.isNotEmpty()) append(" $note")
+            if (note.isEmpty()) append(say.familyRecall(visit.whenLabel))
+            else { append(say.familyIntro); append(" $note") }
             append(" ${say.familyReassure}")
         }
     }

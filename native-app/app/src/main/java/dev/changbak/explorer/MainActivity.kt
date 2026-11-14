@@ -825,11 +825,16 @@ class MainActivity : Activity() {
         if (!asking || place == null || restricted || !foreground) {
             sticker.showScrap(null, null); sticker.show(null); return
         }
-        // The real place beats a drawing of its subject. A photograph of the building the
-        // child is being asked to find is the most related picture there is, and the ones
-        // that cannot be lifted out of their background fall back to the drawing.
-        val clipping = scrapFor(place.id)
+        // Never the same picture twice.
+        //
+        // The clipping is cut from the very photograph that fills the screen while the child
+        // is being asked to find the place, so showing it there put the same image on screen
+        // in two sizes — which tells a child nothing they were not already looking at. It
+        // belongs to the steps that are about a drawing: there it is the real thing beside the
+        // diagram of it, which is a second picture rather than a copy of the first.
+        val clipping = if (scene.showingPhoto) null else scrapFor(place.id)
         if (clipping != null) { sticker.showScrap(clipping, place.id); return }
+        sticker.showScrap(null, null)
         // The favourite only counts while its line is on screen, which is the predict step.
         val spoken = if (state.phase == CuratorPhase.PREDICT) engine.favouriteFor(place) else null
         sticker.show(TopicPicture.pick(spoken, engine.prompt(state)?.field))
@@ -1315,22 +1320,28 @@ class MainActivity : Activity() {
             orientation=LinearLayout.VERTICAL
             setPadding(dp(24),dp(12),dp(24),0)
         }
-        column.addView(label("언제 갔는지 골라 주세요. 아이에게 그대로 말해 줄 표현이에요.",Text.CAPTION,muted))
+        column.addView(label("이 장소에서 아이에게 들려줄 이야기를 적어 주세요.",Text.LABEL,accent,true))
+        column.addView(label("적으신 문장을 그대로 들려줘요. 앱이 고치거나 바꾸지 않아요.",Text.CAPTION,muted))
+        column.addView(label("예) 엄마 아빠가 처음 만난 곳이야.\n예) 네가 다섯 살 때 여행 가기 전에 들렀던 가게야. 어찌나 울었는지.",Text.CAPTION,muted))
+        // Built here, added below the story: the story is what this screen is for, and the
+        // time is the fallback for a guardian who only wants to mark that they were here.
         val choices=RadioGroup(this).apply { orientation=LinearLayout.VERTICAL }
         whenChoices().forEachIndexed { index,choice ->
             choices.addView(RadioButton(this).apply {
-                id=index+1; text=choice; textSize=Text.ACTION
+                id=index+1; text=choice; textSize=Text.LABEL
                 isChecked=existing?.whenLabel==choice || (existing==null && index==0)
             })
         }
-        column.addView(choices)
         val note=EditText(this).apply {
-            hint="같이 무엇을 했는지 한 줄로 적어도 좋아요"
+            hint="여기에 이야기를 적어 주세요"
             textSize=Text.ACTION; setText(existing?.note.orEmpty())
             filters=arrayOf(android.text.InputFilter.LengthFilter(FamilyVisit.MAX_NOTE))
             importantForAutofill=View.IMPORTANT_FOR_AUTOFILL_NO
+            isSingleLine=false; minLines=2
         }
         column.addView(note)
+        column.addView(label("언제 있었던 일인지 (이야기를 적으면 말하지 않아요)",Text.CAPTION,muted))
+        column.addView(choices)
         val builder=AlertDialog.Builder(this).setTitle(place.name).setView(column)
             .setNegativeButton("닫기",null)
             .setPositiveButton("기록하기") { _,_ -> menuAction {

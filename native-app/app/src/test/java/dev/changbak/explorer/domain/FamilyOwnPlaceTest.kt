@@ -22,8 +22,10 @@ class FamilyOwnPlaceTest {
 
         assertEquals("할머니 집", place.name)
         assertEquals(grandma.placeId, place.id)
-        assertTrue(place.explanation.contains("네가 아기였을 때 우리 가족이 함께 왔던 곳이야"))
+        // What the guardian wrote is the explanation. The app's own wrapper is only used
+        // when they wrote nothing, and here they did.
         assertTrue(place.explanation.contains("마당에서 강아지랑 놀았어."))
+        assertFalse(place.explanation.contains("함께 왔던 곳"))
     }
 
     @Test

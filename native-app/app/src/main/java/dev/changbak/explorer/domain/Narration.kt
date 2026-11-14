@@ -33,6 +33,15 @@ data class Narration(
      * way they chose to say when — are never translated: those are theirs, not the app's.
      */
     val familyRecall: (whenLabel: String) -> String,
+    /**
+     * How the app hands over to a story the guardian wrote.
+     *
+     * When there is one, it is the whole of what this place has to say and the app's own frame
+     * must not talk over it. "우리 가족이 함께 왔던 곳이야" is wrong for half of what a parent
+     * would write — the child was not at the place their parents first met — so the app says
+     * only that somebody left a story here, and then says theirs.
+     */
+    val familyIntro: String,
     val familyReassure: String,
     /** How a guardian may choose to say when, offered in the language they are setting up in. */
     val whenChoices: List<String>,
@@ -72,6 +81,7 @@ data class Narration(
             sideRight = "오른쪽 창밖을 봐.",
             sideAhead = "앞쪽을 봐.",
             familyRecall = { whenLabel -> "그런데 있잖아. 여기는 $whenLabel 우리 가족이 함께 왔던 곳이야." },
+            familyIntro = "그런데 있잖아. 여기에는 엄마 아빠가 너한테 들려주고 싶은 이야기가 있어.",
             familyReassure = "기억나지 않아도 괜찮아. 오늘 다시 지나가는 것만으로도 좋아.",
             whenChoices = listOf("네가 지금보다 더 어렸을 때", "네가 아기였을 때", "작년에", "얼마 전에"),
         )
@@ -97,6 +107,7 @@ data class Narration(
             sideRight = "Look out of the right window.",
             sideAhead = "Look straight ahead.",
             familyRecall = { whenLabel -> "Here's a thing. $whenLabel, our family came here together." },
+            familyIntro = "Here's a thing. Someone at home left a story about this place for you.",
             familyReassure = "It's fine if you don't remember. Going past it again today is lovely on its own.",
             whenChoices = listOf("When you were littler than now", "When you were a baby", "Last year", "Not long ago"),
         )

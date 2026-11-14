@@ -138,14 +138,17 @@ class TopicStickerView(context: Context) : View(context) {
         val alpha = (255 * here).toInt().coerceIn(0, 255)
         val photo = scrap
         canvas.save()
-        // The sway turns about the middle of the bottom edge, the way something pinned at the
-        // top of a car would hang, rather than about its own centre.
-        canvas.rotate(SWING * tilt, width / 2f, height.toFloat())
+        // About the middle. Turning about the bottom edge swung the top corners out past the
+        // view and the clipping lost a corner at each end of the swing.
+        canvas.rotate(SWING * tilt, width / 2f, height / 2f)
         if (photo != null) {
             drawScrap(canvas, photo, alpha)
         } else {
             val shape = picture
-            val side = minOf(width, height).toFloat()
+            // The same room to turn in. A square needs the most of all.
+            val turn = Math.toRadians(SWING.toDouble())
+            val span = (kotlin.math.cos(turn) + kotlin.math.sin(turn)).toFloat()
+            val side = minOf(width, height) / span
             if (shape != null && side > 0f) {
                 // Arrives a little low and settles, which is what makes it read as put down
                 // rather than switched on.
@@ -164,16 +167,26 @@ class TopicStickerView(context: Context) : View(context) {
      * somebody kept, which is nearer what this app is doing with these places.
      */
     private fun drawScrap(canvas: Canvas, photo: Bitmap, alpha: Int) {
-        val pad = width * .07f
-        val room = RectF(pad, pad, width - pad, height - pad)
-        val scale = minOf(room.width() / photo.width, room.height() / photo.height)
-        val w = photo.width * scale
-        val h = photo.height * scale
-        val at = RectF(
-            room.centerX() - w / 2, room.centerY() - h / 2,
-            room.centerX() + w / 2, room.centerY() + h / 2,
+        // Small enough that it still fits once it has turned.
+        //
+        // A rectangle rotated by an angle needs a bigger box than the rectangle itself, and the
+        // clipping was being drawn to fill the view flat — so every swing took a corner off it.
+        // The paper's torn edge is part of the shape, so it is inside this measurement too.
+        val bleed = width * .056f
+        val turn = Math.toRadians(SWING.toDouble())
+        val cos = kotlin.math.cos(turn).toFloat()
+        val sin = kotlin.math.sin(turn).toFloat()
+        val aspect = photo.width.toFloat() / photo.height
+        val h = minOf(
+            (width - 2 * bleed) / (aspect * cos + sin),
+            (height - 2 * bleed) / (aspect * sin + cos),
         )
-        torn(at, pad * .8f)
+        val w = aspect * h
+        val at = RectF(
+            width / 2f - w / 2, height / 2f - h / 2,
+            width / 2f + w / 2, height / 2f + h / 2,
+        )
+        torn(at, bleed)
         paper.alpha = alpha
         canvas.drawPath(page, paper)
         news.alpha = alpha
