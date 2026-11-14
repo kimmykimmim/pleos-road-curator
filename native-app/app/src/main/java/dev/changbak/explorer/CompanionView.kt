@@ -33,6 +33,11 @@ class CompanionView(context: Context) : View(context) {
     private var beat = 0f
     private var animator: ValueAnimator? = null
 
+    /** Where the slow breath is, and how shut the eyes are. */
+    private var breath = 0f
+    private var blink = 0f
+    private var life: ValueAnimator? = null
+
     fun setDoing(next: Doing) {
         if (next == doing) return
         doing = next
@@ -50,14 +55,53 @@ class CompanionView(context: Context) : View(context) {
         }
     }
 
-    override fun onDetachedFromWindow() { animator?.cancel(); super.onDetachedFromWindow() }
+    /**
+     * Breathing and blinking, which run whatever else is happening.
+     *
+     * A face that holds perfectly still is a picture of a face. The whole reason there is
+     * somebody on this screen is so that a child answering out loud is answering to someone,
+     * and someone is the thing that keeps moving a little while nothing is going on.
+     *
+     * One loop drives both, so the rhythm is the same every time rather than two timers
+     * drifting against each other. The blinks sit at uneven points in the cycle: evenly spaced
+     * blinking reads as an indicator lamp rather than as eyes.
+     */
+    private fun startLiving() {
+        if (life != null || !ValueAnimator.areAnimatorsEnabled()) return
+        life = ValueAnimator.ofFloat(0f, 1f).apply {
+            duration = LIFE
+            repeatCount = ValueAnimator.INFINITE
+            interpolator = null
+            addUpdateListener {
+                val t = it.animatedValue as Float
+                breath = kotlin.math.sin(t * 2.0 * Math.PI).toFloat()
+                blink = maxOf(shutter(t, .44f), shutter(t, .89f))
+                invalidate()
+            }
+            start()
+        }
+    }
+
+    /** One blink: shut and open again inside a very short window. */
+    private fun shutter(t: Float, at: Float): Float {
+        val half = BLINK / 2f
+        val away = kotlin.math.abs(t - at)
+        return if (away > half) 0f else 1f - away / half
+    }
+
+    override fun onAttachedToWindow() { super.onAttachedToWindow(); startLiving() }
+
+    override fun onDetachedFromWindow() {
+        animator?.cancel(); life?.cancel(); life = null
+        super.onDetachedFromWindow()
+    }
 
     override fun onDraw(canvas: Canvas) {
         val side = minOf(width, height).toFloat()
         if (side <= 0f) return
         canvas.save()
         canvas.translate((width - side) / 2f, (height - side) / 2f)
-        draw(canvas, side, doing, beat)
+        draw(canvas, side, doing, beat, breath, blink)
         canvas.restore()
     }
 
@@ -80,10 +124,30 @@ class CompanionView(context: Context) : View(context) {
         private val glass = Color.rgb(151, 215, 255)
         private val lamp = Color.rgb(255, 250, 230)
 
-        fun draw(canvas: Canvas, side: Float, doing: Doing, beat: Float) {
+        /** One breath in and out, with two blinks somewhere inside it. */
+        const val LIFE = 4200L
+        /** How much of that cycle one blink takes. */
+        const val BLINK = .035f
+
+        /**
+         * @param breath -1 to 1, the slow rise and fall.
+         * @param blink 0 with the eyes open, 1 with them shut.
+         */
+        fun draw(
+            canvas: Canvas,
+            side: Float,
+            doing: Doing,
+            beat: Float,
+            breath: Float = 0f,
+            blink: Float = 0f,
+        ) {
             canvas.save()
             canvas.scale(side / 100f, side / 100f)
             line.strokeWidth = 4.2f
+            // A settle rather than a swell. It has to be the kind of movement you only notice
+            // once you have been looking for a moment.
+            canvas.translate(0f, breath * 1.1f)
+            canvas.scale(1f + breath * .012f, 1f + breath * .018f, 50f, 84f)
 
             // A small nod while talking, and a lean while listening. Neither moves far: this
             // sits beside the words and must not pull the eye off them.
@@ -139,23 +203,60 @@ class CompanionView(context: Context) : View(context) {
                     box.set(x - 9f, 50f, x + 9f, 68f)
                     canvas.drawArc(box, 200f, 140f, false, line)
                 }
-            } else {
+            } else if (blink > .82f) {
+                // Shut, and smiling with it: a closed eye that curves up is asleep-happy, a
+                // straight one is switched off.
+                line.color = ink
                 listOf(36f, 64f).forEach { x ->
+                    box.set(x - 9f, 52f, x + 9f, 68f)
+                    canvas.drawArc(box, 200f, 140f, false, line)
+                }
+            } else {
+                val open = 1f - blink
+                listOf(36f, 64f).forEach { x ->
+                    canvas.save()
+                    canvas.scale(1f, open, x, 59f)
                     fill.color = lamp
-                    canvas.drawCircle(x, 59f, 9f, fill)
+                    canvas.drawCircle(x, 59f, 9.5f, fill)
                     line.color = ink
-                    canvas.drawCircle(x, 59f, 9f, line)
+                    canvas.drawCircle(x, 59f, 9.5f, line)
                     fill.color = ink
-                    canvas.drawCircle(x + 1.5f, 59f, 4.2f, fill)
+                    canvas.drawCircle(x + 1f, 60f, 5f, fill)
+                    // The catchlight. Without it the pupil is a hole, and a hole does not
+                    // look at anybody.
+                    fill.color = Color.WHITE
+                    canvas.drawCircle(x + 3.2f, 57.6f, 1.9f, fill)
+                    canvas.restore()
                 }
             }
 
-            // The mouth: a grille that opens on the beat while the words are being said.
-            val open = if (doing == Doing.SPEAKING) 3f + 7f * beat else 3f
-            fill.color = ink
-            path.reset()
-            path.addRoundRect(RectF(40f, 72f - open / 2f, 60f, 72f + open / 2f), open / 2f, open / 2f, Path.Direction.CW)
-            canvas.drawPath(path, fill)
+            // Cheeks. Two soft spots are most of the difference between a face that is pleased
+            // to see you and a machine with two lamps on it.
+            fill.color = Color.argb(120, 246, 150, 140)
+            canvas.drawCircle(25f, 70f, 6.5f, fill)
+            canvas.drawCircle(75f, 70f, 6.5f, fill)
+
+            // The mouth, which is the whole of whether this face is friendly.
+            //
+            // It was a flat bar across the grille, and a flat bar is a straight line: the one
+            // mouth shape that reads as stern however round everything around it is. It smiles
+            // now, and the smile opens while the words come out instead of a slot widening.
+            line.color = ink
+            line.strokeWidth = 4.6f
+            if (doing == Doing.SPEAKING) {
+                val gape = 4f + 9f * beat
+                fill.color = ink
+                path.reset()
+                path.moveTo(41f, 70f)
+                path.cubicTo(45f, 70f + gape * .35f, 55f, 70f + gape * .35f, 59f, 70f)
+                path.cubicTo(57f, 70f + gape, 43f, 70f + gape, 41f, 70f)
+                path.close()
+                canvas.drawPath(path, fill)
+            } else {
+                box.set(38f, 62f, 62f, 78f)
+                canvas.drawArc(box, 25f, 130f, false, line)
+            }
+            line.strokeWidth = 4.2f
             canvas.restore()
         }
     }

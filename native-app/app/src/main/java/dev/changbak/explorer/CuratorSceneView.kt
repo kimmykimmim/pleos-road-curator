@@ -98,6 +98,70 @@ class CuratorSceneView(context: Context): View(context) {
         private const val RATIO = 960f/540f
 
         /**
+         * A road going away from you, bending twice.
+         *
+         * This is the one picture the app can honestly show before it knows anything: not a
+         * place, not a question, just the drive. It narrows as it goes because that is how a
+         * road looks from a car, and the dashes shorten with it.
+         */
+        private fun road(c: Canvas,w: Float,h: Float,p: Paint) {
+            val far=h*.30f
+            // Built out from the middle rather than as two free curves. Two curves drawn by
+            // hand bowed apart near the bottom and the whole thing read as a hill; a width
+            // measured off the centre line at every step can only ever be a road.
+            val steps=28
+            val lane=Path()
+            (0..steps).forEach { i ->
+                val t=i/steps.toFloat()
+                val x=spineX(w,t)-halfWidth(w,t)
+                if(i==0) lane.moveTo(x,spineY(h,t)) else lane.lineTo(x,spineY(h,t))
+            }
+            (steps downTo 0).forEach { i ->
+                val t=i/steps.toFloat()
+                lane.lineTo(spineX(w,t)+halfWidth(w,t),spineY(h,t))
+            }
+            lane.close()
+            p.style=Paint.Style.FILL
+            // Light enough to read as a surface. A dark band on a dark ground was a hill.
+            p.shader=android.graphics.LinearGradient(0f,far,0f,h,
+                Color.rgb(58,90,110),Color.rgb(104,132,150),android.graphics.Shader.TileMode.CLAMP)
+            c.drawPath(lane,p)
+            p.shader=null
+            // The far end fades into the ground rather than stopping at a hard line.
+            p.shader=android.graphics.LinearGradient(0f,far-h*.02f,0f,far+h*.22f,
+                Color.rgb(12,45,62),Color.argb(0,58,90,110),android.graphics.Shader.TileMode.CLAMP)
+            c.drawRect(0f,far-h*.02f,w,far+h*.22f,p)
+            p.shader=null
+            // The centre line. Each dash is shorter and thinner than the one before it.
+            p.style=Paint.Style.STROKE
+            p.strokeCap=Paint.Cap.ROUND
+            p.color=Color.argb(225,255,239,196)
+            val dashes=7
+            (0 until dashes).forEach { step ->
+                val t0=step/dashes.toFloat()
+                val t1=t0+.055f*(1f-t0*.7f)
+                p.strokeWidth=w*(.015f*(1f-t0)+.002f)
+                c.drawLine(spineX(w,t0),spineY(h,t0),spineX(w,t1),spineY(h,t1),p)
+            }
+            p.style=Paint.Style.FILL
+        }
+
+        /** Half the road's width at this point along it: wide underfoot, a thread at the end. */
+        private fun halfWidth(w: Float,t: Float): Float {
+            val u=1f-t
+            return w*(.30f*u*u*kotlin.math.sqrt(u)+.02f)
+        }
+
+        /** The middle of the road, as a curve from the bottom of the screen to the far end. */
+        private fun spineX(w: Float,t: Float): Float = cubic(w*.50f,w*.30f,w*.74f,w*.50f,t)
+        private fun spineY(h: Float,t: Float): Float = cubic(h*1.06f,h*.80f,h*.52f,h*.30f,t)
+
+        private fun cubic(a: Float,b: Float,cc: Float,d: Float,t: Float): Float {
+            val u=1f-t
+            return u*u*u*a+3*u*u*t*b+3*u*t*t*cc+t*t*t*d
+        }
+
+        /**
          * [place] is passed in rather than looked up here: a guardian's own place lives in their
          * records, not in the bundled catalog, and defaulting would draw another place's artwork.
          */
@@ -105,13 +169,17 @@ class CuratorSceneView(context: Context): View(context) {
                       place: CuratorPlace? = CuratorCatalog.places.firstOrNull { it.id==state.currentId }) {
             val p=Paint(Paint.ANTI_ALIAS_FLAG)
             val teal=Color.rgb(8,98,136)
-            p.color=Color.rgb(205,225,240);c.drawOval(w*.06f,h*.22f,w*.94f,h*.82f,p)
             val mystery=state.phase in setOf(CuratorPhase.READY,CuratorPhase.WAITING)
             if(mystery) {
-                p.color=Color.rgb(255,239,196);c.drawCircle(w*.5f,h*.46f,w*.21f,p)
-                p.color=teal;p.textAlign=Paint.Align.CENTER;p.textSize=h*.23f;p.typeface=Typeface.create("sans-serif",Typeface.BOLD)
-                c.drawText("?",w*.5f,h*.54f,p)
+                // The road itself, bending away from you. 두리 is drawn standing on it by the
+                // screen above this, so that it can breathe and blink.
+                //
+                // There used to be a pale oval here with a question mark on it. It was the
+                // ground for the role play drawings borrowed for a moment it did not fit, and
+                // it said nothing a child could read. A road says where this is going.
+                road(c,w,h,p)
             } else {
+                p.color=Color.rgb(205,225,240);c.drawOval(w*.06f,h*.22f,w*.94f,h*.82f,p)
                 val variant=state.visits.firstOrNull { it.placeId==state.currentId }?.activityId.orEmpty()
                 c.save();c.translate(0f,h*.03f);c.scale(1f,.82f)
                 val pose=when {

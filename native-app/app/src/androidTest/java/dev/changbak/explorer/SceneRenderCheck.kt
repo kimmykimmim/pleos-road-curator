@@ -214,6 +214,29 @@ class SceneRenderCheck : Instrumentation() {
         check(faces[0].indices.count { faces[0][it] != faces[2][it] } > 200) {
             "the companion looks the same resting as it does listening"
         }
+        // Alive while nothing is happening: the eyes shut and the chest moves. Both are small
+        // and quick on screen, which is exactly why they are checked here rather than by eye.
+        val open = Bitmap.createBitmap(side, side, Bitmap.Config.ARGB_8888).also { bmp ->
+            CompanionView.draw(android.graphics.Canvas(bmp), side.toFloat(),
+                CompanionView.Doing.RESTING, 0f, breath = 0f, blink = 0f)
+        }
+        val shut = Bitmap.createBitmap(side, side, Bitmap.Config.ARGB_8888).also { bmp ->
+            CompanionView.draw(android.graphics.Canvas(bmp), side.toFloat(),
+                CompanionView.Doing.RESTING, 0f, breath = 0f, blink = 1f)
+        }
+        val inhaled = Bitmap.createBitmap(side, side, Bitmap.Config.ARGB_8888).also { bmp ->
+            CompanionView.draw(android.graphics.Canvas(bmp), side.toFloat(),
+                CompanionView.Doing.RESTING, 0f, breath = 1f, blink = 0f)
+        }
+        fun pixelsOf(bmp: Bitmap) = IntArray(side * side).also { bmp.getPixels(it, 0, side, 0, 0, side, side) }
+        val openPixels = pixelsOf(open)
+        check(openPixels.indices.count { openPixels[it] != pixelsOf(shut)[it] } > 60) {
+            "the companion's eyes do not close"
+        }
+        check(openPixels.indices.count { openPixels[it] != pixelsOf(inhaled)[it] } > 60) {
+            "the companion does not breathe"
+        }
+        listOf(open, shut, inhaled).forEach(Bitmap::recycle)
         File(output, "stickers.png").outputStream().use {
             check(sheet.compress(Bitmap.CompressFormat.PNG, 100, it))
         }
@@ -221,7 +244,8 @@ class SceneRenderCheck : Instrumentation() {
         report.putString("artifacts", output.absolutePath)
         report.putString("result", "PASS: ${pictures.size} topic pictures each drawn and different, " +
             "${PlaceScrap.assets().size} photo clippings cut out and readable, " +
-            "the companion drawn differently in all ${CompanionView.Doing.entries.size} states")
+            "the companion drawn differently in all ${CompanionView.Doing.entries.size} states, " +
+            "and alive when resting")
     }
 
     private fun checkCurator(report: Bundle) {

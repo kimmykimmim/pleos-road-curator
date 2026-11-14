@@ -172,6 +172,8 @@ class MainActivity : Activity() {
     private lateinit var sticker: TopicStickerView
     /** 두리, who does the talking. */
     private lateinit var companion: CompanionView
+    /** The same character, large, for the moments when there is no place to show yet. */
+    private lateinit var waiting: CompanionView
     /** Whether this screen's own voice is mid-sentence. */
     private var speaking = false
     private lateinit var photoYear: TextView
@@ -644,6 +646,16 @@ class MainActivity : Activity() {
         // Top left, and small. Every photograph in this app is of something tall with sky
         // around it, so that corner is empty in all of them; the picture the child is being
         // asked to find is in the middle, and the sheet is on the right.
+        // Before the first place, and between places, the screen used to hold a cream circle
+        // with a question mark on it. It told a child nothing and it could not move. 두리
+        // stands there instead, breathing, so the screen is somebody waiting with you rather
+        // than a picture of nothing in particular.
+        waiting = CompanionView(this)
+        stage.addView(waiting, FrameLayout.LayoutParams(dp(210), dp(210), Gravity.CENTER)
+            // Centred on the part of the screen the sheet is not covering, and low enough
+            // that the road still runs away behind it rather than being covered by it.
+            .apply { marginEnd = sheetWidth() / 2; topMargin = dp(150) })
+
         sticker = TopicStickerView(this)
         stage.addView(sticker, FrameLayout.LayoutParams(dp(164), dp(150), Gravity.TOP or Gravity.START)
             .apply { leftMargin = dp(20); topMargin = dp(16) })
@@ -794,6 +806,10 @@ class MainActivity : Activity() {
         scene.present(state, !restricted && foreground && dialog==null)
         // The explanation is the one beat that is about the picture rather than the window.
         showSticker()
+        // The big one is for the waiting moments only; once a place is on screen the place is
+        // what the child should be looking at.
+        waiting.visibility =
+            if (!restricted && engine.place(state) == null) View.VISIBLE else View.GONE
         val explaining = state.phase==CuratorPhase.EXPLAIN && !restricted && foreground
         setSheetOut(!explaining || sheetByHand == state.phase to state.currentId)
         showRoute()
