@@ -8,6 +8,12 @@ import dev.changbak.explorer.domain.*
 
 /** Code-drawn landmark sketch, not a photograph or a claim about the current camera view. */
 class CuratorSceneView(context: Context): View(context) {
+    init {
+        // The explanation is made of photographs now, and the drawing routine has no context
+        // of its own to read them with.
+        ScenePhotos.attach(context)
+    }
+
     /**
      * Where to look a place up. A guardian's own place is not in the bundled catalog, and
      * falling back to the catalog would draw it with another place's artwork.

@@ -180,6 +180,9 @@ class MainActivity : Activity() {
     private lateinit var photoLine: TextView
     private lateinit var photoCredit: TextView
     private lateinit var subline: TextView
+    private lateinit var tagRow: LinearLayout
+    /** What the tag row is showing, so it is only rebuilt when the place changes. */
+    private var lastTags: List<String> = emptyList()
     private var statusLabel: TextView? = null
     private val ink = Color.rgb(11,45,63)
     /**
@@ -548,6 +551,13 @@ class MainActivity : Activity() {
      *
      * The same four beats the scene draws, said once more where the child's eyes already are.
      */
+    /** The one thing the memory list still has to say, said as a mark rather than a sentence. */
+    private fun seenMark(seen: SeenStatus): View = row().apply {
+        val found = seen == SeenStatus.SEEN
+        addView(View(this@MainActivity).apply {
+            background = if (found) pill(accent) else pill(Color.rgb(214,228,238))
+        }, LinearLayout.LayoutParams(dp(if (found) 34 else 14), dp(9)))
+    }
     private fun stepDots(active: Int): View = row().apply {
         gravity = Gravity.CENTER
         (0..3).forEach { index ->
@@ -683,6 +693,11 @@ class MainActivity : Activity() {
             maxWidth = resources.displayMetrics.widthPixels - sheetWidth() - dp(96)
         }
         nameBlock.addView(placeName,LinearLayout.LayoutParams(-2,-2))
+        // The place's own words, under its name where they belong: a name, then what it is.
+        // One chip each, because three hashtags run together into one long word otherwise.
+        tagRow = row().also {
+            nameBlock.addView(it,LinearLayout.LayoutParams(-2,-2).apply { topMargin = dp(12) })
+        }
         mediaButton=button(say.replayFilm) { scene.replay() }.apply {
             textSize=sp(Text.LABEL); setTextColor(Color.WHITE); background = pill(onHero)
         }
@@ -795,8 +810,26 @@ class MainActivity : Activity() {
         placeName.text = place?.name ?: say.noPlaceYet
         tagline.visibility = if (state.phase==CuratorPhase.READY) View.VISIBLE else View.GONE
         val met = place?.let { prefs.rounds(it.id) } ?: 0
-        subline.text = if (state.phase==CuratorPhase.FINISHED) say.todaysRoute
-            else state.etaSeconds?.let { if(it>0) say.minutesAway((it+59)/60) else say.passedHere } ?: say.routeDiscovery
+        // Under the name: how far away it still is while it is still ahead, and once the car is
+        // beside it, what it actually is. "이 지점 근처를 지났어요" used to sit here, which tells a
+        // child looking straight at the place nothing at all.
+        val eta = state.etaSeconds?.takeIf { it > 0 }?.let { say.minutesAway((it+59)/60) }
+        subline.text = when {
+            state.phase==CuratorPhase.FINISHED -> say.todaysRoute
+            eta != null -> eta
+            else -> say.routeDiscovery
+        }
+        val tags = if (state.phase==CuratorPhase.FINISHED) emptyList()
+            else place?.let { PlaceTags.of(it.id, prefs.profile.language, it.category) }.orEmpty()
+        if (tags != lastTags) {
+            lastTags = tags
+            tagRow.removeAllViews()
+            tags.forEach { tag ->
+                tagRow.addView(heroChip(tag),LinearLayout.LayoutParams(-2,-2)
+                    .apply { marginEnd = dp(8) })
+            }
+        }
+        tagRow.visibility = if (tags.isEmpty()) View.GONE else View.VISIBLE
         // Which meeting this is explains, without a word of instruction, why the question
         // changed since last time. It is its own fact, so it gets its own chip.
         val showMeeting = met > 0 && state.phase !in setOf(CuratorPhase.FINISHED,CuratorPhase.READY)
@@ -1044,10 +1077,19 @@ class MainActivity : Activity() {
     private fun memoryCard(memory: PlaceMemory?) {
         memory ?: return
         val p=CuratorCatalog.places.firstOrNull { it.id==memory.placeId } ?: return
-        card.addView(label(p.name,Text.LABEL,accent,true)); gap(card,8)
-        val guess=memory.guess?.let { "처음 생각: $it\n" } ?: ""
-        val observed=when(memory.seen) { SeenStatus.SEEN -> "직접 봤어"; SeenStatus.NOT_SEEN -> "보이지 않아 이야기로 만났어"; else -> "봤는지는 아직 말하지 않았어" }
-        card.addView(label(guess+observed+"\n"+(memory.activityLabel ?: "다음에 해 볼 놀이로 남겼어"),Text.BODY,muted)); gap(card,16)
+        card.addView(label(p.name,Text.LABEL,accent,true))
+        // Only what the child said, in their words.
+        //
+        // This used to add a line of bookkeeping to every place: whether they had told us if
+        // they saw it, that a game had been "left for later". That is a note to an adult,
+        // written in the middle of a six year old's screen, and it was there for every place
+        // whether anything had happened or not. A child who said nothing now reads nothing,
+        // and the drive carries on to the next window.
+        val said=listOfNotNull(memory.guess?.trim()?.ifEmpty { null },memory.activityLabel?.trim()?.ifEmpty { null })
+        if(said.isNotEmpty()) { gap(card,8); card.addView(label(said.joinToString("\n"),Text.BODY,muted)) }
+        // Seen or not, said without a sentence: a full mark for a place they found out of the
+        // window, an outline for one they only heard about.
+        gap(card,8); card.addView(seenMark(memory.seen)); gap(card,16)
     }
     private fun show(next: AlertDialog) {
         // A guardian-menu item opens its screen from a posted runnable. The list dialog's own

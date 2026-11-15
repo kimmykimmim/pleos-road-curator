@@ -2,9 +2,27 @@ package dev.changbak.explorer
 
 import android.graphics.*
 import dev.changbak.explorer.domain.CuratorVisual
+import dev.changbak.explorer.domain.SceneScrap
+import dev.changbak.explorer.domain.SceneScraps
 import kotlin.math.*
 
-/** Original educational artwork, shared by local MP4 generation and the interactive scene. Not an engineering simulation. */
+/**
+ * The explanation, made of real photographs.
+ *
+ * This used to build each idea out of rectangles: a gate out of four of them, three
+ * generations of a family out of circles on boxes. A model of a thing is something an adult
+ * reads; a child in the back seat needs the thing. So every scene here is now a clipping — a
+ * licensed photograph laid on the page the way a cutting is stuck into a scrapbook, with its
+ * own caption and the name of whoever took it underneath.
+ *
+ * Nothing is drawn on top of a photograph except where the words need somewhere pointed at: a
+ * ring around the middle of a tower that is still being built, a ring around a shop sign. The
+ * photographs themselves are untouched, and what is listed in [SceneScraps] is what is shown.
+ *
+ * 가족 장소 is the one scene with no photograph, and keeps its paper card. The app has no
+ * picture of a family's own place, and borrowing somebody else's would be inventing their
+ * memory for them.
+ */
 object CuratorMediaArt {
     private val ink=Color.rgb(11,45,63)
     private val teal=Color.rgb(8,98,136)
@@ -24,7 +42,29 @@ object CuratorMediaArt {
             line(x2,y2,x2-cos(a-.5f)*s,y2-sin(a-.5f)*s,color,5f);line(x2,y2,x2-cos(a+.5f)*s,y2-sin(a+.5f)*s,color,5f)
         }
         fun dot(x:Float,y:Float,r:Float,color:Int) {p.color=color;c.drawCircle(x,y,r,p)}
-        fun chip(value:String,x:Float,y:Float,width:Float=220f) {rect(x,y-28,x+width,y+13,Color.WHITE,16f);text(value,x+14,y,21f,teal,true)}
+        // Sized by what is written on it. Every chip used to be handed a width by hand, so a
+        // short label sat in a long white bar with nothing in the rest of it.
+        fun chip(value:String,x:Float,y:Float,width:Float=0f) {
+            p.textSize=21f;p.typeface=Typeface.create("sans-serif",Typeface.BOLD)
+            val span=max(width,p.measureText(value)+28f)
+            rect(x,y-28,x+span,y+13,Color.WHITE,16f);text(value,x+14,y,21f,teal,true)
+        }
+        /**
+         * A line of text centred on the page.
+         *
+         * Every scene used to place its closing line at a hand-found x, which was right for the
+         * drawing that used to be under it and wrong for everything since: the line sat off to
+         * one side of a centred photograph.
+         */
+        fun middle(value:String,y:Float,size:Float=26f,color:Int=teal) {
+            p.textSize=size;p.typeface=Typeface.create("sans-serif",Typeface.BOLD)
+            text(value,480f-p.measureText(value)/2f,y,size,color,true)
+        }
+        /** The same chip, hung from a point rather than from its left edge. */
+        fun chipMid(value:String,middle:Float,y:Float) {
+            p.textSize=21f;p.typeface=Typeface.create("sans-serif",Typeface.BOLD)
+            chip(value,middle-(p.measureText(value)+28f)/2f,y)
+        }
         val titles=when(kind) {
             CuratorVisual.TOWER -> "높은 건물 안의 힘 나누기 팀"
             CuratorVisual.GLASS -> "건물의 뼈대와 유리 겉옷"
@@ -34,108 +74,153 @@ object CuratorMediaArt {
             CuratorVisual.FAMILY -> "우리 가족이 함께 왔던 곳"
         }
         text(titles,42f,56f,32f,ink,true)
-        // A guardian place is a memory, not a mechanism, so it is not labelled as a model of one.
+        // What the child is looking at, said plainly. A photograph and a diagram are different
+        // promises, and the app has to say which one it is making.
         text(if(kind==CuratorVisual.FAMILY) "보호자가 적어 둔 기억을 담은 표시"
-             else "원리를 간단하게 그린 설명용 모형",42f,89f,20f,muted)
+             else "실제 사진을 오려 붙인 설명",42f,89f,20f,muted)
+
+        /**
+         * One clipping: the photograph, the white paper it is stuck on, its caption, and the
+         * name of whoever took it.
+         *
+         * The paper is torn along the bottom and sits at a slight angle, because that is what
+         * a cutting looks like and because two clippings at the same angle read as a form.
+         */
+        fun clipping(scrap: SceneScrap,cx:Float,cy:Float,photoW:Float,photoH:Float,tilt:Float,
+                     chosen:Boolean=false,faded:Boolean=false) {
+            if(faded) c.saveLayerAlpha(0f,0f,960f,540f,96)
+            val photo=ScenePhotos.of(scrap.asset)
+            val pad=13f; val band=if(scrap.credit.isBlank()) 34f else 60f
+            val paperW=photoW+pad*2; val paperH=photoH+pad*2+band
+            c.save();c.translate(cx,cy);c.rotate(tilt)
+            val left=-paperW/2; val top=-paperH/2
+            // The paper, torn along its bottom edge.
+            val paper=Path().apply {
+                moveTo(left,top);lineTo(left+paperW,top);lineTo(left+paperW,top+paperH-9f)
+                var x=left+paperW
+                var step=0
+                while(x>left) {
+                    val dip=if(step%2==0) 9f else 0f
+                    x-=paperW/13f
+                    lineTo(max(x,left),top+paperH-9f+dip)
+                    step++
+                }
+                lineTo(left,top);close()
+            }
+            p.style=Paint.Style.FILL
+            // Its shadow, so it sits on the page rather than in it.
+            c.save();c.translate(3f,6f);p.color=Color.argb(38,11,45,63);c.drawPath(paper,p);c.restore()
+            p.color=Color.WHITE;c.drawPath(paper,p)
+            val box=RectF(left+pad,top+pad,left+pad+photoW,top+pad+photoH)
+            if(photo!=null) {
+                // Centre-crop towards whatever the scrap says must not be lost.
+                val want=photoW/photoH
+                val have=photo.width.toFloat()/photo.height
+                val srcW=if(have>want) photo.height*want else photo.width.toFloat()
+                val srcH=if(have>want) photo.height.toFloat() else photo.width/want
+                val srcX=(scrap.focusX*photo.width-srcW/2).coerceIn(0f,photo.width-srcW)
+                val srcY=(scrap.focusY*photo.height-srcH/2).coerceIn(0f,photo.height-srcH)
+                val src=Rect(srcX.toInt(),srcY.toInt(),(srcX+srcW).toInt(),(srcY+srcH).toInt())
+                c.drawBitmap(photo,src,box,p)
+                // Where to look, if this photograph has somewhere.
+                scrap.mark?.let { mark ->
+                    val mx=box.left+(mark.x*photo.width-srcX)/srcW*photoW
+                    val my=box.top+(mark.y*photo.height-srcY)/srcH*photoH
+                    val r=(mark.r*photo.width)/srcW*photoW*(1f+.06f*sin(t*2f*PI).toFloat())
+                    if(box.contains(mx,my)) {
+                        p.style=Paint.Style.STROKE;p.strokeWidth=5f;p.color=gold
+                        c.drawCircle(mx,my,r,p);p.style=Paint.Style.FILL
+                        if(mark.label.isNotBlank()) {
+                            p.textSize=19f;p.typeface=Typeface.create("sans-serif",Typeface.BOLD)
+                            val span=p.measureText(mark.label)+22f
+                            val labelY=(my+r+26f).coerceAtMost(box.bottom-10f)
+                            rect(mx-span/2,labelY-21f,mx+span/2,labelY+7f,Color.argb(232,255,255,255),13f)
+                            text(mark.label,mx-span/2+11f,labelY,19f,teal,true)
+                        }
+                    }
+                }
+            } else {
+                rect(box.left,box.top,box.right,box.bottom,Color.rgb(226,236,245),6f)
+            }
+            p.style=Paint.Style.STROKE
+            // The one the child picked is outlined, so their answer is visible on the page.
+            p.strokeWidth=if(chosen) 5f else 1.5f
+            p.color=if(chosen) gold else Color.rgb(205,219,232)
+            c.drawRect(box,p);p.style=Paint.Style.FILL
+            // The caption, kept to the width of the paper it is written on.
+            p.textSize=19f;p.typeface=Typeface.create("sans-serif",Typeface.BOLD)
+            var caption=scrap.caption
+            while(p.measureText(caption)>photoW&&caption.length>4) caption=caption.dropLast(1)
+            if(caption!=scrap.caption) caption=caption.dropLast(1)+"…"
+            text(caption,box.left,box.bottom+28f,19f,ink,true)
+            if(scrap.credit.isNotBlank()) {
+                p.textSize=13f;p.typeface=Typeface.create("sans-serif",Typeface.NORMAL)
+                var credit=scrap.credit
+                while(p.measureText(credit)>photoW&&credit.length>4) credit=credit.dropLast(1)
+                text(credit,box.left,box.bottom+50f,13f,muted)
+            }
+            c.restore()
+            if(faded) c.restore()
+        }
+
+        /**
+         * The clippings of this scene, laid out for however many there are.
+         *
+         * @param picked which clipping the child's role-play answer chose, or -1. The chosen
+         *   one is outlined and the other steps back, so the answer changes the page.
+         */
+        fun clippings(kind:CuratorVisual,picked:Int = -1) {
+            val scraps=SceneScraps.of(kind)
+            // A gentle settle, so the cuttings look placed rather than printed.
+            val sway=sin(t*2f*PI).toFloat()
+            when(scraps.size) {
+                0 -> {}
+                1 -> clipping(scraps[0],480f,278f,470f,236f,-1.6f+sway*.8f,picked==0)
+                else -> {
+                    clipping(scraps[0],272f,274f,330f,196f,-3.4f+sway*.7f,picked==0,picked==1)
+                    clipping(scraps[1],690f,282f,330f,196f,3.1f-sway*.7f,picked==1,picked==0)
+                    // Between them: this one became that one.
+                    arrow(470f,278f,500f,278f,gold)
+                }
+            }
+        }
+
         when(kind) {
             CuratorVisual.TOWER -> {
-                rect(90f,430f,530f,450f,Color.rgb(205,225,240))
-                val silhouette=Path().apply {moveTo(225f,427f);lineTo(250f,184f);quadTo(277f,140f,309f,120f);quadTo(340f,140f,364f,184f);lineTo(394f,427f);close()}
-                p.color=Color.rgb(183,214,238);c.drawPath(silhouette,p)
-                val reveal=((t-.15f)/.4f).coerceIn(0f,1f)
-                c.saveLayerAlpha(0f,0f,960f,540f,(255*reveal).toInt())
-                rect(298f,175f,322f,427f,teal,4f)
-                line(245f,250f,245f,427f,ink,12f);line(375f,250f,375f,427f,ink,12f)
-                for(y in listOf(267f,345f)) {
-                    val connect=((t-.4f)/.3f).coerceIn(0f,1f)
-                    val highlight=if(variant=="core") gold else Color.rgb(212,165,80)
-                    line(310f,y,310f+(245f-310f)*connect,y+26*connect,highlight,9f)
-                    line(310f,y,310f+(375f-310f)*connect,y+26*connect,highlight,9f)
-                    line(245f,y+26,245f+(375f-245f)*connect,y+26,if(variant=="belt") gold else teal,7f)
-                }
-                c.restore()
-                val windX=90f+22*sin(t*PI*4).toFloat()
-                for(y in listOf(222f,265f,308f)) arrow(windX,y,196f,y,Color.rgb(77,141,186))
-                chip("중심 몸통",555f,191f)
-                arrow(548f,185f,329f,211f)
-                chip("바깥의 큰 기둥",555f,262f)
-                arrow(548f,256f,382f,328f)
-                chip(if(t<.5f) "연결하는 팔은?" else "아웃리거 = 연결하는 팔",555f,343f,345f)
-                if(t>.45f) arrow(548f,337f,344f,286f,gold)
-                text("중심과 바깥 기둥이 함께 힘을 나눠요",155f,491f,26f,teal,true)
+                clippings(kind)
+                middle(if(variant=="belt") "바깥 기둥끼리도 서로 이어져 있어요"
+                       else "중심과 바깥 기둥이 함께 힘을 나눠요",497f)
             }
             CuratorVisual.GLASS -> {
-                rect(140f,425f,520f,444f,Color.rgb(205,225,240))
-                val split=if(variant=="coat") 0f else if(variant=="skeleton") 1f else ((t-.25f)/.55f).coerceIn(0f,1f)
-                val left=215f;val right=390f
-                for(x in listOf(left,272f,332f,right)) line(x,155f,x,425f,ink,12f)
-                for(y in 0..7) line(left,162f+y*36,right,162f+y*36,ink,6f)
-                val offset=split*140f
-                c.saveLayerAlpha(0f,0f,960f,540f,205)
-                rect(left+offset-12,144f,right+offset+12,425f,Color.rgb(224,180,92),8f)
-                for(i in 0..5) line(left+offset-9+i*38,151f,left+offset-9+i*38,418f,Color.rgb(255,239,196),2f)
-                for(i in 0..9) line(left+offset-10,151f+i*29,right+offset+10,151f+i*29,Color.rgb(255,239,196),2f)
-                c.restore()
-                chip("안쪽 뼈대",620f,220f,240f);arrow(609f,212f,274f,244f)
-                chip("바깥 유리벽",620f,323f,240f);arrow(609f,316f,right+offset,338f,gold)
-                text("커튼월 = 건물 바깥을 감싸는 벽",175f,491f,26f,teal,true)
+                // The child's answer picks which of the two the page is about.
+                clippings(kind,when(variant) { "skeleton" -> 0; "coat" -> 1; else -> -1 })
+                middle(when(variant) {
+                    "skeleton" -> "뼈대가 건물을 떠받치고 있어요"
+                    "coat" -> "유리 겉옷은 바깥에 걸려 있어요"
+                    else -> "커튼월 = 건물 바깥을 감싸는 벽"
+                },497f)
             }
             CuratorVisual.ISLAND -> {
-                rect(85f,136f,875f,424f,Color.rgb(151,215,255),38f)
-                for(i in 0..6) line(108f+i*115,175f,160f+i*115,175f,Color.rgb(222,240,252),3f)
-                val island=RectF(220f-t*25,202f-t*12,736f+t*25,359f+t*12)
-                p.color=Color.rgb(245,223,163);c.drawOval(island,p)
-                if(t>.2f) {
-                    val alpha=((t-.2f)/.2f).coerceIn(0f,1f)
-                    p.color=Color.argb((220*alpha).toInt(),77,141,186);p.style=Paint.Style.STROKE;p.strokeWidth=13f;c.drawOval(island,p);p.style=Paint.Style.FILL
-                }
-                if(t>.45f) {
-                    val grow=((t-.45f)/.4f).coerceIn(0f,1f)
-                    for(i in 0..5) {val x=300f+i*60;val ht=(55+i%3*23)*grow;rect(x,290-ht,x+35,300f,if(i%2==0)teal else Color.rgb(150,176,196),5f)}
-                }
-                if(variant=="park") {
-                    for(i in 0..4) {val x=300f+i*70;line(x,315f,x,346f,muted,5f);dot(x,311f,17f,Color.rgb(77,141,186))}
-                    chip("네가 더한 나무 그늘",565f,388f,280f)
-                } else if(variant=="birds") {
-                    for(i in 0..3) {val x=293f+i*85;line(x-12,353f,x,361f,ink,4f);line(x,361f,x+12,353f,ink,4f)}
-                    chip("네가 남긴 새들의 쉼터",525f,388f,320f)
-                }
-                chip(if(t<.25f) "원래 있던 모래섬" else if(t<.6f) "섬 둘레에 쌓은 둑" else "땅을 넓히며 자란 도시",95f,128f,335f)
-                text("자연의 섬 위에 사람들의 변화가 더해졌어요",155f,491f,26f,teal,true)
+                clippings(kind)
+                middle(when(variant) {
+                    "park" -> "네가 더한 나무 그늘까지 이 섬의 이야기예요"
+                    "birds" -> "네가 남긴 새들의 쉼터까지 이 섬의 이야기예요"
+                    else -> "자연의 섬 위에 사람들의 변화가 더해졌어요"
+                },497f)
             }
             CuratorVisual.RECIPE -> {
-                val positions=listOf(230f,480f,730f)
-                for((index,x) in positions.withIndex()) {
-                    dot(x,224f,32f,Color.rgb(243,214,163))
-                    rect(x-49,266f,x+49,367f,if(index==2)teal else Color.rgb(77,141,186),24f)
-                    rect(x-30,285f,x+30,363f,Color.rgb(255,245,219),12f)
-                    text("${index+1}대",x-20,409f,24f,ink,true)
-                }
-                for(i in 0..1) arrow(297f+i*250,300f,407f+i*250,300f,gold)
-                val ladleX=230f+500f*t
-                line(ladleX,276f,ladleX+26,324f,Color.rgb(110,130,150),7f);dot(ladleX+29,331f,14f,Color.rgb(110,130,150))
-                chip("서울미래유산에 기록된 3대 이야기",247f,145f,470f)
-                text(if(variant=="kindness") "다음 사람에게 따뜻한 인사를!" else "음식과 함께 동네의 기억도 이어져요",180f,491f,26f,teal,true)
+                clippings(kind)
+                middle(if(variant=="kindness") "다음 사람에게 따뜻한 인사를!"
+                       else "음식과 함께 동네의 기억도 이어져요",497f)
             }
             CuratorVisual.GATE -> {
-                rect(220f,310f,740f,425f,Color.rgb(198,212,226),7f)
-                p.color=Color.rgb(255,239,196);c.drawRoundRect(431f,334f,529f,429f,49f,49f,p)
-                for(level in 0..1) {
-                    val y=290f-level*84
-                    rect(300f,y-47,660f,y,Color.rgb(60,110,150),3f)
-                    for(i in 0..6) line(315f+i*52,y-42,315f+i*52,y,teal,8f)
-                    val roof=Path().apply { moveTo(175f,y);quadTo(296f,y-6,340f,y-68);lineTo(620f,y-68);quadTo(665f,y-6,785f,y);quadTo(480f,y+28,175f,y) }
-                    p.color=ink;c.drawPath(roof,p)
-                }
-                val open=if(variant.isNotBlank()) 1f else t
-                rect(432f,345f,480f-46*open,425f,Color.rgb(77,141,186),2f)
-                rect(480f+46*open,345f,528f,425f,Color.rgb(77,141,186),2f)
-                dot(782f,163f,30f,gold)
-                text(if(variant=="greet") "오늘도 즐겁게 다녀오세요!" else "좋은 아침! 문을 열어요",282f,491f,28f,teal,true)
+                clippings(kind)
+                middle(if(variant=="greet") "오늘도 즐겁게 다녀오세요!" else "좋은 아침! 문을 열어요",497f,28f)
             }
             CuratorVisual.FAMILY -> {
-                // Deliberately not a building. Drawing one would be inventing what this place
-                // looks like, and the only true thing the app holds here is the guardian's line.
+                // Deliberately not a building, and deliberately not a photograph. Drawing one
+                // would be inventing what this place looks like, and the only true thing the
+                // app holds here is the guardian's line.
                 rect(250f,196f,710f,430f,Color.WHITE,28f)
                 rect(250f,196f,710f,252f,Color.rgb(77,141,186),28f)
                 rect(250f,236f,710f,252f,Color.rgb(77,141,186),0f)
@@ -150,10 +235,10 @@ object CuratorMediaArt {
                 }
                 p.color=gold;c.drawPath(heart,p)
                 dot(292f,224f,11f,Color.rgb(255,245,219))
-                text("오늘 이 길에서 다시 만났어요",286f,491f,26f,teal,true)
+                middle("오늘 이 길에서 다시 만났어요",497f)
             }
         }
-        if(variant=="own") chip("네가 더한 상상",635f,126f,260f)
+        if(variant=="own") chipMid("네가 더한 상상",760f,126f)
         c.restore()
     }
 }

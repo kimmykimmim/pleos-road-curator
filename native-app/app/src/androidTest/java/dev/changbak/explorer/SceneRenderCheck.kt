@@ -26,6 +26,8 @@ class SceneRenderCheck : Instrumentation() {
 
     override fun onStart() {
         val report = Bundle()
+        // The explanation scenes are photographs now; the drawing routine reads them from here.
+        ScenePhotos.attach(targetContext)
         try {
             if(requestedCheck=="navi-connection") {
                 report.putString("result",NaviConnectionCheck.run(targetContext));finish(Activity.RESULT_OK,report);return
@@ -194,6 +196,17 @@ class SceneRenderCheck : Instrumentation() {
             }
             bmp.recycle()
         }
+        // The explanation's clippings are files too, and one that failed to decode would leave
+        // a grey box where the photograph should be without failing anything.
+        SceneScraps.assets().forEach { asset ->
+            val bytes = targetContext.assets.open("scenes/$asset").use { it.readBytes() }
+            val bmp = android.graphics.BitmapFactory.decodeByteArray(bytes, 0, bytes.size)
+            checkNotNull(bmp) { "scenes/$asset did not decode" }
+            check(bmp.width >= 600 && bmp.height >= 400) {
+                "scenes/$asset is too small to read: ${bmp.width}x${bmp.height}"
+            }
+            bmp.recycle()
+        }
         // 두리 in each of the things it can be doing, so a face that stopped drawing or
         // stopped changing shows up here rather than in front of a child.
         val faces = CompanionView.Doing.entries.mapIndexed { index, doing ->
@@ -244,6 +257,7 @@ class SceneRenderCheck : Instrumentation() {
         report.putString("artifacts", output.absolutePath)
         report.putString("result", "PASS: ${pictures.size} topic pictures each drawn and different, " +
             "${PlaceScrap.assets().size} photo clippings cut out and readable, " +
+            "${SceneScraps.assets().size} explanation photographs readable, " +
             "the companion drawn differently in all ${CompanionView.Doing.entries.size} states, " +
             "and alive when resting")
     }

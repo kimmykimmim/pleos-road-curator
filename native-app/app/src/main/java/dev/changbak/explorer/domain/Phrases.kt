@@ -74,7 +74,6 @@ data class Phrases(
     val tagline: String,
     val noPlaceYet: String,
     val routeDiscovery: String,
-    val passedHere: String,
     val todaysRoute: String,
     /** Minutes until this place, as the child hears it. */
     val minutesAway: (Int) -> String,
@@ -152,7 +151,6 @@ data class Phrases(
             tagline = "가는 길이 이야기가 되는 시간",
             noPlaceYet = "길에서 만날 이야기",
             routeDiscovery = "경로에서 만나는 발견",
-            passedHere = "이 지점 근처를 지났어요",
             todaysRoute = "오늘 지나온 발견",
             minutesAway = { minutes -> "이 지점까지 약 ${minutes}분" },
             pause = "잠깐 쉬기",
@@ -230,7 +228,6 @@ data class Phrases(
             tagline = "When the drive becomes a story",
             noPlaceYet = "A story along the way",
             routeDiscovery = "Something to find on this route",
-            passedHere = "We just went past it",
             todaysRoute = "Where we went today",
             minutesAway = { minutes -> "About $minutes min to go" },
             pause = "Take a break",
