@@ -17,11 +17,11 @@ import android.view.View
  * is a strange thing to ask. So there is somebody: a small face at the top of the sheet that
  * moves while the words are being said and listens while the child answers.
  *
- * It is drawn from the front of a car — two round headlamps for eyes, a windscreen for a brow,
- * two wing mirrors — because the thing talking to the child really is the car they are sitting
- * in. That is also why it is ours and not a borrowed one: shipping somebody else's character
- * in a submitted app is not something to do on a maybe, and a car's own face is the honest
- * shape for this app anyway.
+ * It is drawn as a car window with a face in it, with one wing mirror on its left. The app's
+ * whole request to the child is "look out of the window", so the thing doing the asking is a
+ * window: the shape and the job are the same. That is also why it is ours and not a borrowed
+ * one — shipping somebody else's character in a submitted app is not something to do on a
+ * maybe, and this shape says what the app is for without a word.
  *
  * The name is 두리번거리다 — to look around you. That is the whole of what the app wants.
  */
@@ -168,92 +168,114 @@ class CompanionView(context: Context) : View(context) {
                 }
             }
 
-            // The body: a cabin with a windscreen, seen head on.
-            fill.color = cream
+            // The body: a car window, seen from inside the back seat.
+            //
+            // 두리 used to be the front of a car. This is the same idea one step closer to
+            // what the app actually asks for: the child is told to look out of a window, and
+            // the thing asking is the window. One wing mirror keeps the car in it.
+            fill.color = Color.rgb(168, 224, 95)
             path.reset()
-            path.addRoundRect(RectF(16f, 26f, 84f, 84f), 24f, 24f, Path.Direction.CW)
+            path.addRoundRect(RectF(2f, 52f, 14f, 70f), 6f, 6f, Path.Direction.CW)
             canvas.drawPath(path, fill)
             line.color = ink
             canvas.drawPath(path, line)
 
-            // The windscreen.
-            fill.color = glass
             path.reset()
-            path.moveTo(29f, 46f)
-            path.cubicTo(34f, 34f, 66f, 34f, 71f, 46f)
-            path.cubicTo(60f, 42f, 40f, 42f, 29f, 46f)
+            path.moveTo(14f, 30f)
+            path.quadTo(18f, 20f, 30f, 19f)
+            path.lineTo(70f, 19f)
+            path.quadTo(82f, 20f, 86f, 30f)
+            path.lineTo(90f, 74f)
+            path.quadTo(90f, 86f, 78f, 87f)
+            path.lineTo(22f, 87f)
+            path.quadTo(10f, 86f, 10f, 74f)
             path.close()
+            fill.color = cream
             canvas.drawPath(path, fill)
 
-            // Wing mirrors, which is what makes it read as a car rather than a bear.
-            fill.color = cream
-            listOf(12f to 52f, 88f to 52f).forEach { (x, y) ->
-                path.reset()
-                path.addRoundRect(RectF(x - 7f, y - 5f, x + 7f, y + 7f), 4f, 4f, Path.Direction.CW)
-                canvas.drawPath(path, fill)
-                line.color = ink
-                canvas.drawPath(path, line)
-            }
+            // The sky in the top of the window. Clipped to the glass so it cannot spill.
+            canvas.save()
+            canvas.clipPath(path)
+            fill.color = glass
+            path.reset()
+            path.moveTo(10f, 30f)
+            path.quadTo(18f, 19f, 30f, 18f)
+            path.lineTo(70f, 18f)
+            path.quadTo(82f, 19f, 90f, 30f)
+            path.lineTo(90f, 36f)
+            path.lineTo(10f, 36f)
+            path.close()
+            canvas.drawPath(path, fill)
+            canvas.restore()
 
-            // Headlamp eyes. They close to a happy arc while listening, so the child can see
-            // they are being attended to rather than looked at.
+            // The frame, drawn last so the glass meets a clean edge.
+            path.reset()
+            path.moveTo(14f, 30f)
+            path.quadTo(18f, 20f, 30f, 19f)
+            path.lineTo(70f, 19f)
+            path.quadTo(82f, 20f, 86f, 30f)
+            path.lineTo(90f, 74f)
+            path.quadTo(90f, 86f, 78f, 87f)
+            path.lineTo(22f, 87f)
+            path.quadTo(10f, 86f, 10f, 74f)
+            path.close()
+            line.color = ink
+            canvas.drawPath(path, line)
+
+            // Eyes. They close to a happy arc while listening, so the child can see they are
+            // being attended to rather than looked at.
             if (doing == Doing.LISTENING) {
                 line.color = ink
-                listOf(36f, 64f).forEach { x ->
-                    box.set(x - 9f, 50f, x + 9f, 68f)
+                listOf(37f, 63f).forEach { x ->
+                    box.set(x - 10f, 50f, x + 10f, 68f)
                     canvas.drawArc(box, 200f, 140f, false, line)
                 }
             } else if (blink > .82f) {
-                // Shut, and smiling with it: a closed eye that curves up is asleep-happy, a
-                // straight one is switched off.
                 line.color = ink
-                listOf(36f, 64f).forEach { x ->
-                    box.set(x - 9f, 52f, x + 9f, 68f)
+                listOf(37f, 63f).forEach { x ->
+                    box.set(x - 10f, 52f, x + 10f, 68f)
                     canvas.drawArc(box, 200f, 140f, false, line)
                 }
             } else {
                 val open = 1f - blink
-                listOf(36f, 64f).forEach { x ->
+                listOf(37f, 63f).forEach { x ->
                     canvas.save()
-                    canvas.scale(1f, open, x, 59f)
-                    fill.color = lamp
-                    canvas.drawCircle(x, 59f, 9.5f, fill)
+                    canvas.scale(1f, open, x, 56f)
+                    fill.color = Color.WHITE
+                    canvas.drawCircle(x, 56f, 10f, fill)
                     line.color = ink
-                    canvas.drawCircle(x, 59f, 9.5f, line)
+                    canvas.drawCircle(x, 56f, 10f, line)
                     fill.color = ink
-                    canvas.drawCircle(x + 1f, 60f, 5f, fill)
+                    canvas.drawCircle(x + 1f, 57f, 5.2f, fill)
                     // The catchlight. Without it the pupil is a hole, and a hole does not
                     // look at anybody.
                     fill.color = Color.WHITE
-                    canvas.drawCircle(x + 3.2f, 57.6f, 1.9f, fill)
+                    canvas.drawCircle(x + 3.4f, 54.4f, 2.1f, fill)
                     canvas.restore()
                 }
             }
 
             // Cheeks. Two soft spots are most of the difference between a face that is pleased
-            // to see you and a machine with two lamps on it.
+            // to see you and a window with two lamps in it.
             fill.color = Color.argb(120, 246, 150, 140)
-            canvas.drawCircle(25f, 70f, 6.5f, fill)
-            canvas.drawCircle(75f, 70f, 6.5f, fill)
+            canvas.drawCircle(24f, 72f, 6.5f, fill)
+            canvas.drawCircle(76f, 72f, 6.5f, fill)
 
-            // The mouth, which is the whole of whether this face is friendly.
-            //
-            // It was a flat bar across the grille, and a flat bar is a straight line: the one
-            // mouth shape that reads as stern however round everything around it is. It smiles
-            // now, and the smile opens while the words come out instead of a slot widening.
+            // The mouth, which is the whole of whether this face is friendly. It smiles, and
+            // the smile opens while the words come out.
             line.color = ink
             line.strokeWidth = 4.6f
             if (doing == Doing.SPEAKING) {
                 val gape = 4f + 9f * beat
                 fill.color = ink
                 path.reset()
-                path.moveTo(41f, 70f)
-                path.cubicTo(45f, 70f + gape * .35f, 55f, 70f + gape * .35f, 59f, 70f)
-                path.cubicTo(57f, 70f + gape, 43f, 70f + gape, 41f, 70f)
+                path.moveTo(41f, 74f)
+                path.cubicTo(45f, 74f + gape * .35f, 55f, 74f + gape * .35f, 59f, 74f)
+                path.cubicTo(57f, 74f + gape, 43f, 74f + gape, 41f, 74f)
                 path.close()
                 canvas.drawPath(path, fill)
             } else {
-                box.set(38f, 62f, 62f, 78f)
+                box.set(38f, 66f, 62f, 82f)
                 canvas.drawArc(box, 25f, 130f, false, line)
             }
             line.strokeWidth = 4.2f
