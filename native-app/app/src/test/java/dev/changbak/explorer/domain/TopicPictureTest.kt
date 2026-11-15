@@ -37,4 +37,32 @@ class TopicPictureTest {
         assertEquals(fields.size, fields.toSet().size)
         assertEquals(favourites.size + fields.size, (favourites + fields).toSet().size)
     }
+
+    @Test
+    fun `the picture is of the place, not of the kind of question`() {
+        // 숭례문 asked a question about the people who walked through it — a "living" question
+        // — and the screen put a bowl of soup beside a photograph of a gate.
+        assertEquals(TopicPicture.GATE,
+            TopicPicture.pick(null, InterestField.LIVING, CuratorVisual.GATE))
+        assertEquals(TopicPicture.TOWER,
+            TopicPicture.pick(null, InterestField.HISTORY, CuratorVisual.TOWER))
+        assertEquals(TopicPicture.BOWL,
+            TopicPicture.pick(null, InterestField.HISTORY, CuratorVisual.RECIPE))
+    }
+
+    @Test
+    fun `a favourite that is actually being said still wins`() {
+        // The line "공룡 좋아한댔지" is on screen, so the dinosaur is what the app is talking
+        // about at that moment.
+        assertEquals(TopicPicture.DINOSAUR,
+            TopicPicture.pick(FavouriteTopic.DINOSAUR, InterestField.SCIENCE, CuratorVisual.TOWER))
+    }
+
+    @Test
+    fun `every place in the catalogue has a picture of its own kind`() {
+        CuratorCatalog.places.forEach { place ->
+            assertEquals(TopicPicture.of(place.visual),
+                TopicPicture.pick(null, place.rounds.first().field, place.visual))
+        }
+    }
 }
