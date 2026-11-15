@@ -301,6 +301,7 @@ object EnglishPlaces {
             "Can you find the round passage under the big roof?",
             "Old Seoul had a bedtime too! Sungnyemun, the south gate of the Hanyang city wall, was closed at night and opened again at dawn. The whole city had a big front door. There is a two storey building on top of the stone passage.",
             "Korea Heritage Service, Royal Palaces and Tombs Centre", "https://royal.khs.go.kr/ROYAL/contents/R108010000.do",
+            mediaKey = "sungnyemun",
             activity = PlaceActivity("morning gatekeeper", "What would you say as you open the gate?", listOf(
                 PlayChoice("welcome", "Good morning! Come in!", "The model gate opened with your greeting. You just became the gatekeeper who opens the city's morning!", cues = listOf("morning","come in","welcome","hello")),
                 PlayChoice("greet", "Have a lovely day out there!", "People walking through got your cheer. This is a morning we made up together.", cues = listOf("lovely","day","good day","bye")))),
@@ -389,6 +390,7 @@ object EnglishPlaces {
             "Look at the space that opens up behind the big gate.",
             "Walk through one gate and another world opens up! Gwanghwamun is the main gate into Gyeongbokgung, a palace of the Joseon period. If Sungnyemun is the city's gate, Gwanghwamun is the palace's gate. A gate's job depends on where it leads.",
             "Korea.kr policy briefing, palaces", "https://www.korea.kr/goNewsRes/attaches/2019.05/23/107_20170109_01IozeNoYDGJM000.pdf",
+            mediaKey = "gwanghwamun",
             activity = PlaceActivity("palace guide", "What would you say to a visitor arriving for the first time?", listOf(
                 PlayChoice("welcome", "Welcome to the palace!", "The model palace gate opened with your welcome. You passed on the story that Gwanghwamun is the gate into the palace!", cues = listOf("welcome","come in","hello")),
                 PlayChoice("greet", "What do you think is behind the gate?", "You handed your own question to the visitor. You are the guide who opened up the next person's discovery.", cues = listOf("behind","what","question")))),

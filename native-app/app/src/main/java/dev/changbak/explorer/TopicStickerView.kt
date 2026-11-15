@@ -264,6 +264,11 @@ class TopicStickerView(context: Context) : View(context) {
                 TopicPicture.BRUSH -> brush(canvas)
                 TopicPicture.LEAF -> leaf(canvas)
                 TopicPicture.BOWL -> bowl(canvas)
+                TopicPicture.GATE -> gate(canvas)
+                TopicPicture.TOWER -> tower(canvas)
+                TopicPicture.GLASS -> glassTower(canvas)
+                TopicPicture.ISLAND -> island(canvas)
+                TopicPicture.HEART -> heart(canvas)
             }
             canvas.restore()
             fill.alpha = 255; line.alpha = 255
@@ -459,6 +464,79 @@ class TopicStickerView(context: Context) : View(context) {
             }
             line.color = ink
             canvas.drawLine(20f, 82f, 76f, 26f, line)
+        }
+
+        /** A gate: a tiled roof over a stone base with a way through it. */
+        private fun gate(canvas: Canvas) {
+            shape(canvas, Color.rgb(205, 216, 226)) {
+                addRoundRect(RectF(22f, 50f, 78f, 88f), 4f, 4f, Path.Direction.CW)
+            }
+            // The arch a child can walk through, which is the whole of what a gate is.
+            shape(canvas, ink) {
+                moveTo(42f, 88f); lineTo(42f, 68f)
+                cubicTo(42f, 56f, 58f, 56f, 58f, 68f)
+                lineTo(58f, 88f); close()
+            }
+            // The roof, wide and turned up at both ends.
+            shape(canvas, cream) {
+                moveTo(10f, 50f)
+                cubicTo(24f, 48f, 30f, 36f, 34f, 26f)
+                lineTo(66f, 26f)
+                cubicTo(70f, 36f, 76f, 48f, 90f, 50f)
+                cubicTo(66f, 56f, 34f, 56f, 10f, 50f)
+                close()
+            }
+        }
+
+        /** A tower that narrows as it goes up. */
+        private fun tower(canvas: Canvas) {
+            shape(canvas) {
+                moveTo(36f, 90f); lineTo(43f, 20f)
+                cubicTo(46f, 12f, 54f, 12f, 57f, 20f)
+                lineTo(64f, 90f); close()
+            }
+            line.color = ink
+            listOf(38f, 52f, 66f, 80f).forEach { y ->
+                piece.reset()
+                val inset = (90f - y) * .07f
+                piece.moveTo(37f + inset, y); piece.lineTo(63f - inset, y)
+                canvas.drawPath(piece, line)
+            }
+        }
+
+        /** A glass tower: a slab with its windows in rows. */
+        private fun glassTower(canvas: Canvas) {
+            shape(canvas, Color.rgb(246, 214, 146)) {
+                addRoundRect(RectF(32f, 16f, 68f, 90f), 5f, 5f, Path.Direction.CW)
+            }
+            line.color = ink
+            (0..4).forEach { row ->
+                piece.reset()
+                piece.moveTo(34f, 30f + row * 14f); piece.lineTo(66f, 30f + row * 14f)
+                canvas.drawPath(piece, line)
+            }
+            piece.reset(); piece.moveTo(50f, 18f); piece.lineTo(50f, 88f)
+            canvas.drawPath(piece, line)
+        }
+
+        /** An island: a band of water with ground in the middle of it. */
+        private fun island(canvas: Canvas) {
+            shape(canvas, Color.rgb(151, 215, 255)) {
+                addRoundRect(RectF(8f, 32f, 92f, 76f), 10f, 10f, Path.Direction.CW)
+            }
+            shape(canvas) { addOval(RectF(24f, 40f, 76f, 68f), Path.Direction.CW) }
+            // Something standing on it, because this island has a city on it.
+            shape(canvas, ink) { addRoundRect(RectF(46f, 30f, 54f, 52f), 2f, 2f, Path.Direction.CW) }
+        }
+
+        /** A heart, for the places a family brought with them. */
+        private fun heart(canvas: Canvas) {
+            shape(canvas, Color.rgb(246, 150, 140)) {
+                moveTo(50f, 86f)
+                cubicTo(6f, 56f, 20f, 18f, 50f, 38f)
+                cubicTo(80f, 18f, 94f, 56f, 50f, 86f)
+                close()
+            }
         }
 
         private fun bowl(canvas: Canvas) {

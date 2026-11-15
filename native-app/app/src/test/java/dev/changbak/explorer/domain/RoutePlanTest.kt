@@ -16,7 +16,12 @@ class RoutePlanTest {
     @Test
     fun `the road is one road`() {
         assertEquals(1, CuratorRoutes.routes.size)
-        assertEquals(listOf("sungnyemun", "gwanghwamun", "cheongjinok"), route.placeIds)
+        // East to west across Seoul: the science of three buildings and an island, then what
+        // people did at three places downtown.
+        assertEquals(
+            listOf("lotte", "building63", "yeouido", "sungnyemun", "gwanghwamun", "cheongjinok"),
+            route.placeIds,
+        )
     }
 
     @Test
@@ -27,9 +32,8 @@ class RoutePlanTest {
         assertTrue(InterestField.ART in fields)
         assertTrue(InterestField.LIVING in fields)
         assertTrue(InterestField.SCIENCE in fields)
-        // Nature is not one of them: nothing on this road has a nature question written for
-        // it, and inventing one is the thing this app does not do.
-        assertTrue(InterestField.NATURE !in fields)
+        // 여의도 is on this road now, and it is the one place with honest nature questions.
+        assertTrue(InterestField.NATURE in fields)
     }
 
     @Test

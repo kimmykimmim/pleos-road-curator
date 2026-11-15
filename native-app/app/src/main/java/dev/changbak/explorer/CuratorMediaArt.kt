@@ -28,7 +28,8 @@ object CuratorMediaArt {
     private val teal=Color.rgb(8,98,136)
     private val gold=Color.rgb(224,180,92)
     private val muted=Color.rgb(104,130,151)
-    fun draw(canvas: Canvas,w:Float,h:Float,kind:CuratorVisual,progress:Float,variant:String="") {
+    fun draw(canvas: Canvas,w:Float,h:Float,kind:CuratorVisual,progress:Float,variant:String="",
+             placeId:String?=null) {
         val c=canvas; val p=Paint(Paint.ANTI_ALIAS_FLAG); val t=progress.coerceIn(0f,1f)
         c.drawColor(Color.rgb(238,246,252))
         c.save();val scale=min(w/960f,h/540f);c.translate((w-960f*scale)/2,(h-540f*scale)/2);c.scale(scale,scale)
@@ -65,19 +66,18 @@ object CuratorMediaArt {
             p.textSize=21f;p.typeface=Typeface.create("sans-serif",Typeface.BOLD)
             chip(value,middle-(p.measureText(value)+28f)/2f,y)
         }
-        val titles=when(kind) {
+        // The place names its own explanation. Two places that share a kind of story — a city
+        // gate and a palace gate — are not the same story and must not be headed as one.
+        val titles=SceneScraps.titleFor(placeId) ?: when(kind) {
             CuratorVisual.TOWER -> "높은 건물 안의 힘 나누기 팀"
             CuratorVisual.GLASS -> "건물의 뼈대와 유리 겉옷"
             CuratorVisual.ISLAND -> "모래섬에서 오늘의 도시까지"
             CuratorVisual.RECIPE -> "사람에서 사람으로 건너가는 이야기"
-            CuratorVisual.GATE -> "도시의 아침을 여는 문"
+            CuratorVisual.GATE -> "도시의 문"
             CuratorVisual.FAMILY -> "우리 가족이 함께 왔던 곳"
         }
         text(titles,42f,56f,32f,ink,true)
-        // What the child is looking at, said plainly. A photograph and a diagram are different
-        // promises, and the app has to say which one it is making.
-        text(if(kind==CuratorVisual.FAMILY) "보호자가 적어 둔 기억을 담은 표시"
-             else "실제 사진을 오려 붙인 설명",42f,89f,20f,muted)
+        if(kind==CuratorVisual.FAMILY) text("보호자가 적어 둔 기억을 담은 표시",42f,89f,20f,muted)
 
         /**
          * One clipping: the photograph, the white paper it is stuck on, its caption, and the
@@ -170,7 +170,7 @@ object CuratorMediaArt {
          *   one is outlined and the other steps back, so the answer changes the page.
          */
         fun clippings(kind:CuratorVisual,picked:Int = -1) {
-            val scraps=SceneScraps.of(kind)
+            val scraps=SceneScraps.of(placeId)
             // A gentle settle, so the cuttings look placed rather than printed.
             val sway=sin(t*2f*PI).toFloat()
             when(scraps.size) {

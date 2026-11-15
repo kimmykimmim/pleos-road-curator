@@ -321,6 +321,7 @@ object KoreanPlaces {
             "큰 지붕 아래 둥근 통로를 찾아볼래?",
             "옛날 서울에도 잠자는 시간이 있었대! 한양도성 남쪽 문인 숭례문은 밤에 닫고 새벽에 다시 열었어. 도시 전체에 커다란 현관문이 있었던 셈이지. 돌로 쌓은 통로 위에는 두 층 건물도 있어.",
             "국가유산청 궁능유적본부", "https://royal.khs.go.kr/ROYAL/contents/R108010000.do",
+            mediaKey = "sungnyemun",
             activity = PlaceActivity("아침 문지기", "문을 열면서 어떤 인사를 해 줄래?", listOf(
                 PlayChoice("welcome", "좋은 아침! 들어오세요!", "네 인사와 함께 모형 속 문이 열렸어. 네가 도시의 아침을 열어 준 문지기가 됐네!", cues = listOf("좋은아침", "들어오", "환영")),
                 PlayChoice("greet", "오늘도 즐겁게 다녀오세요!", "문을 지나가는 사람들에게 네 응원이 전해졌어. 이건 우리가 만든 상상 속 아침이야.", cues = listOf("다녀오", "즐겁", "문뒤")))),
@@ -409,6 +410,7 @@ object KoreanPlaces {
             "큰 문 뒤로 이어지는 공간을 살펴봐.",
             "문을 하나 지나면 또 다른 세상이 펼쳐져! 광화문은 조선의 궁궐인 경복궁으로 들어가는 정문이야. 숭례문이 도시의 문이라면 광화문은 궁궐의 문이야. 문도 어디로 들어가느냐에 따라 역할이 다르지.",
             "정부 정책브리핑 궁궐 이야기", "https://www.korea.kr/goNewsRes/attaches/2019.05/23/107_20170109_01IozeNoYDGJM000.pdf",
+            mediaKey = "gwanghwamun",
             activity = PlaceActivity("궁궐 안내자", "처음 온 손님에게 한마디 해 줄래?", listOf(
                 PlayChoice("welcome", "궁궐에 오신 걸 환영해요!", "네 안내와 함께 모형 속 궁궐 문이 열렸어. 광화문이 궁궐로 들어가는 문이라는 이야기를 전했네!", cues = listOf("좋은아침", "들어오", "환영")),
                 PlayChoice("greet", "문 뒤에는 어떤 곳이 있을까요?", "손님에게 네가 품었던 궁금증을 건넸어. 다음 사람이 발견할 이야기를 열어 준 안내자야.", cues = listOf("다녀오", "즐겁", "문뒤")))),
@@ -552,8 +554,12 @@ object CuratorRoutes {
      * near them. They are simply not a second demonstration.
      */
     val fixed = CuratorDemoRoute(
-        "old-seoul", "도심의 오래된 이야기", "숭례문 → 광화문 → 청진옥 / 가상 경로",
-        listOf("sungnyemun", "gwanghwamun", "cheongjinok"),
+        "old-seoul", "서울을 가로지르는 길",
+        "롯데월드타워 → 63빌딩 → 여의도 → 숭례문 → 광화문 → 청진옥 / 가상 경로",
+        // East to west, the way the road actually runs: 잠실에서 여의도를 지나 도심으로.
+        // Three of these are the science of how a building stands up and what an island is
+        // made of; three are what people did here. One drive, both kinds of question.
+        listOf("lotte", "building63", "yeouido", "sungnyemun", "gwanghwamun", "cheongjinok"),
     )
 
     val routes = listOf(fixed)

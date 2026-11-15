@@ -894,7 +894,7 @@ class MainActivity : Activity() {
         sticker.showScrap(null, null)
         // The favourite only counts while its line is on screen, which is the predict step.
         val spoken = if (state.phase == CuratorPhase.PREDICT) engine.favouriteFor(place) else null
-        sticker.show(TopicPicture.pick(spoken, engine.prompt(state)?.field))
+        sticker.show(TopicPicture.pick(spoken, engine.prompt(state)?.field, place.visual))
     }
 
     /**

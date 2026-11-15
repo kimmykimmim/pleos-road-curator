@@ -15,7 +15,9 @@ package dev.changbak.explorer.domain
  */
 enum class TopicPicture {
     DINOSAUR, SPACE, ANIMAL, VEHICLE, PALETTE, MUSIC, ROBOT,
-    GEAR, HOURGLASS, BRUSH, LEAF, BOWL;
+    GEAR, HOURGLASS, BRUSH, LEAF, BOWL,
+    /** The places themselves, which is what the picture is about nearly all of the time. */
+    GATE, TOWER, GLASS, ISLAND, HEART;
 
     companion object {
         /** What a child's favourite thing looks like. */
@@ -27,6 +29,23 @@ enum class TopicPicture {
             FavouriteTopic.DRAWING -> PALETTE
             FavouriteTopic.MUSIC -> MUSIC
             FavouriteTopic.ROBOTS -> ROBOT
+        }
+
+        /**
+         * What the place itself looks like.
+         *
+         * This is the one that matters. The picture used to come from the kind of question, so
+         * a question about how many people walked through 숭례문 — a question about living —
+         * put a bowl of soup beside a photograph of a gate. A child reads the picture before
+         * anybody reads them the words, and a bowl at a gate is simply wrong.
+         */
+        fun of(visual: CuratorVisual): TopicPicture = when (visual) {
+            CuratorVisual.TOWER -> TOWER
+            CuratorVisual.GLASS -> GLASS
+            CuratorVisual.ISLAND -> ISLAND
+            CuratorVisual.RECIPE -> BOWL
+            CuratorVisual.GATE -> GATE
+            CuratorVisual.FAMILY -> HEART
         }
 
         /** What a kind of question looks like, when nothing more particular is being said. */
@@ -48,7 +67,10 @@ enum class TopicPicture {
          *   to. Null for a turn that is asking nothing, and then there is no picture: a drawing
          *   that appears for no reason teaches a child to stop looking at the screen.
          */
-        fun pick(spokenFavourite: FavouriteTopic?, field: InterestField?): TopicPicture? =
-            spokenFavourite?.let(::of) ?: field?.let(::of)
+        fun pick(
+            spokenFavourite: FavouriteTopic?,
+            field: InterestField?,
+            visual: CuratorVisual? = null,
+        ): TopicPicture? = spokenFavourite?.let(::of) ?: visual?.let(::of) ?: field?.let(::of)
     }
 }

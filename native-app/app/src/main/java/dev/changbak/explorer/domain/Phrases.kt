@@ -196,7 +196,7 @@ data class Phrases(
             startLive = "실제 내비로 음성 여행 시작",
             routeNames = mapOf(
                 "hangang-science" to "한강의 과학 여행",
-                "old-seoul" to "도심의 오래된 이야기",
+                "old-seoul" to "서울을 가로지르는 길",
             ),
             tagline = "가는 길이 이야기가 되는 시간",
             noPlaceYet = "길에서 만날 이야기",
@@ -283,7 +283,7 @@ data class Phrases(
             startLive = "Start the trip with real navigation",
             routeNames = mapOf(
                 "hangang-science" to "Science along the Han River",
-                "old-seoul" to "Old stories downtown",
+                "old-seoul" to "Across Seoul",
             ),
             tagline = "When the drive becomes a story",
             noPlaceYet = "A story along the way",

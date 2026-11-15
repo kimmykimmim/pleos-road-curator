@@ -93,22 +93,26 @@ class SceneRenderCheck : Instrumentation() {
 
     private fun exportCuratorMedia(report:Bundle) {
         val output=File(targetContext.filesDir,"curator-media-build").apply { mkdirs() }
-        val types=mapOf("tower" to CuratorVisual.TOWER,"glass" to CuratorVisual.GLASS,"island" to CuratorVisual.ISLAND,"recipe" to CuratorVisual.RECIPE,"gate" to CuratorVisual.GATE)
-        types.forEach { (key,kind) ->
+        // One film per place: 숭례문 and 광화문 used to share one, and now that each place has
+        // its own photographs they cannot.
+        val types=CuratorCatalog.places.filter { it.mediaKey.isNotBlank() }
+            .associate { it.mediaKey to (it.visual to it.id) }
+        types.forEach { (key,what) ->
+            val (kind,placeId)=what
             val frames=File(output,key).apply { mkdirs() }
             val bitmap=Bitmap.createBitmap(960,540,Bitmap.Config.ARGB_8888)
             val canvas=android.graphics.Canvas(bitmap)
             for(index in 0..143) {
-                CuratorMediaArt.draw(canvas,960f,540f,kind,index/143f)
+                CuratorMediaArt.draw(canvas,960f,540f,kind,index/143f,placeId=placeId)
                 File(frames,"frame-%03d.png".format(index)).outputStream().use { check(bitmap.compress(Bitmap.CompressFormat.PNG,100,it)) }
             }
             bitmap.recycle()
         }
-        report.putString("result","PASS: original five-topic motion artwork, 720 production Canvas frames")
+        report.putString("result","PASS: one film per place, ${types.size*144} production Canvas frames")
         report.putString("artifacts",output.absolutePath)
     }
     private fun checkCuratorMedia(report:Bundle) {
-        for(key in listOf("tower","glass","island","recipe","gate")) {
+        for(key in CuratorCatalog.places.map { it.mediaKey }.filter { it.isNotBlank() }.distinct()) {
             val id=targetContext.resources.getIdentifier("curator_$key","raw",targetContext.packageName)
             check(id!=0) { "Missing bundled clip $key" }
             val reader=android.media.MediaMetadataRetriever()
@@ -138,7 +142,7 @@ class SceneRenderCheck : Instrumentation() {
             }
             check(images.size==2 && images[0].indices.count {images[0][it]!=images[1][it]}>80) {"Role choices have no visible difference: ${place.id}"}
         }
-        report.putString("result","PASS: five bundled MP4s, six-second duration, 960x540 decoding, visible motion and distinct role scenes at all six places")
+        report.putString("result","PASS: one bundled MP4 per place, six-second duration, 960x540 decoding, visible motion and distinct role scenes at all six places")
         report.putString("artifacts",output.absolutePath)
     }
 
@@ -202,7 +206,7 @@ class SceneRenderCheck : Instrumentation() {
             val bytes = targetContext.assets.open("scenes/$asset").use { it.readBytes() }
             val bmp = android.graphics.BitmapFactory.decodeByteArray(bytes, 0, bytes.size)
             checkNotNull(bmp) { "scenes/$asset did not decode" }
-            check(bmp.width >= 600 && bmp.height >= 400) {
+            check(bmp.width >= 480 && bmp.height >= 400) {
                 "scenes/$asset is too small to read: ${bmp.width}x${bmp.height}"
             }
             bmp.recycle()

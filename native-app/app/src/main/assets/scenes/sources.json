@@ -21,17 +21,6 @@
     "file": "glass-1984.jpg",
     "bytes": 454868
   },
-  "glass-skin": {
-    "title": "File:1900 M Street NW - Washington DC - curtain wall detail.JPG",
-    "artist": "Tim1965",
-    "license": "CC BY-SA 3.0",
-    "licenseurl": "https://creativecommons.org/licenses/by-sa/3.0",
-    "credit": "Own work",
-    "page": "https://commons.wikimedia.org/wiki/File%3A1900_M_Street_NW_-_Washington_DC_-_curtain_wall_detail.JPG",
-    "size": "2000x1333",
-    "file": "glass-skin.jpg",
-    "bytes": 455086
-  },
   "island-1969": {
     "title": "File:서울, 한강, 여의도-1969년.jpg",
     "artist": "경기도청",
@@ -83,5 +72,38 @@
     "page": "https://commons.wikimedia.org/wiki/File:%EB%8F%99%EC%9E%91%EB%8C%80%EA%B5%90%EC%97%90%EC%84%9C_%EB%B3%B8_%EC%97%AC%EC%9D%98%EB%8F%84%EC%9D%98_%EB%A7%88%EC%B2%9C%EB%A3%A8%EB%93%A4.jpg",
     "file": "yeouido-today.jpg",
     "note": "same file the place already shows as its photograph"
+  },
+  "gate-1900": {
+    "title": "File:South Gate, Seoul, c.1900.jpg",
+    "artist": "Homer Hulbert",
+    "license": "Public domain",
+    "page": "https://commons.wikimedia.org/wiki/File%3ASouth_Gate%2C_Seoul%2C_c.1900.jpg",
+    "file": "gate-1900.jpg",
+    "size": "2093x1420"
+  },
+  "gate-night-1929": {
+    "title": "File:Sungnyemun in night 1929.png",
+    "artist": "알 수 없음 (1929년 사진)",
+    "license": "Public domain",
+    "page": "https://commons.wikimedia.org/wiki/File%3ASungnyemun_in_night_1929.png",
+    "file": "gate-night-1929.jpg",
+    "size": "1156x758"
+  },
+  "palace-guard": {
+    "title": "File:Royal Guard at Gwanghwamun Gate, Gyeongbokgung, Seoul.jpg",
+    "artist": "Frank Schulenburg",
+    "license": "CC BY-SA 4.0",
+    "page": "https://commons.wikimedia.org/wiki/File%3ARoyal_Guard_at_Gwanghwamun_Gate%2C_Gyeongbokgung%2C_Seoul.jpg",
+    "file": "palace-guard.jpg",
+    "size": "2464x3450"
+  },
+  "glass-wall": {
+    "title": "File:63 Building - panoramio.jpg",
+    "artist": "Maris Teteris",
+    "license": "CC BY 3.0",
+    "page": "https://commons.wikimedia.org/wiki/File%3A63_Building_-_panoramio.jpg",
+    "file": "glass-wall.jpg",
+    "size": "3504x2336",
+    "note": "63빌딩만 보이도록 잘라 썼습니다."
   }
 }

@@ -198,7 +198,7 @@ class CuratorSceneView(context: Context): View(context) {
                     }
                     else -> 1f
                 }
-                CuratorMediaArt.draw(c,w,h,place?.visual ?: CuratorVisual.GATE,pose,variant)
+                CuratorMediaArt.draw(c,w,h,place?.visual ?: CuratorVisual.GATE,pose,variant,place?.id)
                 c.restore()
             }
 
