@@ -59,7 +59,7 @@
 - 프로젝트: `native-app`
 - 패키지: `dev.changbak.explorer`
 - 버전: `0.24.0`, versionCode `26`
-- 저장소: 비공개 깃허브 `kimmykimmim/pleos-road-curator`. 작업 사본은 Drive 밖 로컬에 둡니다.
+- 저장소: 공개 깃허브 `kimmykimmim/pleos-road-curator`. 작업 사본은 Drive 밖 로컬에 둡니다.
 - API 34, minSdk 28, Kotlin, Android 기본 View 및 Canvas
 - SDK: NaviHelper 3.0.5, Vehicle 2.3.2, TextToSpeech 3.3.1, SpeechToText 3.3.1
 - `MainActivity.kt`: 화면, 정차 제한, 시연 흐름, 실제 음성 서비스 시작 버튼, 위치 권한 요청, 서비스 연결
@@ -154,13 +154,13 @@
 - 평가 항목 4개: 차량 특화, 창의성, 기술 활용, 사업성. 세부 배점은 비공개입니다.
 - 깃허브 저장소, APK, 시연 영상은 가점 항목입니다. 기획서만으로도 접수는 됩니다.
 - 저장소 요건: 소스 코드, `apk/팀명_앱이름_release.apk`[실행 가능한 release], `README.md`에 앱 설명과 실행 방법과 테스트 환경과 APK 위치.
-- 비공개 저장소도 되지만 지정된 심사 계정을 Collaborator로 추가해야 합니다. 계정 이름은 공개 가이드에서 확인하지 못했습니다. 접수 메일 회신으로 확인이 필요합니다.
+- 저장소는 2026-11-15에 공개로 바꿨습니다. 심사 계정을 따로 초대할 필요가 없습니다. 공개 전에 추적 파일과 전체 히스토리에서 서명 키, 비밀번호, 개인 연락처가 없는 것을 확인했습니다.
 - 제출 메일: `appdevchallenge@hyundai-partners.com`. 제목은 `[차량용 앱 개발 공모전] 이름_대표자명`.
 - 2차 PT 전까지 1차 제출본을 계속 개선할 수 있습니다.
 
 ## 9. 원본 작업 위치
 
-- 기준 작업 위치: 비공개 깃허브 `kimmykimmim/pleos-road-curator`. 로컬 사본은 `~/dev/pleos-road-curator`
+- 기준 작업 위치: 공개 깃허브 `kimmykimmim/pleos-road-curator`. 로컬 사본은 `~/dev/pleos-road-curator`
 - Drive 폴더의 `native-app`과 `apk`는 0.11.0 시점이며 더 갱신하지 않습니다. 코드는 저장소에서 고칩니다.
 - 서명 키와 비밀번호는 Drive의 `signing-private` 폴더에만 있습니다. 저장소에는 올리지 않습니다.
 - Windows 원본: `C:/Users/pc/Documents/Codex/2026-11-07/new-chat/work/changbak-pleos`
