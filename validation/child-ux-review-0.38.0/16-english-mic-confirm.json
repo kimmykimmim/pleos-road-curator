@@ -1,0 +1,30 @@
+[
+  {
+    "text": "I think… (say it out loud)",
+    "bounds": "[1357,632][2031,657]",
+    "clickable": "false",
+    "checked": "false",
+    "class": "android.widget.TextView"
+  },
+  {
+    "text": "확인을 누르면 이번 답변을 듣기 시작해요. 음성은 기기 안에서 처리하고 외부 AI로 보내지 않아요.",
+    "bounds": "[1333,665][2055,685]",
+    "clickable": "false",
+    "checked": "false",
+    "class": "android.widget.TextView"
+  },
+  {
+    "text": "나중에",
+    "bounds": "[1895,717][1959,771]",
+    "clickable": "true",
+    "checked": "false",
+    "class": "android.widget.Button"
+  },
+  {
+    "text": "이야기할게",
+    "bounds": "[1959,717][2043,771]",
+    "clickable": "true",
+    "checked": "false",
+    "class": "android.widget.Button"
+  }
+]

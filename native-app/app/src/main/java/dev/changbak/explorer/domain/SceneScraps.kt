@@ -130,8 +130,8 @@ object SceneScraps {
         CuratorVisual.GATE to listOf(
             SceneScrap(
                 asset = "gate-guard.jpg",
-                caption = "문을 지키던 수문장의 교대 의식",
-                captionEn = "The gate guards — the ceremony still happens today",
+                caption = "예시: 경복궁 수문장 교대식",
+                captionEn = "Example: the guard ceremony at Gyeongbokgung",
                 author = "Garam", license = ATTRIBUTION,
                 page = "https://commons.wikimedia.org/wiki/File:Royal_Guard-Changing_Ceremony_of_Joseon_in_2018.jpg",
                 focusY = .55f,

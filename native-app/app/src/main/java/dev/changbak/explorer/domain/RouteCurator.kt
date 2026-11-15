@@ -56,7 +56,15 @@ data class PlaceMemory(val placeId: String, val guess: String? = null, val seen:
 data class CuratorState(val phase: CuratorPhase = CuratorPhase.READY, val routeId: String? = null,
     val sequence: Long = -1, val currentId: String? = null, val etaSeconds: Int? = null,
     val visits: List<PlaceMemory> = emptyList(), val deferred: Set<String> = emptySet(), val message: String = "",
-    val routeValid: Boolean = true)
+    val routeValid: Boolean = true,
+    /**
+     * Whether the spoken exchange at this place has already been closed off.
+     *
+     * [VoiceTalk] decides this — a child who said they do not know has been answered and must
+     * not be asked again — but the decision was being thrown away with the rest of the reply,
+     * so the microphone reopened and the child was left waiting for a turn that was over.
+     */
+    val askingDone: Boolean = false)
 data class CuratorTurn(val state: CuratorState, val narration: String? = null)
 
 /**
@@ -131,7 +139,7 @@ class RouteCurator(
                 if (current.passed || current.arrived) return explain(next, current.arrived)
                 if ((current.etaSeconds in 0..30 || current.nearby) && state.phase == CuratorPhase.PREDICT) {
                     val p = place(next) ?: return CuratorTurn(next)
-                    val text = if (current.observable) say.comingUp(p.name, point(current), p.observe)
+                    val text = if (current.observable) say.comingUp(p.name, point(current), watchLine(p))
                         else say.notVisible
                     return CuratorTurn(next.copy(phase = CuratorPhase.WATCH, message = text), text)
                 }
@@ -144,11 +152,22 @@ class RouteCurator(
         val p = catalog.first { it.id == candidate.placeId }
         val close = candidate.nearby || candidate.etaSeconds in 0..30
         val ask = openingFor(p)
-        val text = if(close) say.closeBy(p.name, point(candidate), ask, p.observe)
+        val text = if(close) say.closeBy(p.name, point(candidate), ask, watchLine(p))
             else say.minutesAhead(((requireNotNull(candidate.etaSeconds) + 59)/60).coerceAtLeast(1), p.name, ask)
         return CuratorTurn(next.copy(phase = if(close) CuratorPhase.WATCH else CuratorPhase.PREDICT, currentId = p.id, etaSeconds = candidate.etaSeconds,
-            visits = next.visits + PlaceMemory(p.id), message = text), text)
+            // A new place is a new question, so whatever closed the last one does not carry over.
+            visits = next.visits + PlaceMemory(p.id), message = text, askingDone = false), text)
     }
+    /**
+     * What to look for while this place is the one being asked about.
+     *
+     * The round owns this when it asks about something in particular, because the child has
+     * just been asked where the ends of the roof go and must not then be sent to find the
+     * passage underneath it. Otherwise the place's standing observation stands.
+     */
+    private fun watchLine(place: CuratorPlace): String =
+        promptFor(place).watch.ifBlank { place.observe }
+
     /** Names the window only when the fixes are confident enough to name one. */
     private fun point(approach: PlaceApproach) = say.side(approach.side)
 
@@ -172,14 +191,19 @@ class RouteCurator(
         // The round the child is answering decides where the exchange goes next, so an art
         // question is followed up about art rather than about whatever the place usually says.
         val round = promptFor(p)
-        val line = round.reveal ?: VoiceTalk.reply(p, clean, turn, profile.language, round.field).line
+        val spoken = if (round.reveal != null) null
+            else VoiceTalk.reply(p, clean, turn, profile.language, round.field)
+        val line = round.reveal ?: spoken!!.line
         val next = updateMemory(state) { it.copy(guess = it.guess ?: clean.ifBlank { null }) }
-        return CuratorTurn(next.copy(message = line), line)
+        // A reveal is its own ending, and so is a reply that stopped asking.
+        val done = spoken?.askAgain == false
+        return CuratorTurn(next.copy(message = line, askingDone = next.askingDone || done), line)
     }
 
     /** Whether the child is still being asked for something here, so the microphone reopens. */
     fun expectsAnswer(state: CuratorState, turnsTaken: Int): Boolean {
         if (state.phase != CuratorPhase.PREDICT) return state.phase in setOf(CuratorPhase.WATCH, CuratorPhase.PLAY)
+        if (state.askingDone) return false
         if (place(state)?.let { promptFor(it).reveal } != null) return turnsTaken < 1
         return turnsTaken < VoiceTalk.MAX_TURNS
     }

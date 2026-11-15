@@ -1,0 +1,142 @@
+[
+  {
+    "text": "도심의 오래된 이야기 / 시간 10배",
+    "bounds": "[1996,139][2367,193]",
+    "clickable": "false",
+    "checked": "false",
+    "class": "android.widget.TextView"
+  },
+  {
+    "text": "보호자",
+    "bounds": "[2385,123][2496,210]",
+    "clickable": "true",
+    "checked": "false",
+    "class": "android.widget.Button"
+  },
+  {
+    "text": "지금",
+    "bounds": "[904,866][946,895]",
+    "clickable": "false",
+    "checked": "false",
+    "class": "android.widget.TextView"
+  },
+  {
+    "text": "높은 건물 사이에 기와 지붕이 있어",
+    "bounds": "[904,895][1261,928]",
+    "clickable": "false",
+    "checked": "false",
+    "class": "android.widget.TextView"
+  },
+  {
+    "text": "사진 Sean Young (@assanges) · CC BY 4.0 · Wikimedia Commons",
+    "bounds": "[904,931][1467,955]",
+    "clickable": "false",
+    "checked": "false",
+    "class": "android.widget.TextView"
+  },
+  {
+    "text": "이 지점까지 약 1분",
+    "bounds": "[904,973][1135,1027]",
+    "clickable": "false",
+    "checked": "false",
+    "class": "android.widget.TextView"
+  },
+  {
+    "text": "10번째 만남",
+    "bounds": "[1147,973][1318,1027]",
+    "clickable": "false",
+    "checked": "false",
+    "class": "android.widget.TextView"
+  },
+  {
+    "text": "숭례문",
+    "bounds": "[904,1045][1015,1090]",
+    "clickable": "false",
+    "checked": "false",
+    "class": "android.widget.TextView"
+  },
+  {
+    "text": "#한양도성",
+    "bounds": "[904,1108][1059,1162]",
+    "clickable": "false",
+    "checked": "false",
+    "class": "android.widget.TextView"
+  },
+  {
+    "text": "#남쪽대문",
+    "bounds": "[1071,1108][1226,1162]",
+    "clickable": "false",
+    "checked": "false",
+    "class": "android.widget.TextView"
+  },
+  {
+    "text": "#밤에닫는문",
+    "bounds": "[1238,1108][1414,1162]",
+    "clickable": "false",
+    "checked": "false",
+    "class": "android.widget.TextView"
+  },
+  {
+    "text": "찾기 놀이",
+    "bounds": "[1940,286][2030,315]",
+    "clickable": "false",
+    "checked": "false",
+    "class": "android.widget.TextView"
+  },
+  {
+    "text": "오늘은 지붕 모양을 봐 줘.",
+    "bounds": "[1841,368][2445,401]",
+    "clickable": "false",
+    "checked": "false",
+    "class": "android.widget.TextView"
+  },
+  {
+    "text": "지붕 끝이 하늘로 올라갔어, 아니면 아래로 내려왔어?",
+    "bounds": "[1841,419][2445,504]",
+    "clickable": "false",
+    "checked": "false",
+    "class": "android.widget.TextView"
+  },
+  {
+    "text": "하늘로 올라갔어",
+    "bounds": "[1841,543][2445,654]",
+    "clickable": "true",
+    "checked": "false",
+    "class": "android.widget.Button"
+  },
+  {
+    "text": "아래로 내려왔어",
+    "bounds": "[1841,669][2445,780]",
+    "clickable": "true",
+    "checked": "false",
+    "class": "android.widget.Button"
+  },
+  {
+    "text": "내 생각엔… (직접 말하기)",
+    "bounds": "[1841,795][2445,906]",
+    "clickable": "true",
+    "checked": "false",
+    "class": "android.widget.Button"
+  },
+  {
+    "text": "다시 듣기",
+    "bounds": "[1841,976][2135,1078]",
+    "clickable": "true",
+    "checked": "false",
+    "class": "android.widget.Button"
+  },
+  {
+    "text": "넘어갈래",
+    "bounds": "[2150,976][2445,1078]",
+    "clickable": "true",
+    "checked": "false",
+    "class": "android.widget.Button"
+  },
+  {
+    "text": "말하지 않아도 괜찮아",
+    "bounds": "[1841,1099][2445,1123]",
+    "clickable": "false",
+    "checked": "false",
+    "class": "android.widget.TextView"
+  }
+]

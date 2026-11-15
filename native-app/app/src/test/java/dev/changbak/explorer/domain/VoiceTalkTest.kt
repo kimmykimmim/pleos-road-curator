@@ -227,6 +227,19 @@ class SpokenPredictTest {
     }
 
     @Test
+    fun `a child who said they don't know is not asked again`() {
+        // VoiceTalk already decided this: not knowing closes the exchange. The decision was
+        // being dropped on the floor, so the microphone reopened and the child was left
+        // waiting for a turn that was over.
+        val turn = engine.heard(asking, "모르겠어", 1)
+
+        assertTrue(turn.state.askingDone)
+        assertFalse(engine.expectsAnswer(turn.state, 1))
+        // The place that comes after starts its own question with a clean slate.
+        assertTrue(engine.expectsAnswer(asking, 1))
+    }
+
+    @Test
     fun `a quiz is one answer and then the answer, not a conversation`() {
         round = 2
         val turn = engine.heard(asking, "백 층쯤?", 1)

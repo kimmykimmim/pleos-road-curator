@@ -150,6 +150,20 @@ class SpokenReplyTest {
     }
 
     @Test
+    fun `the ways a child actually asks to stop`() {
+        // Every one of these was answered as if it were a thought about the building, and the
+        // conversation carried on over a child who had asked it to stop.
+        assertEquals(SpokenIntent.Rest, SpokenReply.of("그만해", firstRound))
+        assertEquals(SpokenIntent.Rest, SpokenReply.of("쉬고 싶어", firstRound))
+        assertEquals(SpokenIntent.Rest, SpokenReply.of("잠깐만", firstRound))
+        assertEquals(SpokenIntent.Rest, SpokenReply.of("이제 쉴래", firstRound))
+        assertEquals(SpokenIntent.Rest, SpokenReply.of("I want a break", emptyList(), ChildLanguage.ENGLISH))
+        // And the sentence that must never be mistaken for one of them.
+        assertTrue(SpokenReply.of("다음에 또 보고 싶어", firstRound) is SpokenIntent.OwnWords)
+        assertTrue(SpokenReply.of("잠깐만 기다려 봐 저기 뭐가 보여", firstRound) is SpokenIntent.OwnWords)
+    }
+
+    @Test
     fun `an english child can stop, repeat and move on`() {
         val english = ChildLanguage.ENGLISH
         assertEquals(SpokenIntent.Rest, SpokenReply.of("stop", emptyList(), english))

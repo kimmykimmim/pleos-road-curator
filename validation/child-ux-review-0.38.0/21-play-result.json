@@ -1,0 +1,121 @@
+[
+  {
+    "text": "Old stories downtown / 시간 10배",
+    "bounds": "[1960,139][2367,193]",
+    "clickable": "false",
+    "checked": "false",
+    "class": "android.widget.TextView"
+  },
+  {
+    "text": "보호자",
+    "bounds": "[2385,123][2496,210]",
+    "clickable": "true",
+    "checked": "false",
+    "class": "android.widget.Button"
+  },
+  {
+    "text": "Something to find on this route",
+    "bounds": "[904,871][1296,925]",
+    "clickable": "false",
+    "checked": "false",
+    "class": "android.widget.TextView"
+  },
+  {
+    "text": "7th time here",
+    "bounds": "[1308,871][1506,925]",
+    "clickable": "false",
+    "checked": "false",
+    "class": "android.widget.TextView"
+  },
+  {
+    "text": "Cheongjinok",
+    "bounds": "[904,943][1141,988]",
+    "clickable": "false",
+    "checked": "false",
+    "class": "android.widget.TextView"
+  },
+  {
+    "text": "#openedin1937",
+    "bounds": "[904,1006][1132,1060]",
+    "clickable": "false",
+    "checked": "false",
+    "class": "android.widget.TextView"
+  },
+  {
+    "text": "#threegenerations",
+    "bounds": "[1144,1006][1402,1060]",
+    "clickable": "false",
+    "checked": "false",
+    "class": "android.widget.TextView"
+  },
+  {
+    "text": "#seoulfutureheritage",
+    "bounds": "[1414,1006][1698,1060]",
+    "clickable": "false",
+    "checked": "false",
+    "class": "android.widget.TextView"
+  },
+  {
+    "text": "Play the short clip again",
+    "bounds": "[904,1081][1214,1162]",
+    "clickable": "true",
+    "checked": "false",
+    "class": "android.widget.Button"
+  },
+  {
+    "text": "Today's discovery",
+    "bounds": "[1940,417][2136,446]",
+    "clickable": "false",
+    "checked": "false",
+    "class": "android.widget.TextView"
+  },
+  {
+    "text": "The ladle in the model crossed to the next person. You became someone who carries the shop's taste and its story. This is not a real recipe.",
+    "bounds": "[1841,499][2445,676]",
+    "clickable": "false",
+    "checked": "false",
+    "class": "android.widget.TextView"
+  },
+  {
+    "text": "청진옥",
+    "bounds": "[1841,700][2445,729]",
+    "clickable": "false",
+    "checked": "false",
+    "class": "android.widget.TextView"
+  },
+  {
+    "text": "I'd pass on the taste",
+    "bounds": "[1841,741][2445,774]",
+    "clickable": "false",
+    "checked": "false",
+    "class": "android.widget.TextView"
+  },
+  {
+    "text": "Keep watching outside",
+    "bounds": "[1841,838][2445,949]",
+    "clickable": "true",
+    "checked": "false",
+    "class": "android.widget.Button"
+  },
+  {
+    "text": "Say it again",
+    "bounds": "[1841,976][2135,1078]",
+    "clickable": "true",
+    "checked": "false",
+    "class": "android.widget.Button"
+  },
+  {
+    "text": "Move on",
+    "bounds": "[2150,976][2445,1078]",
+    "clickable": "true",
+    "checked": "false",
+    "class": "android.widget.Button"
+  },
+  {
+    "text": "Telling the story",
+    "bounds": "[1841,1099][2445,1123]",
+    "clickable": "false",
+    "checked": "false",
+    "class": "android.widget.TextView"
+  }
+]

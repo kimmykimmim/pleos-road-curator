@@ -107,11 +107,18 @@ object SpokenReply {
     )
     private val restWords = mapOf(
         ChildLanguage.KOREAN to Cues(
-            phrases = listOf("그만듣", "그만할", "그만하자", "그만하고", "쉬자", "잠깐쉴", "조용히"),
-            alone = listOf("그만"),
+            // A child asking to stop says it a dozen ways, and most of them are not "그만".
+            // "쉬고 싶어" and "그만해" were being answered as if they were thoughts about the
+            // building. Each of these still has to end the sentence: "다음에 또 보고 싶어" is
+            // a child saying they liked it, and must never be read as a request to stop.
+            phrases = listOf("그만듣", "그만할", "그만하자", "그만하고", "그만해", "그만볼",
+                "쉬자", "잠깐쉴", "쉬고싶", "쉴래", "조용히", "그만하면"),
+            alone = listOf("그만", "잠깐만", "잠깐"),
         ),
         ChildLanguage.ENGLISH to Cues(
-            alone = listOf("stop", "stop it", "enough", "quiet", "be quiet", "no more", "break"),
+            alone = listOf("stop", "stop it", "enough", "quiet", "be quiet", "no more", "break",
+                "i want a break", "i need a break", "i want to stop", "stop talking",
+                "lets stop", "not now"),
         ),
     )
 

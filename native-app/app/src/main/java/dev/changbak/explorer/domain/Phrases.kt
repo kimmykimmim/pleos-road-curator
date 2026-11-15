@@ -59,6 +59,23 @@ data class Phrases(
      */
     val pretendPlay: String,
     /**
+     * Everything the microphone says for itself.
+     *
+     * The title of this dialog came from the phrase pack and the rest of it did not, so an
+     * English child pressed "I think… (say it out loud)" and was answered in Korean. What the
+     * app does with a child's voice is exactly the thing it must not say in a language they
+     * cannot read.
+     */
+    val micAsk: String,
+    val micLater: String,
+    val micGo: String,
+    val micOpen: String,
+    val micClosed: String,
+    /** The other two lines the child's own status row can carry. */
+    val needsLocation: String,
+    val preparingVoice: String,
+    val naviBefore: String,
+    /**
      * The way out of the two answers on screen, and into the child's own.
      *
      * It read "내 말로 이야기하기" — a label for a feature. Said as the child would start the
@@ -157,6 +174,14 @@ data class Phrases(
             heardIt = "그랬구나!",
             imagineIt = "그때를 상상해 볼래",
             pretendPlay = "여기부터는 네가 만드는 이야기야",
+            micAsk = "확인을 누르면 이번 답변을 듣기 시작해요. 음성은 기기 안에서 처리하고 외부 AI로 보내지 않아요.",
+            micLater = "나중에",
+            micGo = "이야기할게",
+            micOpen = "듣고 있어. 그냥 말해도 돼.",
+            micClosed = "지금은 화면으로 골라줘",
+            needsLocation = "주변 장소를 찾으려면 정확한 위치 권한이 필요해요.",
+            preparingVoice = "음성을 준비하고 있어요",
+            naviBefore = "내비게이션 연결 전",
             sayItMyself = "내 생각엔… (직접 말하기)",
             inMyOwnWords = "내 생각엔… (직접 말하기)",
             keepWatching = "계속 창밖 보기",
@@ -227,6 +252,14 @@ data class Phrases(
             heardIt = "Oh, I see!",
             imagineIt = "I'll picture that day",
             pretendPlay = "From here, the story is yours to make up",
+            micAsk = "Press OK and I'll start listening for your answer. Your voice stays in this car and is never sent to an outside AI.",
+            micLater = "Not now",
+            micGo = "I'll talk",
+            micOpen = "I'm listening. Just say it.",
+            micClosed = "Let's use the screen for now",
+            needsLocation = "I need precise location to find places along the way.",
+            preparingVoice = "Getting my voice ready",
+            naviBefore = "Not connected to navigation yet",
             sayItMyself = "I think… (say it out loud)",
             inMyOwnWords = "I think… (say it out loud)",
             keepWatching = "Keep watching outside",

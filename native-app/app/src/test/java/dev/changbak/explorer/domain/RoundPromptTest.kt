@@ -19,6 +19,21 @@ class RoundPromptTest {
     }
 
     @Test
+    fun `a round that asks about one thing sends the child to look at that thing`() {
+        // 숭례문 asks where the ends of the roof go, and the place's standing observation is
+        // the passage underneath it. A child was asked about one and then sent to find the
+        // other. Every hunting round now carries the thing its own question is about.
+        ChildLanguage.values().forEach { language ->
+            CuratorCatalog.places(language).forEach { place ->
+                place.rounds.filter { it.kind == RoundKind.HUNT }.forEach { round ->
+                    assertTrue("${place.id} ${language} hunt round has no watch line",
+                        round.watch.isNotBlank())
+                }
+            }
+        }
+    }
+
+    @Test
     fun `the hook is never used twice`() {
         // Hearing "한국에서 가장 높은 건물이 어디인지 알아?" on the ninth school run as though it
         // were news is exactly what this is for.

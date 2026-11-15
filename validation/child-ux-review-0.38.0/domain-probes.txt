@@ -1,0 +1,12 @@
+KO 그만 => Rest
+KO 그만해 => OwnWords(text=그만해)
+KO 쉬고 싶어 => OwnWords(text=쉬고 싶어)
+KO 잠깐만 => OwnWords(text=잠깐만)
+KO 잠깐 쉴래 => Rest
+KO 그만 듣고 싶어 => Rest
+KO 다음에 또 보고 싶어 => OwnWords(text=다음에 또 보고 싶어)
+EN stop => Rest
+EN I want a break => OwnWords(text=I want a break)
+EN I don't know => OwnWords(text=I don't know)
+모르겠어 => reply=TalkReply(line=몰라도 괜찮아. 아주 옛날 이야기니까. 큰 지붕 아래 둥근 통로를 찾아봐., askAgain=false); engine.expectsAnswer=true
+공룡이 문을 지켜 => reply=TalkReply(line=“공룡이 문을 지켜”라고 했구나. 그렇게 생각할 수도 있겠다. 그럼 도시 전체에 문이 있다면 언제 닫았을까?, askAgain=true); engine.expectsAnswer=true

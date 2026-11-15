@@ -119,7 +119,7 @@ class MainActivity : Activity() {
         super.onRequestPermissionsResult(code,permissions,results)
         if(code==71) handler.post {
             if(checkSelfPermission(android.Manifest.permission.ACCESS_FINE_LOCATION)==PackageManager.PERMISSION_GRANTED) startLive()
-            else { status="주변 장소를 찾으려면 정확한 위치 권한이 필요해요.";render() }
+            else { status=say.needsLocation;render() }
         }
     }
     private var car: Car? = null
@@ -144,8 +144,9 @@ class MainActivity : Activity() {
     /** Voice is the way in whenever the guardian has turned it on and the engine can listen. */
     private val talking: Boolean get() = prefs.backSeatVoice && !showChoices &&
         ::voice.isInitialized && voice.canListen
-    private var status = "음성을 준비하고 있어요"
-    private var naviStatus = "내비게이션 연결 전"
+    // Set once the phrase pack can be read, which needs the child's saved language.
+    private var status = ""
+    private var naviStatus = ""
     private var live = false
     private var narrationGeneration = 0L
     private var cardGeneration = 0L
@@ -237,6 +238,8 @@ class MainActivity : Activity() {
     }
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        status = say.preparingVoice
+        naviStatus = say.naviBefore
         voice = VoiceGuide(this, onState = { value -> runOnUiThread {
             val wasListening=mic
             status = when(value) { "speaking" -> say.nowSpeaking; "listening" -> say.nowListening; else -> say.noNeedToSpeak }
@@ -414,7 +417,7 @@ class MainActivity : Activity() {
         drive?.suppress(true)
         mic = voice.enableCommands()
         if (!mic) drive?.suppress(false)
-        status = if (mic) "듣고 있어. 그냥 말해도 돼." else "지금은 화면으로 골라줘"
+        status = if (mic) say.micOpen else say.micClosed
         render()
     }
 
@@ -448,9 +451,9 @@ class MainActivity : Activity() {
         val wasPlaying = playing
         quiet(); playing = false
         show(AlertDialog.Builder(this).setTitle(say.sayItMyself)
-            .setMessage("확인을 누르면 이번 답변을 듣기 시작해요. 음성은 기기 안에서 처리하고 외부 AI로 보내지 않아요.")
-            .setNegativeButton("나중에") { _, _ -> resumeAfterListening(wasPlaying) }
-            .setPositiveButton("이야기할게") { _, _ -> menuAction { openMic(wasPlaying) } }
+            .setMessage(say.micAsk)
+            .setNegativeButton(say.micLater) { _, _ -> resumeAfterListening(wasPlaying) }
+            .setPositiveButton(say.micGo) { _, _ -> menuAction { openMic(wasPlaying) } }
             .setOnCancelListener { resumeAfterListening(wasPlaying) }
             .create())
     }
@@ -819,7 +822,12 @@ class MainActivity : Activity() {
             eta != null -> eta
             else -> say.routeDiscovery
         }
-        val tags = if (state.phase==CuratorPhase.FINISHED) emptyList()
+        // Not while the question is still open. 청진옥 asks what year it opened and #1937년개업
+        // sat under the two answers; 숭례문 asks what the gate did at night and #밤에닫는문 said
+        // so. The tags are what the place is, and the child earns them by getting there.
+        val told = state.phase in setOf(CuratorPhase.EXPLAIN, CuratorPhase.FAMILY,
+            CuratorPhase.PLAY, CuratorPhase.COMPARE, CuratorPhase.MEMORY)
+        val tags = if (!told) emptyList()
             else place?.let { PlaceTags.of(it.id, prefs.profile.language, it.category) }.orEmpty()
         if (tags != lastTags) {
             lastTags = tags

@@ -46,6 +46,15 @@ data class RoundPrompt(
     val question: String,
     val choices: List<String>,
     val reveal: String? = null,
+    /**
+     * What to look for out of the window while this round is the question.
+     *
+     * A place has one standing observation — 숭례문's is the round passage under the roof —
+     * and that is right for most of its questions. It is wrong for the round that asks about
+     * the ends of the roof: the child is sent looking for the question's answer and then told
+     * to find something else. Blank means the place's own observation still fits.
+     */
+    val watch: String = "",
 ) {
     /** What the app says when it opens this round. */
     val spoken: String get() = if (lead.isBlank()) question else "$lead $question"

@@ -1,0 +1,114 @@
+[
+  {
+    "text": "Old stories downtown / 시간 10배",
+    "bounds": "[1960,139][2367,193]",
+    "clickable": "false",
+    "checked": "false",
+    "class": "android.widget.TextView"
+  },
+  {
+    "text": "보호자",
+    "bounds": "[2385,123][2496,210]",
+    "clickable": "true",
+    "checked": "false",
+    "class": "android.widget.Button"
+  },
+  {
+    "text": "About 5 min to go",
+    "bounds": "[904,973][1153,1027]",
+    "clickable": "false",
+    "checked": "false",
+    "class": "android.widget.TextView"
+  },
+  {
+    "text": "6th time here",
+    "bounds": "[1165,973][1365,1027]",
+    "clickable": "false",
+    "checked": "false",
+    "class": "android.widget.TextView"
+  },
+  {
+    "text": "Cheongjinok",
+    "bounds": "[904,1045][1141,1090]",
+    "clickable": "false",
+    "checked": "false",
+    "class": "android.widget.TextView"
+  },
+  {
+    "text": "#openedin1937",
+    "bounds": "[904,1108][1132,1162]",
+    "clickable": "false",
+    "checked": "false",
+    "class": "android.widget.TextView"
+  },
+  {
+    "text": "#threegenerations",
+    "bounds": "[1144,1108][1402,1162]",
+    "clickable": "false",
+    "checked": "false",
+    "class": "android.widget.TextView"
+  },
+  {
+    "text": "#seoulfutureheritage",
+    "bounds": "[1414,1108][1698,1162]",
+    "clickable": "false",
+    "checked": "false",
+    "class": "android.widget.TextView"
+  },
+  {
+    "text": "Guessing game",
+    "bounds": "[1940,553][2109,582]",
+    "clickable": "false",
+    "checked": "false",
+    "class": "android.widget.TextView"
+  },
+  {
+    "text": "Today is a guessing game. It is fine not to know.",
+    "bounds": "[1841,635][2445,668]",
+    "clickable": "false",
+    "checked": "false",
+    "class": "android.widget.TextView"
+  },
+  {
+    "text": "When did Cheongjinok first open?",
+    "bounds": "[1841,686][2445,725]",
+    "clickable": "false",
+    "checked": "false",
+    "class": "android.widget.TextView"
+  },
+  {
+    "text": "You said: The 1990s",
+    "bounds": "[1841,749][2445,778]",
+    "clickable": "false",
+    "checked": "false",
+    "class": "android.widget.TextView"
+  },
+  {
+    "text": "1937! That is what the Seoul Future Heritage record says. It has been kept in the family for three generations.",
+    "bounds": "[1841,793][2445,906]",
+    "clickable": "false",
+    "checked": "false",
+    "class": "android.widget.TextView"
+  },
+  {
+    "text": "Say it again",
+    "bounds": "[1841,976][2135,1078]",
+    "clickable": "true",
+    "checked": "false",
+    "class": "android.widget.Button"
+  },
+  {
+    "text": "Move on",
+    "bounds": "[2150,976][2445,1078]",
+    "clickable": "true",
+    "checked": "false",
+    "class": "android.widget.Button"
+  },
+  {
+    "text": "Telling the story",
+    "bounds": "[1841,1099][2445,1123]",
+    "clickable": "false",
+    "checked": "false",
+    "class": "android.widget.TextView"
+  }
+]

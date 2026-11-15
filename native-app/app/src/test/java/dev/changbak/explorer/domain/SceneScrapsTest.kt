@@ -41,6 +41,18 @@ class SceneScrapsTest {
     }
 
     @Test
+    fun `a photograph of somewhere else says where it is`() {
+        // The gate scene is shown at 숭례문 as well as 광화문, and the photograph is the guard
+        // ceremony at 경복궁. Unlabelled, a child is looking at one place being told it is
+        // another.
+        val gate = SceneScraps.of(CuratorVisual.GATE).single()
+
+        assertTrue(gate.caption.contains("경복궁"))
+        assertTrue(gate.caption.contains("예시"))
+        assertTrue(gate.captionEn.contains("Gyeongbokgung"))
+    }
+
+    @Test
     fun `captions stay short enough to be read from the back seat`() {
         all.forEach { assertTrue(it.caption, it.caption.length <= 24) }
     }
