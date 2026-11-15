@@ -148,8 +148,12 @@ object SceneScraps {
                 focusY = .55f,
             ),
         )),
-        // The street the place is on, with its own sign in the photograph, and the bowl that
-        // has been handed down three generations.
+        // The street the place is on, with its own sign in the photograph.
+        //
+        // There was a second clipping here, a bowl of 해장국 — a good photograph of the dish,
+        // taken somewhere else. Captioned "3대를 건너온 해장국 한 그릇" beside this place's own
+        // street it reads as this shop's food, which it is not. A photograph of the right kind
+        // of thing is not a photograph of the place.
         "cheongjinok" to PlaceScene("사람에서 사람으로 건너가는 이야기", "A story handed from person to person", listOf(
             SceneScrap(
                 asset = "recipe-street.jpg",
@@ -159,13 +163,6 @@ object SceneScraps {
                 page = "https://commons.wikimedia.org/wiki/File:Cheongjin-dong_Haejang-guk_street_in_1999.jpg",
                 focusY = .30f,
                 mark = ScrapMark(.35f, .18f, .16f, "청진옥"),
-            ),
-            SceneScrap(
-                asset = "recipe-bowl.jpg",
-                caption = "3대를 건너온 해장국 한 그릇",
-                captionEn = "The soup handed down three generations",
-                author = "sangmins", license = CC0,
-                page = "https://commons.wikimedia.org/wiki/File:Haejangguk_(hangover_soup).jpg",
             ),
         )),
         // A guardian's own place has none on purpose. The app has no photograph of it, and
