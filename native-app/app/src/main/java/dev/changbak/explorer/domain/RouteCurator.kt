@@ -52,7 +52,16 @@ data class PlaceMemory(val placeId: String, val guess: String? = null, val seen:
     val reflection: Reflection? = null, val explained: Boolean = false,
     val activityId: String? = null, val activityLabel: String? = null,
     /** The family record was spoken here. It does not claim the child remembered anything. */
-    val familyRecalled: Boolean = false)
+    val familyRecalled: Boolean = false,
+    /**
+     * How many times this place had been finished before this meeting began.
+     *
+     * Frozen when the place is first met, and never read again from the store. The store is
+     * written the moment this meeting reaches its closing card, so anything that re-read it
+     * mid-visit started describing the *next* meeting: the chip under the name jumped from
+     * "2번째 만남" to "3번째 만남" while the child was still looking at the same place.
+     */
+    val round: Int = 0)
 data class CuratorState(val phase: CuratorPhase = CuratorPhase.READY, val routeId: String? = null,
     val sequence: Long = -1, val currentId: String? = null, val etaSeconds: Int? = null,
     val visits: List<PlaceMemory> = emptyList(), val deferred: Set<String> = emptySet(), val message: String = "",
@@ -100,6 +109,19 @@ class RouteCurator(
         Rounds.promptFor(place, roundSource(place.id), profile)
 
     /**
+     * The same, for a place this journey is already in the middle of.
+     *
+     * Uses the number frozen when the place was met rather than the store, so the question a
+     * child is being asked cannot change under them part way through the visit.
+     */
+    fun promptFor(state: CuratorState, place: CuratorPlace): RoundPrompt =
+        Rounds.promptFor(place, roundOf(state, place), profile)
+
+    /** Which meeting this is: the frozen one if this place is in today's visits. */
+    fun roundOf(state: CuratorState, place: CuratorPlace): Int =
+        state.visits.lastOrNull { it.placeId == place.id }?.round ?: roundSource(place.id)
+
+    /**
      * The whole opening, with the line connecting this place to something the child loves when
      * there is a true one to say. A favourite with nothing honest to say here says nothing.
      */
@@ -122,7 +144,7 @@ class RouteCurator(
         profile.favourites.firstOrNull { place.bridges.containsKey(it) }
 
     /** Today's round for the place being met now, for the screen to draw the same one. */
-    fun prompt(state: CuratorState): RoundPrompt? = place(state)?.let(::promptFor)
+    fun prompt(state: CuratorState): RoundPrompt? = place(state)?.let { promptFor(state, it) }
     fun memory(state: CuratorState) = state.visits.firstOrNull { it.placeId == state.currentId }
     fun start() = CuratorState(phase = CuratorPhase.WAITING, message = say.waiting)
     fun tick(state: CuratorState, fix: CuratorFix): CuratorTurn {
@@ -139,7 +161,7 @@ class RouteCurator(
                 if (current.passed || current.arrived) return explain(next, current.arrived)
                 if ((current.etaSeconds in 0..30 || current.nearby) && state.phase == CuratorPhase.PREDICT) {
                     val p = place(next) ?: return CuratorTurn(next)
-                    val text = if (current.observable) say.comingUp(p.name, point(current), watchLine(p))
+                    val text = if (current.observable) say.comingUp(p.name, point(current), watchLine(next, p))
                         else say.notVisible
                     return CuratorTurn(next.copy(phase = CuratorPhase.WATCH, message = text), text)
                 }
@@ -152,11 +174,13 @@ class RouteCurator(
         val p = catalog.first { it.id == candidate.placeId }
         val close = candidate.nearby || candidate.etaSeconds in 0..30
         val ask = openingFor(p)
-        val text = if(close) say.closeBy(p.name, point(candidate), ask, watchLine(p))
+        val text = if(close) say.closeBy(p.name, point(candidate), ask, watchLine(next, p))
             else say.minutesAhead(((requireNotNull(candidate.etaSeconds) + 59)/60).coerceAtLeast(1), p.name, ask)
         return CuratorTurn(next.copy(phase = if(close) CuratorPhase.WATCH else CuratorPhase.PREDICT, currentId = p.id, etaSeconds = candidate.etaSeconds,
             // A new place is a new question, so whatever closed the last one does not carry over.
-            visits = next.visits + PlaceMemory(p.id), message = text, askingDone = false), text)
+            // The meeting number is fixed here, where the meeting begins.
+            visits = next.visits + PlaceMemory(p.id, round = roundSource(p.id)),
+            message = text, askingDone = false), text)
     }
     /**
      * What to look for while this place is the one being asked about.
@@ -165,8 +189,8 @@ class RouteCurator(
      * just been asked where the ends of the roof go and must not then be sent to find the
      * passage underneath it. Otherwise the place's standing observation stands.
      */
-    private fun watchLine(place: CuratorPlace): String =
-        promptFor(place).watch.ifBlank { place.observe }
+    private fun watchLine(state: CuratorState, place: CuratorPlace): String =
+        promptFor(state, place).watch.ifBlank { place.observe }
 
     /** Names the window only when the fixes are confident enough to name one. */
     private fun point(approach: PlaceApproach) = say.side(approach.side)
@@ -190,7 +214,7 @@ class RouteCurator(
         // nothing to draw out of them afterwards: they asked a question and it has an answer.
         // The round the child is answering decides where the exchange goes next, so an art
         // question is followed up about art rather than about whatever the place usually says.
-        val round = promptFor(p)
+        val round = promptFor(state, p)
         val spoken = if (round.reveal != null) null
             else VoiceTalk.reply(p, clean, turn, profile.language, round.field)
         val line = round.reveal ?: spoken!!.line
@@ -204,7 +228,7 @@ class RouteCurator(
     fun expectsAnswer(state: CuratorState, turnsTaken: Int): Boolean {
         if (state.phase != CuratorPhase.PREDICT) return state.phase in setOf(CuratorPhase.WATCH, CuratorPhase.PLAY)
         if (state.askingDone) return false
-        if (place(state)?.let { promptFor(it).reveal } != null) return turnsTaken < 1
+        if (place(state)?.let { promptFor(state, it).reveal } != null) return turnsTaken < 1
         return turnsTaken < VoiceTalk.MAX_TURNS
     }
 

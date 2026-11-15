@@ -242,11 +242,27 @@ class SpokenPredictTest {
     @Test
     fun `a quiz is one answer and then the answer, not a conversation`() {
         round = 2
-        val turn = engine.heard(asking, "백 층쯤?", 1)
+        // The meeting carries its own number: a visit that began as the third meeting stays
+        // the third meeting even after the store moves on.
+        val quiz = asking.copy(visits = listOf(PlaceMemory(lotte.id, round = 2)))
+        val turn = engine.heard(quiz, "백 층쯤?", 1)
 
         assertEquals(Rounds.promptFor(lotte, 2).reveal, turn.narration)
-        assertTrue(engine.expectsAnswer(asking, 0))
-        assertFalse(engine.expectsAnswer(asking, 1))
+        assertTrue(engine.expectsAnswer(quiz, 0))
+        assertFalse(engine.expectsAnswer(quiz, 1))
+    }
+
+    @Test
+    fun `the meeting number is fixed when the meeting starts`() {
+        // The closing card writes this visit into the store, and the screen used to re-read it
+        // straight away: the chip under the place's name called the visit the child was still
+        // looking at the next one.
+        val visiting = asking.copy(visits = listOf(PlaceMemory(lotte.id, round = 1)))
+        round = 2
+
+        assertEquals(1, engine.roundOf(visiting, lotte))
+        // A place this journey has not met yet still asks the store.
+        assertEquals(2, engine.roundOf(CuratorState(), lotte))
     }
 
     @Test

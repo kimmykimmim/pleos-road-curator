@@ -1,0 +1,40 @@
+
+frame=0
+<?xml version='1.0' encoding='utf-8' standalone='yes' ?>
+<map />
+
+frame=10
+<?xml version='1.0' encoding='utf-8' standalone='yes' ?>
+<map />
+
+frame=20
+<?xml version='1.0' encoding='utf-8' standalone='yes' ?>
+<map />
+
+frame=30
+<?xml version='1.0' encoding='utf-8' standalone='yes' ?>
+<map />
+
+frame=40
+<?xml version='1.0' encoding='utf-8' standalone='yes' ?>
+<map />
+
+frame=50
+<?xml version='1.0' encoding='utf-8' standalone='yes' ?>
+<map />
+
+frame=60
+<?xml version='1.0' encoding='utf-8' standalone='yes' ?>
+<map />
+
+frame=70
+<?xml version='1.0' encoding='utf-8' standalone='yes' ?>
+<map>
+    <int name="round:cheongjinok" value="1" />
+</map>
+
+frame=80
+<?xml version='1.0' encoding='utf-8' standalone='yes' ?>
+<map>
+    <int name="round:cheongjinok" value="1" />
+</map>

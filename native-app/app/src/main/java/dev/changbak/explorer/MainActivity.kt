@@ -812,7 +812,10 @@ class MainActivity : Activity() {
         val place = engine.place(state)
         placeName.text = place?.name ?: say.noPlaceYet
         tagline.visibility = if (state.phase==CuratorPhase.READY) View.VISIBLE else View.GONE
-        val met = place?.let { prefs.rounds(it.id) } ?: 0
+        // Which meeting this is, as it was when the meeting began. Reading the store here
+        // meant that the moment the closing card wrote this visit down, the chip started
+        // calling the same visit the next one.
+        val met = place?.let { engine.roundOf(state, it) } ?: 0
         // Under the name: how far away it still is while it is still ahead, and once the car is
         // beside it, what it actually is. "이 지점 근처를 지났어요" used to sit here, which tells a
         // child looking straight at the place nothing at all.
