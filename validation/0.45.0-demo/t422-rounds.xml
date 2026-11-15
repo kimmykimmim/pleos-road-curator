@@ -1,0 +1,8 @@
+<?xml version='1.0' encoding='utf-8' standalone='yes' ?>
+<map>
+    <int name="round:lotte" value="1" />
+    <int name="round:gwanghwamun" value="1" />
+    <int name="round:yeouido" value="1" />
+    <int name="round:building63" value="1" />
+    <int name="round:sungnyemun" value="1" />
+</map>

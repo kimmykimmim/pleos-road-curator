@@ -1,0 +1,7 @@
+t002-rounds: {}
+t086-rounds: {'round:lotte': 1}
+t158-rounds: {'round:lotte': 1, 'round:building63': 1}
+t230-rounds: {'round:lotte': 1, 'round:yeouido': 1, 'round:building63': 1}
+t302-rounds: {'round:lotte': 1, 'round:yeouido': 1, 'round:building63': 1, 'round:sungnyemun': 1}
+t374-rounds: {'round:lotte': 1, 'round:gwanghwamun': 1, 'round:yeouido': 1, 'round:building63': 1, 'round:sungnyemun': 1}
+t446-rounds: {'round:lotte': 1, 'round:cheongjinok': 1, 'round:gwanghwamun': 1, 'round:yeouido': 1, 'round:building63': 1, 'round:sungnyemun': 1}
