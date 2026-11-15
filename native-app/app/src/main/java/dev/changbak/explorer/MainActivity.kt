@@ -1043,8 +1043,13 @@ class MainActivity : Activity() {
             CuratorPhase.FAMILY -> {
                 card.addView(label(say.guardianNote,Text.CAPTION,muted)); gap(card,8)
                 // Both answers go to the same place. The child is never graded on remembering.
-                action(say.rememberIt,true) { quiet(); apply(engine.afterFamilyMemory(state)) }
-                action(say.notSure) { quiet(); apply(engine.afterFamilyMemory(state)) }
+                //
+                // Which pair of answers, though, depends on whose memory this is. A story a
+                // parent wrote down is not something the child can remember, so it is not
+                // offered as a memory question.
+                val written = album.load().wrote(state.currentId)
+                action(if(written) say.heardIt else say.rememberIt,true) { quiet(); apply(engine.afterFamilyMemory(state)) }
+                action(if(written) say.imagineIt else say.notSure) { quiet(); apply(engine.afterFamilyMemory(state)) }
             }
             CuratorPhase.PLAY -> {
                 card.addView(label(say.pretendPlay,Text.CAPTION,muted)); gap(card,8)

@@ -42,7 +42,22 @@ data class Narration(
      * only that somebody left a story here, and then says theirs.
      */
     val familyIntro: String,
+    /**
+     * What closes a memory the app itself noticed: that the family came here, and when.
+     *
+     * Here the child really is being asked to remember something they were at, so being told
+     * that not remembering is fine belongs.
+     */
     val familyReassure: String,
+    /**
+     * What closes a story somebody at home wrote.
+     *
+     * This used to end with the same "기억나지 않아도 괜찮아", which is nonsense against the
+     * thing a parent most often writes: a child cannot fail to remember the day their parents
+     * met. Nothing is being asked of their memory, so the app points them at the window and
+     * leaves them somewhere to imagine instead.
+     */
+    val familyShared: String,
     /** How a guardian may choose to say when, offered in the language they are setting up in. */
     val whenChoices: List<String>,
 ) {
@@ -83,6 +98,7 @@ data class Narration(
             familyRecall = { whenLabel -> "그런데 있잖아. 여기는 $whenLabel 우리 가족이 함께 왔던 곳이야." },
             familyIntro = "그런데 있잖아. 여기에는 엄마 아빠가 너한테 들려주고 싶은 이야기가 있어.",
             familyReassure = "기억나지 않아도 괜찮아. 오늘 다시 지나가는 것만으로도 좋아.",
+            familyShared = "창밖에 그 자리가 있어. 그때 엄마 아빠는 어떤 마음이었을까?",
             whenChoices = listOf("네가 지금보다 더 어렸을 때", "네가 아기였을 때", "작년에", "얼마 전에"),
         )
 
@@ -109,6 +125,7 @@ data class Narration(
             familyRecall = { whenLabel -> "Here's a thing. $whenLabel, our family came here together." },
             familyIntro = "Here's a thing. Someone at home left a story about this place for you.",
             familyReassure = "It's fine if you don't remember. Going past it again today is lovely on its own.",
+            familyShared = "That spot is out there. What do you think that day was like for them?",
             whenChoices = listOf("When you were littler than now", "When you were a baby", "Last year", "Not long ago"),
         )
     }

@@ -41,6 +41,22 @@ data class Phrases(
     val readTheStory: String,
     val rememberIt: String,
     val notSure: String,
+    /**
+     * The two answers to a story somebody at home wrote down.
+     *
+     * "기억나!" and "잘 모르겠어" are the right pair for a place the app noticed the family
+     * visiting. They are the wrong pair for a parent's own story, which the child was never
+     * at: there is nothing there to remember or to fail to remember. So that story is answered
+     * by taking it in, or by going off to picture it.
+     */
+    val heardIt: String,
+    val imagineIt: String,
+    /**
+     * What marks the step where the facts stop and the child's own story starts.
+     *
+     * It read "여기부터는 우리의 상상 놀이", which announces a game rather than starting one.
+     * This step is the child's to make up, so the line hands it to them.
+     */
     val pretendPlay: String,
     /**
      * The way out of the two answers on screen, and into the child's own.
@@ -131,7 +147,9 @@ data class Phrases(
             readTheStory = "해설을 글로 보기",
             rememberIt = "기억나!",
             notSure = "잘 모르겠어",
-            pretendPlay = "여기부터는 우리의 상상 놀이",
+            heardIt = "그랬구나!",
+            imagineIt = "그때를 상상해 볼래",
+            pretendPlay = "여기부터는 네가 만드는 이야기야",
             sayItMyself = "내 생각엔… (직접 말하기)",
             inMyOwnWords = "내 생각엔… (직접 말하기)",
             keepWatching = "계속 창밖 보기",
@@ -199,7 +217,9 @@ data class Phrases(
             readTheStory = "Read the story",
             rememberIt = "I remember!",
             notSure = "I'm not sure",
-            pretendPlay = "From here on we are pretending",
+            heardIt = "Oh, I see!",
+            imagineIt = "I'll picture that day",
+            pretendPlay = "From here, the story is yours to make up",
             sayItMyself = "I think… (say it out loud)",
             inMyOwnWords = "I think… (say it out loud)",
             keepWatching = "Keep watching outside",

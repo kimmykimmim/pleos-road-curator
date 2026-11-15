@@ -39,8 +39,10 @@ class FamilyAlbumTest {
         // a parent writes.
         assertTrue(said.contains("전망대에서 한강을 봤어."))
         assertFalse(said.contains("우리 가족이 함께 왔던 곳"))
-        // The child is told it is fine not to remember, so there is nothing to get wrong.
-        assertTrue(said.contains("기억나지 않아도 괜찮아"))
+        // Nothing is asked of the child's memory here: they were not at the place their
+        // parents are telling them about. They are pointed at the window instead.
+        assertFalse(said.contains("기억나지 않아도 괜찮아"))
+        assertTrue(said.contains("창밖에 그 자리가 있어"))
     }
 
     @Test

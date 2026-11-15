@@ -66,6 +66,9 @@ class FamilyAlbum(
     val places: Set<String> get() = byPlace.keys
     val isEmpty: Boolean get() = byPlace.isEmpty()
     fun of(placeId: String?): FamilyVisit? = placeId?.let(byPlace::get)
+
+    /** Whether somebody at home wrote a story for this place, rather than the app noticing it. */
+    fun wrote(placeId: String?): Boolean = of(placeId)?.note?.isBlank() == false
     fun with(visit: FamilyVisit) = FamilyAlbum(byPlace.values.filter { it.placeId != visit.placeId } + visit, language)
     fun without(placeId: String) = FamilyAlbum(byPlace.values.filter { it.placeId != placeId }, language)
     fun toList(): List<FamilyVisit> = byPlace.values.sortedBy { it.placeId }
@@ -118,7 +121,7 @@ class FamilyAlbum(
                 // A guardian's own place has no field and nothing written for one, so the
                 // follow-up asks about the family rather than about a subject.
                 follow = "그때 누구랑 같이 있었어?",
-                unsure = "기억나지 않아도 괜찮아.",
+                unsure = "몰라도 괜찮아. 네 생각을 들려줘.",
                 silence = "괜찮아. 오늘 다시 지나가는 것만으로도 좋아.",
                 closing = "창밖을 한번 봐.",
             ),
@@ -158,9 +161,15 @@ class FamilyAlbum(
     private fun story(visit: FamilyVisit): String {
         val note = visit.note?.trim()?.take(FamilyVisit.MAX_NOTE).orEmpty()
         return buildString {
-            if (note.isEmpty()) append(say.familyRecall(visit.whenLabel))
-            else { append(say.familyIntro); append(" $note") }
-            append(" ${say.familyReassure}")
+            if (note.isEmpty()) {
+                append(say.familyRecall(visit.whenLabel))
+                // The app noticed this one, so remembering is a fair thing to ask about.
+                append(" ${say.familyReassure}")
+            } else {
+                append(say.familyIntro); append(" $note")
+                // Somebody's own story. Nothing is being asked of the child's memory.
+                append(" ${say.familyShared}")
+            }
         }
     }
 
