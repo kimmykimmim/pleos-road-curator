@@ -86,11 +86,11 @@ class WindowCompass(context: Context) : View(context) {
 
         line.strokeWidth = 5f
         // The badge: a soft round-cornered window, not a brass instrument.
-        fill.color = Color.rgb(255, 239, 196)
+        fill.color = Palette.paper
         path.reset()
         path.addRoundRect(RectF(8f, 8f, 92f, 92f), 30f, 30f, Path.Direction.CW)
         canvas.drawPath(path, fill)
-        line.color = Color.rgb(11, 45, 63)
+        line.color = Palette.ink
         canvas.drawPath(path, line)
 
         // A fat arrow, rounded at every corner, pointing the way.
@@ -100,7 +100,7 @@ class WindowCompass(context: Context) : View(context) {
             WindowSide.AHEAD -> -90f
             else -> 0f
         }, 50f, 50f)
-        fill.color = Color.rgb(8, 98, 136)
+        fill.color = Palette.accent
         path.reset()
         path.moveTo(30f, 42f)
         path.lineTo(56f, 42f)
@@ -113,7 +113,7 @@ class WindowCompass(context: Context) : View(context) {
         val round = android.graphics.CornerPathEffect(7f)
         fill.pathEffect = round; line.pathEffect = round
         canvas.drawPath(path, fill)
-        line.color = Color.rgb(11, 45, 63)
+        line.color = Palette.ink
         canvas.drawPath(path, line)
         fill.pathEffect = null; line.pathEffect = null
         canvas.restore()

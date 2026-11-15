@@ -186,7 +186,7 @@ class MainActivity : Activity() {
     /** What the tag row is showing, so it is only rebuilt when the place changes. */
     private var lastTags: List<String> = emptyList()
     private var statusLabel: TextView? = null
-    private val ink = Color.rgb(11,45,63)
+    private val ink = Palette.ink
     /**
      * Secondary type.
      *
@@ -194,8 +194,8 @@ class MainActivity : Activity() {
      * small text needs, and the notes at caption size are small text. Darkened until both
      * surfaces clear it, which in a moving car is worth more than the lighter grey looked.
      */
-    private val muted = Color.rgb(70,96,111)
-    private val accent = Color.rgb(8,98,136)
+    private val muted = Palette.muted
+    private val accent = Palette.accent
     /**
      * Daylight. What the page is made of.
      *
@@ -203,24 +203,24 @@ class MainActivity : Activity() {
      * the wrong story for this app: a child in a car is looking at sky and city, not at paper.
      * The tint is the palette's own sky, lightened until type sits on it comfortably.
      */
-    private val ground = Color.rgb(219,234,244)
+    private val ground = Palette.ground
     /** The window. One flat colour, because it is one thing you look through. */
-    private val deep = Color.rgb(8,78,110)
+    private val deep = Palette.deep
     /**
      * What lies behind the view when there is no picture filling it.
      *
      * Darker and greyer than the brand blue: it reads as the road at dusk rather than as a
      * panel, which is the point — it is ground, not a surface.
      */
-    private val road = Color.rgb(10,47,66)
-    private val pale = Color.rgb(234,243,250)
-    private val sky = Color.rgb(151,215,255)
+    private val road = Palette.road
+    private val pale = Palette.pale
+    private val sky = Palette.sky
     /** The palette's cream, kept as a mark rather than a mood. See [chipMark]. */
-    private val cream = Color.rgb(255,239,196)
+    private val cream = Palette.paper
     /** White at low alpha, for a chip that has to sit on the illustration without boxing it in. */
-    private val onHero = Color.argb(48,255,255,255)
+    private val onHero = Palette.onHero
     /** The credit line over a photograph: quieter than the caption, still plainly readable. */
-    private val onPhoto = Color.argb(222,255,255,255)
+    private val onPhoto = Palette.onPhoto
     private val timer = object : Runnable {
         override fun run() {
             if (foreground && demo && playing && !restricted && dialog == null) {
@@ -559,14 +559,14 @@ class MainActivity : Activity() {
     private fun seenMark(seen: SeenStatus): View = row().apply {
         val found = seen == SeenStatus.SEEN
         addView(View(this@MainActivity).apply {
-            background = if (found) pill(accent) else pill(Color.rgb(214,228,238))
+            background = if (found) pill(accent) else pill(Palette.pale)
         }, LinearLayout.LayoutParams(dp(if (found) 34 else 14), dp(9)))
     }
     private fun stepDots(active: Int): View = row().apply {
         gravity = Gravity.CENTER
         (0..3).forEach { index ->
             val on = index == active
-            addView(View(this@MainActivity).apply { background = pill(if (on) accent else Color.rgb(214,228,238)) },
+            addView(View(this@MainActivity).apply { background = pill(if (on) accent else Palette.pale) },
                 LinearLayout.LayoutParams(dp(if (on) 30 else 11), dp(11)).apply { marginStart = if (index == 0) 0 else dp(8) })
         }
     }
@@ -610,11 +610,14 @@ class MainActivity : Activity() {
         }
     }
     private fun button(text: String, primary: Boolean = false, action: () -> Unit) = Button(this).apply {
-        this.text = text; textSize = sp(Text.ACTION); isAllCaps = false; setTextColor(if (primary) Color.WHITE else ink)
+        this.text = text; textSize = sp(Text.ACTION); isAllCaps = false
+        // Dark type on the bright one. White on lime is unreadable, and this is the button a
+        // child presses from the back seat.
+        setTextColor(if (primary) Palette.onPrimary else ink)
         if (primary) typeface = Typeface.create("sans-serif-medium", Typeface.NORMAL)
         // Fully rounded. A pill reads as something to press from across the back seat in a way
         // a softened rectangle does not.
-        background = pill(if(primary) accent else pale); minHeight = dp(72)
+        background = pill(if(primary) Palette.primary else pale); minHeight = dp(72)
         setPadding(dp(16),dp(12),dp(16),dp(12)); setOnClickListener { if (usable()) action() }
         wholeWords()
     }

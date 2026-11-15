@@ -28,7 +28,7 @@ class PhotoSequenceView(context: Context) : View(context) {
     private var animator: ValueAnimator? = null
     private val paint = Paint(Paint.ANTI_ALIAS_FLAG or Paint.FILTER_BITMAP_FLAG)
     private val text = Paint(Paint.ANTI_ALIAS_FLAG)
-    private val cream = Color.rgb(255, 239, 196)
+    private val cream = Palette.paper
     private val source = Rect()
     private val target = RectF()
 

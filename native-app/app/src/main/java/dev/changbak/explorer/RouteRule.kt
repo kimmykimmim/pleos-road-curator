@@ -33,7 +33,7 @@ class RouteRule(context: Context) : View(context) {
 
     /** White at low alpha: these sit on a photograph as often as on a flat colour. */
     private val line = Color.argb(70, 255, 255, 255)
-    private val lit = Color.rgb(255, 239, 196)
+    private val lit = Palette.primary
     private val faint = Color.argb(150, 255, 255, 255)
 
     fun show(stops: List<String>, current: Int, approach: Float?, passed: Boolean) {
@@ -85,7 +85,7 @@ class RouteRule(context: Context) : View(context) {
             }
             canvas.drawCircle(x, y, h * (if (here) .13f else .075f), paint)
             if (here) {
-                paint.color = Color.argb(60, 255, 239, 196)
+                paint.color = Color.argb(60, 168, 224, 95)
                 canvas.drawCircle(x, y, h * .24f, paint)
             }
             text.color = if (here) lit else faint

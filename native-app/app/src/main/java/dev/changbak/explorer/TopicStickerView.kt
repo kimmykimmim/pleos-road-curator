@@ -230,8 +230,8 @@ class TopicStickerView(context: Context) : View(context) {
         private val piece = Path()
         private val box = RectF()
 
-        private val cream = Color.rgb(255, 239, 196)
-        private val ink = Color.rgb(11, 45, 63)
+        private val cream = Palette.paper
+        private val ink = Palette.ink
         private val sky = Color.rgb(151, 215, 255)
 
         const val ARRIVE = 420L

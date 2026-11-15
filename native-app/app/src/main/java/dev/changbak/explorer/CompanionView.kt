@@ -119,10 +119,10 @@ class CompanionView(context: Context) : View(context) {
         private val path = Path()
         private val box = RectF()
 
-        private val cream = Color.rgb(255, 239, 196)
-        private val ink = Color.rgb(11, 45, 63)
-        private val glass = Color.rgb(151, 215, 255)
-        private val lamp = Color.rgb(255, 250, 230)
+        private val cream = Palette.paper
+        private val ink = Palette.ink
+        private val glass = Palette.sky
+        private val lamp = Color.rgb(252, 255, 246)
 
         /** One breath in and out, with two blinks somewhere inside it. */
         const val LIFE = 4200L

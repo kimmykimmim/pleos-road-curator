@@ -24,14 +24,14 @@ import kotlin.math.*
  * memory for them.
  */
 object CuratorMediaArt {
-    private val ink=Color.rgb(11,45,63)
-    private val teal=Color.rgb(8,98,136)
-    private val gold=Color.rgb(224,180,92)
-    private val muted=Color.rgb(104,130,151)
+    private val ink=Palette.ink
+    private val teal=Palette.accent
+    private val gold=Palette.primary
+    private val muted=Palette.muted
     fun draw(canvas: Canvas,w:Float,h:Float,kind:CuratorVisual,progress:Float,variant:String="",
              placeId:String?=null) {
         val c=canvas; val p=Paint(Paint.ANTI_ALIAS_FLAG); val t=progress.coerceIn(0f,1f)
-        c.drawColor(Color.rgb(238,246,252))
+        c.drawColor(Palette.ground)
         c.save();val scale=min(w/960f,h/540f);c.translate((w-960f*scale)/2,(h-540f*scale)/2);c.scale(scale,scale)
         fun text(value:String,x:Float,y:Float,size:Float=24f,color:Int=ink,bold:Boolean=false) {
             p.shader=null;p.style=Paint.Style.FILL;p.color=color;p.textSize=size;p.typeface=Typeface.create("sans-serif",if(bold) Typeface.BOLD else Typeface.NORMAL);p.textAlign=Paint.Align.LEFT;c.drawText(value,x,y,p)
@@ -222,8 +222,8 @@ object CuratorMediaArt {
                 // would be inventing what this place looks like, and the only true thing the
                 // app holds here is the guardian's line.
                 rect(250f,196f,710f,430f,Color.WHITE,28f)
-                rect(250f,196f,710f,252f,Color.rgb(77,141,186),28f)
-                rect(250f,236f,710f,252f,Color.rgb(77,141,186),0f)
+                rect(250f,196f,710f,252f,Palette.accent,28f)
+                rect(250f,236f,710f,252f,Palette.accent,0f)
                 for(i in 0..2) rect(296f,296f+i*44f,664f-i*96f,316f+i*44f,Color.rgb(226,240,250),10f)
                 val beat=1f+0.08f*sin(t*2f*PI.toFloat())
                 val heart=Path().apply {

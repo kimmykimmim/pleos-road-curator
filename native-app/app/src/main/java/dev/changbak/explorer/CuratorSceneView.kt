@@ -130,18 +130,18 @@ class CuratorSceneView(context: Context): View(context) {
             p.style=Paint.Style.FILL
             // Light enough to read as a surface. A dark band on a dark ground was a hill.
             p.shader=android.graphics.LinearGradient(0f,far,0f,h,
-                Color.rgb(58,90,110),Color.rgb(104,132,150),android.graphics.Shader.TileMode.CLAMP)
+                Color.rgb(46,52,56),Color.rgb(92,100,96),android.graphics.Shader.TileMode.CLAMP)
             c.drawPath(lane,p)
             p.shader=null
             // The far end fades into the ground rather than stopping at a hard line.
             p.shader=android.graphics.LinearGradient(0f,far-h*.02f,0f,far+h*.22f,
-                Color.rgb(12,45,62),Color.argb(0,58,90,110),android.graphics.Shader.TileMode.CLAMP)
+                Color.rgb(21,24,26),Color.argb(0,46,52,56),android.graphics.Shader.TileMode.CLAMP)
             c.drawRect(0f,far-h*.02f,w,far+h*.22f,p)
             p.shader=null
             // The centre line. Each dash is shorter and thinner than the one before it.
             p.style=Paint.Style.STROKE
             p.strokeCap=Paint.Cap.ROUND
-            p.color=Color.argb(225,255,239,196)
+            p.color=Color.argb(235,168,224,95)
             val dashes=7
             (0 until dashes).forEach { step ->
                 val t0=step/dashes.toFloat()
@@ -174,7 +174,7 @@ class CuratorSceneView(context: Context): View(context) {
         fun drawScene(c: Canvas,w: Float,h: Float,state: CuratorState,
                       place: CuratorPlace? = CuratorCatalog.places.firstOrNull { it.id==state.currentId }) {
             val p=Paint(Paint.ANTI_ALIAS_FLAG)
-            val teal=Color.rgb(8,98,136)
+            val teal=Palette.accent
             val mystery=state.phase in setOf(CuratorPhase.READY,CuratorPhase.WAITING)
             if(mystery) {
                 // The road itself, bending away from you. 두리 is drawn standing on it by the
@@ -185,7 +185,7 @@ class CuratorSceneView(context: Context): View(context) {
                 // it said nothing a child could read. A road says where this is going.
                 road(c,w,h,p)
             } else {
-                p.color=Color.rgb(205,225,240);c.drawOval(w*.06f,h*.22f,w*.94f,h*.82f,p)
+                p.color=Color.rgb(222,228,218);c.drawOval(w*.06f,h*.22f,w*.94f,h*.82f,p)
                 val variant=state.visits.firstOrNull { it.placeId==state.currentId }?.activityId.orEmpty()
                 c.save();c.translate(0f,h*.03f);c.scale(1f,.82f)
                 val pose=when {
