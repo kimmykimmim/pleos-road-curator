@@ -1,0 +1,7 @@
+[19] name="round:lotte" value="1" 
+[31] name="round:lotte" value="1" name="round:building63" value="1" 
+[43] name="round:lotte" value="1" name="round:yeouido" value="1" name="round:building63" value="1" 
+[54] name="round:lotte" value="1" name="round:yeouido" value="1" name="round:building63" value="1" name="round:sungnyemun" value="1" 
+[66] name="round:lotte" value="1" name="round:gwanghwamun" value="1" name="round:yeouido" value="1" name="round:building63" value="1" name="round:sungnyemun" value="1" 
+[78] name="round:lotte" value="1" name="round:cheongjinok" value="1" name="round:gwanghwamun" value="1" name="round:yeouido" value="1" name="round:building63" value="1" name="round:sungnyemun" value="1" 
+DONE

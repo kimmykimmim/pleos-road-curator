@@ -162,7 +162,7 @@ object SceneScraps {
                 author = "서울연구원", license = CC_BY_4,
                 page = "https://commons.wikimedia.org/wiki/File:Cheongjin-dong_Haejang-guk_street_in_1999.jpg",
                 focusY = .30f,
-                mark = ScrapMark(.35f, .18f, .16f, "청진옥"),
+                mark = ScrapMark(.34f, .21f, .13f, "청진옥"),
             ),
         )),
         // A guardian's own place has none on purpose. The app has no photograph of it, and
