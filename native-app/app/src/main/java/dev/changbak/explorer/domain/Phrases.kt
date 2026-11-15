@@ -74,6 +74,10 @@ data class Phrases(
     /** The other two lines the child's own status row can carry. */
     val needsLocation: String,
     val preparingVoice: String,
+    /** The word under the arrow that points at a window. One word, read at a glance. */
+    val windowLeft: String,
+    val windowRight: String,
+    val windowAhead: String,
     val naviBefore: String,
     /**
      * The way out of the two answers on screen, and into the child's own.
@@ -181,6 +185,9 @@ data class Phrases(
             micClosed = "지금은 화면으로 골라줘",
             needsLocation = "주변 장소를 찾으려면 정확한 위치 권한이 필요해요.",
             preparingVoice = "음성을 준비하고 있어요",
+            windowLeft = "왼쪽 창밖",
+            windowRight = "오른쪽 창밖",
+            windowAhead = "앞쪽 창밖",
             naviBefore = "내비게이션 연결 전",
             sayItMyself = "내 생각엔… (직접 말하기)",
             inMyOwnWords = "내 생각엔… (직접 말하기)",
@@ -259,6 +266,9 @@ data class Phrases(
             micClosed = "Let's use the screen for now",
             needsLocation = "I need precise location to find places along the way.",
             preparingVoice = "Getting my voice ready",
+            windowLeft = "Left window",
+            windowRight = "Right window",
+            windowAhead = "Straight ahead",
             naviBefore = "Not connected to navigation yet",
             sayItMyself = "I think… (say it out loud)",
             inMyOwnWords = "I think… (say it out loud)",

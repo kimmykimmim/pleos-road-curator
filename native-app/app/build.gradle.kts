@@ -23,8 +23,8 @@ android {
         applicationId = "dev.changbak.explorer"
         minSdk = 28
         targetSdk = 34
-        versionCode = 44
-        versionName = "0.42.0"
+        versionCode = 45
+        versionName = "0.43.0"
         testInstrumentationRunner = "dev.changbak.explorer.SceneRenderCheck"
     }
 

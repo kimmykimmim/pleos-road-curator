@@ -182,6 +182,7 @@ class MainActivity : Activity() {
     private lateinit var photoCredit: TextView
     private lateinit var subline: TextView
     private lateinit var tagRow: LinearLayout
+    private lateinit var compass: WindowCompass
     /** What the tag row is showing, so it is only rebuilt when the place changes. */
     private var lastTags: List<String> = emptyList()
     private var statusLabel: TextView? = null
@@ -673,6 +674,11 @@ class MainActivity : Activity() {
         stage.addView(sticker, FrameLayout.LayoutParams(dp(164), dp(150), Gravity.TOP or Gravity.START)
             .apply { leftMargin = dp(20); topMargin = dp(16) })
 
+        // Which window to look out of, in the corner the photograph can spare.
+        compass = WindowCompass(this).apply { visibility = View.GONE }
+        stage.addView(compass, FrameLayout.LayoutParams(dp(132), dp(158), Gravity.TOP or Gravity.START)
+            .apply { leftMargin = dp(20); topMargin = dp(16) })
+
         // The place's name is part of the picture, not a caption under it: set large, low, and
         // over the view itself.
         val nameBlock = column().apply { setPadding(dp(34),0,dp(34),dp(18)) }
@@ -846,6 +852,7 @@ class MainActivity : Activity() {
         val showMeeting = met > 0 && state.phase !in setOf(CuratorPhase.FINISHED,CuratorPhase.READY)
         meetingChip.text = if (showMeeting) say.meeting(met+1) else ""
         meetingChip.visibility = if (showMeeting) View.VISIBLE else View.GONE
+        showCompass(place)
         scene.visibility=if(restricted) View.INVISIBLE else View.VISIBLE
         scene.present(state, !restricted && foreground && dialog==null)
         // The explanation is the one beat that is about the picture rather than the window.
@@ -878,6 +885,36 @@ class MainActivity : Activity() {
      * being asked get one: the explanation is about the picture that is already filling the
      * screen, and a sticker over that would be a second drawing arguing with the first.
      */
+    /**
+     * The arrow that points at a window, while the child is looking for the place.
+     *
+     * Only during the watching step: before it there is nothing out there yet, and after it the
+     * place has gone past. It takes the top corner the question's sticker leaves empty, and
+     * moves to the other corner when this place's photograph has its subject on that side —
+     * the one thing it must never do is sit on top of the building the child is looking for.
+     */
+    private fun showCompass(place: CuratorPlace?) {
+        if (!::compass.isInitialized) return
+        val pointing = state.phase == CuratorPhase.WATCH && !restricted && place != null &&
+            state.side != WindowSide.UNKNOWN
+        if (!pointing) { compass.point(WindowSide.UNKNOWN, ""); return }
+        val focus = PhotoStages.forRecognising(place?.id).firstOrNull()?.focusX ?: .5f
+        val params = compass.layoutParams as FrameLayout.LayoutParams
+        val wanted = if (focus < .42f) Gravity.TOP or Gravity.END else Gravity.TOP or Gravity.START
+        if (params.gravity != wanted) {
+            params.gravity = wanted
+            // Clear of the sheet when it has to sit on the right.
+            params.leftMargin = dp(20)
+            params.rightMargin = sheetWidth() + dp(20)
+            compass.layoutParams = params
+        }
+        compass.point(state.side, when (state.side) {
+            WindowSide.LEFT -> say.windowLeft
+            WindowSide.RIGHT -> say.windowRight
+            else -> say.windowAhead
+        })
+    }
+
     private fun showSticker() {
         if (!::sticker.isInitialized) return
         val asking = state.phase in setOf(CuratorPhase.PREDICT, CuratorPhase.PLAY)
@@ -1306,8 +1343,12 @@ class MainActivity : Activity() {
             quiet();state=engine.start();sequence=0L;playing=false
             val seconds=selectedRoute.passageAt(index)
             demoTime=seconds-300
-            apply(engine.tick(state,CuratorFix(selectedRoute.id,++sequence,listOf(PlaceApproach(chosen,300)))))
-            if(stage>0) {demoTime=seconds+if(stage==1) -20 else 10;apply(engine.tick(state,CuratorFix(selectedRoute.id,++sequence,listOf(PlaceApproach(chosen,if(stage==1)20 else -10,stage==2)))))}
+            // The jump builds its own signal, so it has to carry the same window the drive
+            // would have carried. Without it the guardian's preview was the one place in the
+            // app that could not say which way to look.
+            val window=selectedRoute.sides[chosen] ?: WindowSide.UNKNOWN
+            apply(engine.tick(state,CuratorFix(selectedRoute.id,++sequence,listOf(PlaceApproach(chosen,300,side=window)))))
+            if(stage>0) {demoTime=seconds+if(stage==1) -20 else 10;apply(engine.tick(state,CuratorFix(selectedRoute.id,++sequence,listOf(PlaceApproach(chosen,if(stage==1)20 else -10,stage==2,side=window)))))}
         } }.setNegativeButton("닫기",null).create())
     }
     /**

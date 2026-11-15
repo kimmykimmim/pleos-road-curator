@@ -67,6 +67,13 @@ data class CuratorState(val phase: CuratorPhase = CuratorPhase.READY, val routeI
     val visits: List<PlaceMemory> = emptyList(), val deferred: Set<String> = emptySet(), val message: String = "",
     val routeValid: Boolean = true,
     /**
+     * Which window the place being met is at, as of the last fix.
+     *
+     * The narration already says it once. A child who was looking the other way when it was
+     * said has nothing to go back to, so the screen keeps pointing while the step lasts.
+     */
+    val side: WindowSide = WindowSide.UNKNOWN,
+    /**
      * Whether the spoken exchange at this place has already been closed off.
      *
      * [VoiceTalk] decides this — a child who said they do not know has been answered and must
@@ -153,7 +160,8 @@ class RouteCurator(
         val current = fix.approaches.firstOrNull { it.placeId == state.currentId }
         if (state.currentId != null && current == null && state.phase in setOf(CuratorPhase.PREDICT, CuratorPhase.WATCH)) {
             next = next.copy(phase = CuratorPhase.WAITING, currentId = null, etaSeconds = null,
-                deferred = next.deferred + state.currentId, message = say.routeChanged)
+                deferred = next.deferred + state.currentId, message = say.routeChanged,
+                side = WindowSide.UNKNOWN)
         }
         if (current != null) {
             next = next.copy(etaSeconds = current.etaSeconds?.coerceAtLeast(0))
@@ -163,7 +171,8 @@ class RouteCurator(
                     val p = place(next) ?: return CuratorTurn(next)
                     val text = if (current.observable) say.comingUp(p.name, point(current), watchLine(next, p))
                         else say.notVisible
-                    return CuratorTurn(next.copy(phase = CuratorPhase.WATCH, message = text), text)
+                    return CuratorTurn(next.copy(phase = CuratorPhase.WATCH, message = text,
+                        side = current.side), text)
                 }
             }
         }
@@ -180,7 +189,7 @@ class RouteCurator(
             // A new place is a new question, so whatever closed the last one does not carry over.
             // The meeting number is fixed here, where the meeting begins.
             visits = next.visits + PlaceMemory(p.id, round = roundSource(p.id)),
-            message = text, askingDone = false), text)
+            message = text, askingDone = false, side = candidate.side), text)
     }
     /**
      * What to look for while this place is the one being asked about.

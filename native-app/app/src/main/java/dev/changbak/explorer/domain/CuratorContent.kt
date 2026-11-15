@@ -532,14 +532,26 @@ object KoreanPlaces {
     )
 }
 
-data class CuratorDemoRoute(val id: String, val title: String, val subtitle: String, val placeIds: List<String>) {
+data class CuratorDemoRoute(
+    val id: String, val title: String, val subtitle: String, val placeIds: List<String>,
+    /**
+     * Which window each place is at on this scripted drive.
+     *
+     * A real journey works this out from the direction the car is actually travelling. A
+     * demonstration has no car, so the side is written down with the rest of the script. It is
+     * part of the story being shown, not a measurement, and a place with nothing written here
+     * points nowhere rather than guessing.
+     */
+    val sides: Map<String, WindowSide> = emptyMap(),
+) {
     fun passageAt(index: Int) = 360 + index * 720
     /** Guardian places join the end of the demo so a family's own place can be shown too. */
     fun stops(alsoVisit: List<String> = emptyList()) = placeIds + alsoVisit.filter { it !in placeIds }
     fun endSeconds(alsoVisit: List<String> = emptyList()) = passageAt(stops(alsoVisit).lastIndex) + 180
     fun fix(seconds: Int, sequence: Long, alsoVisit: List<String> = emptyList()) =
         CuratorFix(id, sequence, stops(alsoVisit).mapIndexed { index,id ->
-            PlaceApproach(id, passageAt(index)-seconds, seconds>passageAt(index)) })
+            PlaceApproach(id, passageAt(index)-seconds, seconds>passageAt(index),
+                side = sides[id] ?: WindowSide.UNKNOWN) })
 }
 object CuratorRoutes {
     /**
@@ -560,6 +572,15 @@ object CuratorRoutes {
         // Three of these are the science of how a building stands up and what an island is
         // made of; three are what people did here. One drive, both kinds of question.
         listOf("lotte", "building63", "yeouido", "sungnyemun", "gwanghwamun", "cheongjinok"),
+        // Which window each one is at, for this scripted drive from 잠실 to 도심.
+        sides = mapOf(
+            "lotte" to WindowSide.RIGHT,
+            "building63" to WindowSide.LEFT,
+            "yeouido" to WindowSide.AHEAD,
+            "sungnyemun" to WindowSide.RIGHT,
+            "gwanghwamun" to WindowSide.AHEAD,
+            "cheongjinok" to WindowSide.LEFT,
+        ),
     )
 
     val routes = listOf(fixed)
