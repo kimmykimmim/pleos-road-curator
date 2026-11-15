@@ -48,10 +48,26 @@ class VoiceGuide(
     private val app = context.applicationContext
     private val main = Handler(Looper.getMainLooper())
     private val audio = app.getSystemService(AudioManager::class.java)
+    /**
+     * How this voice asks to be played.
+     *
+     * It used to ride on USAGE_MEDIA, which is the music channel: in a car that is whatever
+     * volume the radio was left at, and the family turns the radio down. Spoken guidance has
+     * its own channel, and on Android Automotive that channel is its own volume group — so
+     * the child hears the question at the volume the car keeps for being spoken to, not at
+     * the volume somebody set for music two days ago.
+     *
+     * Not the navigation channel: this app must never sound like the actual route guidance.
+     */
     private val attributes = AudioAttributes.Builder()
-        .setUsage(AudioAttributes.USAGE_MEDIA)
+        .setUsage(AudioAttributes.USAGE_ASSISTANT)
         .setContentType(AudioAttributes.CONTENT_TYPE_SPEECH)
         .build()
+
+    /** Full scale on the engine's own level, so only the car's volume decides loudness. */
+    private val loud = android.os.Bundle().apply {
+        putFloat(AndroidTts.Engine.KEY_PARAM_VOLUME, 1f)
+    }
 
     @Volatile private var disposed = false
     @Volatile private var commandsEnabled = false
@@ -389,7 +405,7 @@ class VoiceGuide(
             } else {
                 val android = androidTts ?: throw IllegalStateException()
                 if (android.playSilentUtterance(180L, AndroidTts.QUEUE_FLUSH, "silence-${run.epoch}") == AndroidTts.ERROR ||
-                    android.speak(run.text, AndroidTts.QUEUE_ADD, null, run.utteranceId) == AndroidTts.ERROR
+                    android.speak(run.text, AndroidTts.QUEUE_ADD, loud, run.utteranceId) == AndroidTts.ERROR
                 ) stopWithError("음성 안내를 듣기 어려워요. 버튼으로 이어갈 수 있어요.")
             }
         } catch (_: Exception) { if (isSpeech(run)) stopWithError("음성 안내를 듣기 어려워요. 버튼으로 이어갈 수 있어요.") }

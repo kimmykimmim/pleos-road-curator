@@ -857,8 +857,12 @@ class MainActivity : Activity() {
             lastTags = tags
             tagRow.removeAllViews()
             tags.forEach { tag ->
-                tagRow.addView(heroChip(tag),LinearLayout.LayoutParams(-2,-2)
-                    .apply { marginEnd = dp(8) })
+                // Cut out of paper, like every other picture in this app.
+                // sp() gives a scale-independent size for a TextView; a Canvas measures in pixels.
+                tagRow.addView(ScrapTag(this,tag).apply {
+                    textSizePx = sp(Text.LABEL) * resources.displayMetrics.density
+                },
+                    LinearLayout.LayoutParams(-2,-2))
             }
         }
         tagRow.visibility = if (tags.isEmpty()) View.GONE else View.VISIBLE
