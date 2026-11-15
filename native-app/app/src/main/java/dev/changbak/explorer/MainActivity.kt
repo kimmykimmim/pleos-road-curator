@@ -948,13 +948,18 @@ class MainActivity : Activity() {
             card.addView(label(if(live) "화면은 쉬고, 시작한 음성 여행은 계속돼요." else "차가 멈추면 이야기를 이어가요.",Text.BODY,muted)); return
         }
         if(live && (state.phase in setOf(CuratorPhase.READY,CuratorPhase.WAITING) || !state.routeValid)) {
-            card.addView(label("가는 길의 이야기를 찾고 있어요",Text.TITLE,ink,true));gap(card,16)
-            card.addView(label(naviStatus,Text.BODY,muted));gap(card,14)
-            card.addView(label("등록된 목적지와 경유지는 약 5분 전, 그 밖의 장소는 가까워졌을 때 소개해요.",Text.BODY,muted))
-            gap(card,10);card.addView(label("현재 서울 6곳 / 위치로 찾는 장소 5곳",Text.CAPTION,muted))
-            drive?.let { card.addView(label("예고 가능한 장소 ${it.timedCount}곳 / 가까운 장소 ${it.nearbyCount}곳",Text.CAPTION,accent)) }
-            action(if(playing) "음성 여행 잠시 쉬기" else "음성 여행 다시 연결",true) { drive?.setPaused(!drive!!.paused) ?: startLive() }
-            action("시연으로 살펴보기") { routeMenu() };return
+            // Four sentences used to stand here, two of them about how the app decides when
+            // to speak. A six year old cannot choose anything from a paragraph, and nothing
+            // here was theirs to decide anyway. One line about what is happening, one number
+            // worth knowing, and the two things they can press.
+            card.addView(label("길을 찾는 중이야",Text.TITLE,ink,true));gap(card,14)
+            card.addView(label(naviStatus,Text.BODY,muted));gap(card,18)
+            val ready = drive?.let { it.timedCount + it.nearbyCount } ?: 0
+            if(ready > 0) {
+                card.addView(label("곧 만날 장소 ${ready}곳",Text.BODY,accent,true));gap(card,16)
+            }
+            action(if(playing) "잠깐 쉬기" else "다시 시작",true) { drive?.setPaused(!drive!!.paused) ?: startLive() }
+            action("지금 바로 해 보기") { routeMenu() };return
         }
         if(state.phase==CuratorPhase.READY) {
             card.addView(label(say.readyTitle,Text.DISPLAY,ink,true)); gap(card,20)

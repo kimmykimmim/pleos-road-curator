@@ -58,7 +58,8 @@ class CuratorNaviSource(context: Context, private val status: (String) -> Unit,
                 guiding=info.naviMode in setOf(NaviMode.ROUTE_GUIDING,NaviMode.SIMULATION_GUIDING)
                 guidanceAt=now()
                 if(!guiding) { position=null;destination=null;waypoints=emptyList();arrivals=emptyList() }
-                status(if(guiding) "실제 내비 연결 / 등록 장소와 주변 장소를 살펴봐요." else "내비게이션에서 목적지를 정하고 안내를 시작해 주세요.")
+                // Said to a child in the back seat, so it says what is happening, not how.
+                status(if(guiding) "내비와 연결됐어. 길을 보고 있어." else "내비에 목적지를 정하면 시작해.")
                 emit()
             }
             override fun onCurrentLocationInfo(info:CurrentLocationInfo)=dispatch {
