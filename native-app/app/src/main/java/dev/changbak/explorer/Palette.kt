@@ -54,6 +54,6 @@ object Palette {
     val paper = Color.rgb(239, 245, 230)
 
     /** A chip over a photograph, and the credit line under it. */
-    val onHero = Color.argb(46, 255, 255, 255)
+    val onHero = Color.argb(132, 15, 17, 19)
     val onPhoto = Color.argb(226, 255, 255, 255)
 }

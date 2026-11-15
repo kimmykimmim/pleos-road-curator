@@ -1,0 +1,5 @@
+<?xml version='1.0' encoding='utf-8' standalone='yes' ?>
+<map>
+    <int name="round:cheongjinok" value="2" />
+    <int name="round:sungnyemun" value="1" />
+</map>

@@ -218,6 +218,13 @@ class MainActivity : Activity() {
     /** The palette's cream, kept as a mark rather than a mood. See [chipMark]. */
     private val cream = Palette.paper
     /** White at low alpha, for a chip that has to sit on the illustration without boxing it in. */
+    /**
+     * A chip over the picture.
+     *
+     * White on a white film is fine over a dark photograph and disappears over a bright sky,
+     * which is most of this road at midday. Dark film, white type: it reads on both, and on
+     * the charcoal ground it simply sinks into it, which is where chips belong.
+     */
     private val onHero = Palette.onHero
     /** The credit line over a photograph: quieter than the caption, still plainly readable. */
     private val onPhoto = Palette.onPhoto
@@ -649,8 +656,8 @@ class MainActivity : Activity() {
         // readable on both. One gradient along the bottom does that without a box.
         scrim = View(this).apply {
             background = GradientDrawable(GradientDrawable.Orientation.TOP_BOTTOM,
-                intArrayOf(Color.TRANSPARENT, Color.argb(70,4,32,46), Color.argb(170,4,32,46),
-                    Color.argb(222,4,32,46), Color.argb(246,4,32,46)))
+                intArrayOf(Color.TRANSPARENT, Color.argb(70,15,17,19), Color.argb(170,15,17,19),
+                    Color.argb(222,15,17,19), Color.argb(246,15,17,19)))
         }
         // Tall enough to reach the photograph's own caption. The caption used to carry a second
         // gradient of its own, which ended in a hard line across the picture — two washes doing
@@ -808,6 +815,11 @@ class MainActivity : Activity() {
             addUpdateListener { scene.coveredRight = it.animatedValue as Float }
         }.start()
         val band = (if (out) heroCaption.height + dp(74) else dp(74)).toFloat()
+        // The wash along the bottom is there to hold the place's name over a photograph. With
+        // the sheet away the explanation fills the screen, there is no name down there, and
+        // the wash was darkening the drawing's own closing line to 1.9:1. So it leaves with
+        // the sheet and comes back with it.
+        scrim.animate().alpha(if (out) 1f else 0f).setDuration(span).start()
         ValueAnimator.ofFloat(scene.coveredBottom, band).apply {
             duration = span; interpolator = DecelerateInterpolator()
             addUpdateListener { scene.coveredBottom = it.animatedValue as Float }
