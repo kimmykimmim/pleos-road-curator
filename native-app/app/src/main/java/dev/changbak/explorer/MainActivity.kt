@@ -958,7 +958,7 @@ class MainActivity : Activity() {
             if(ready > 0) {
                 card.addView(label("곧 만날 장소 ${ready}곳",Text.BODY,accent,true));gap(card,16)
             }
-            action(if(playing) "잠깐 쉬기" else "다시 시작",true) { drive?.setPaused(!drive!!.paused) ?: startLive() }
+            action(if(playing) say.pause else say.resume,true) { drive?.setPaused(!drive!!.paused) ?: startLive() }
             action("지금 바로 해 보기") { routeMenu() };return
         }
         if(state.phase==CuratorPhase.READY) {

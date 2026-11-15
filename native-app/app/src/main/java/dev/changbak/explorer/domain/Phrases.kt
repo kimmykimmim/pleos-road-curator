@@ -93,6 +93,13 @@ data class Phrases(
     val todaysRoute: String,
     /** Minutes until this place, as the child hears it. */
     val minutesAway: (Int) -> String,
+    /**
+     * The two states of the one button that stops and starts the talking.
+     *
+     * "잠깐 쉬기" and "이어서 가기" describe what the app does. A child pressing a button is
+     * saying something to somebody, so these say it in their words instead: stop telling me
+     * things, start telling me things.
+     */
     val pause: String,
     val resume: String,
     val replayFilm: String,
@@ -171,8 +178,8 @@ data class Phrases(
             routeDiscovery = "경로에서 만나는 발견",
             todaysRoute = "오늘 지나온 발견",
             minutesAway = { minutes -> "이 지점까지 약 ${minutes}분" },
-            pause = "잠깐 쉬기",
-            resume = "이어서 가기",
+            pause = "그만 들을래",
+            resume = "다시 들을래",
             replayFilm = "짧은 원리 영상 다시 보기",
             nowSpeaking = "이야기를 듣는 중",
             nowListening = "네 생각을 듣고 있어",
@@ -250,8 +257,8 @@ data class Phrases(
             routeDiscovery = "Something to find on this route",
             todaysRoute = "Where we went today",
             minutesAway = { minutes -> "About $minutes min to go" },
-            pause = "Take a break",
-            resume = "Carry on",
+            pause = "Stop talking",
+            resume = "Talk to me again",
             replayFilm = "Play the short clip again",
             nowSpeaking = "Telling the story",
             nowListening = "Listening to you",
