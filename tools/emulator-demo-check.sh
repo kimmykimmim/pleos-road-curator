@@ -19,7 +19,7 @@ PACKAGE="dev.changbak.explorer"
 TTS_PACKAGE="com.google.android.tts"
 ROOT="$(cd "$(dirname "$0")/.." && pwd)"
 OUT="${1:-$ROOT/validation/emulator-run}"
-APK="$ROOT/apk/김규범_길위의큐레이터_release.apk"
+APK="$ROOT/apk/김규범_창밖을보라_release.apk"
 
 mkdir -p "$OUT"
 die() { echo "중단: $*" >&2; exit 1; }

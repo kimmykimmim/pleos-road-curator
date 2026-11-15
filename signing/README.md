@@ -14,7 +14,7 @@
 제출한 APK가 이 키로 서명되었는지 확인하는 방법입니다.
 
 ```bash
-apksigner verify --print-certs apk/김규범_길위의큐레이터_release.apk
+apksigner verify --print-certs apk/김규범_창밖을보라_release.apk
 ```
 
 ## 다른 컴퓨터에서 release 빌드를 하려면

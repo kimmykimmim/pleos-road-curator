@@ -106,7 +106,7 @@
 
 - `testDebugUnitTest assembleDebug assembleRelease`: 성공
 - 자동 검사 251개, 실패 0, 오류 0
-- 제출용 서명 APK: `apk/김규범_길위의큐레이터_release.apk`, `apksigner verify` 통과[v2, RSA 4096]
+- 제출용 서명 APK: `apk/김규범_창밖을보라_release.apk`, `apksigner verify` 통과[v2, RSA 4096]
 - 실제 Pleos에서 5개 MP4 디코딩, 길이와 크기, 6개 장소의 역할 놀이 그림 차이: 통과
 - 기기 내 시연 처리 검사: 질문 → 관찰 → 통과 → 해설 → 역할 놀이 통과
 - 실제 SDK 조회: `connected=true`, `mode=SAFE_GUIDING`

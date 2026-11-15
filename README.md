@@ -1,11 +1,11 @@
-# 길 위의 큐레이터
+# 창밖을 보라
 
 차량에 탄 6세에서 8세 아이를 위한 Pleos 차량용 앱입니다. 가는 길에 있는 장소를 아이가 직접
 창밖으로 바라보게 하고, 짧은 질문과 해설로 그 운행을 기억에 남기는 것이 목표입니다.
 
 - 참가 구분: 개인 참가
 - 참가자: 김규범
-- 앱 이름: 길 위의 큐레이터
+- 앱 이름: 창밖을 보라
 - 패키지: `dev.changbak.explorer`
 - 버전: 0.47.0, versionCode 49
 
@@ -179,7 +179,7 @@
 
 ## APK 위치
 
-- `apk/김규범_길위의큐레이터_release.apk`
+- `apk/김규범_창밖을보라_release.apk`
 - 서명된 release 빌드입니다. 설치해서 바로 실행할 수 있습니다.
 
 ## 실행 방법
@@ -187,7 +187,7 @@
 ### 1. APK 설치만 하는 경우
 
 ```bash
-adb install -r apk/김규범_길위의큐레이터_release.apk
+adb install -r apk/김규범_창밖을보라_release.apk
 adb shell monkey -p dev.changbak.explorer -c android.intent.category.LAUNCHER 1
 ```
 

@@ -23,7 +23,7 @@
     </queries>
     <application
         android:allowBackup="false"
-        android:label="길 위의 큐레이터"
+        android:label="창밖을 보라"
         android:icon="@drawable/ic_explorer"
         android:theme="@style/AppTheme"
         android:supportsRtl="true">

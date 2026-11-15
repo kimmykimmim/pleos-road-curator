@@ -142,7 +142,7 @@ class CuratorDriveService:Service() {
         val open=PendingIntent.getActivity(this,0,Intent(this,MainActivity::class.java),PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE)
         val stop=PendingIntent.getService(this,1,Intent(this,CuratorDriveService::class.java).setAction("STOP"),PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE)
         return Notification.Builder(this,"curator-journey").setSmallIcon(R.drawable.ic_explorer)
-            .setContentTitle(if(paused) "길 위의 이야기 잠시 쉬는 중" else "길 위의 큐레이터")
+            .setContentTitle(if(paused) "창밖 이야기 잠시 쉬는 중" else "창밖을 보라")
             .setContentText(engine.place(state)?.name ?: "주변의 이야기를 기다리고 있어요")
             .setContentIntent(open).setOngoing(true).setOnlyAlertOnce(true)
             .addAction(Notification.Action.Builder(null,"여행 끝내기",stop).build())
